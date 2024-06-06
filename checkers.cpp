@@ -25,6 +25,7 @@ int main()
 
     std::cout << '\n';
     std::cout << "        Enter your name dear: ";
+
     char temp_name[max_length]{};
     std::cin.getline(temp_name, max_length);
 
@@ -37,6 +38,7 @@ int main()
         temp_name[i] = std::toupper(temp_name[i]);
         player_name[i] = temp_name[i];
     }
+    
     std::cout << std::endl;
     std::cout << "           ID  |  MODE" << std::endl;
     std::cout << "        -------|---------" << std::endl;
@@ -72,7 +74,7 @@ void reset_board()
     {
         for (size_t column{}; column < 4; column++)
         {
-            box[row][column] = 'x';
+            box[row][column] = ' ';
         }
     }
 
@@ -86,7 +88,11 @@ void reset_board()
     }
 
     box[3][1] = 'o';
-    box[2][0] = ' ';
+    box[3][2] = 'o';
+    box[2][0] = 'x';
+    box[2][1] = 'X';
+    box[5][1] = 'O';
+    box[5][2] = 'O';
 }
 
 void print_board()
@@ -129,6 +135,7 @@ void player()
     char knock = knocks('P', &total_knocks);
 
     char played{};
+
     if (knock == 'Y')
     {
         if (total_knocks > 1)
@@ -247,38 +254,74 @@ void player()
     }
     else
     {
-        print_board();
-
-        // removing '.'
-        for (size_t i = 0; i < 8; i++)
+        do
         {
-            for (size_t j = 0; j < 4; j++)
+            print_board();
+
+            // removing '.'
+            for (size_t i = 0; i < 8; i++)
             {
-                if (box[i][j] == '.')
+                for (size_t j = 0; j < 4; j++)
                 {
-                    box[i][j] = ' ';
+                    if (box[i][j] == '.')
+                    {
+                        box[i][j] = ' ';
+                    }
                 }
             }
+
+            std::cout << "        Enter piece  row# column# e.g 12: ";
+            std::cin >> choice[0];
+            choice_processing(0);
+
+            std::cout << "        Enter target row# column# e.g 23: ";
+            std::cin >> choice[1];
+            choice_processing(1);
+
+            played = move_piece('N');
+
+        } while (played == 'N');
+    }
+
+    while ((played = more_knocks()) != 'N')
+    {
+        if (box[y[1]][x[1]] == 'X')
+        {
+            box[y[1]][x[1]] = 'S';
+        }
+        else
+        {
+            box[y[1]][x[1]] = 's';
         }
 
-        std::cout << "        Enter piece  row# column# e.g 12: ";
-        std::cin >> choice[0];
-        choice_processing(0);
+        y[0] = y[1];
+        x[0] = x[1];
 
-        std::cout << "        Enter target row# column# e.g 23: ";
-        std::cin >> choice[1];
-        choice_processing(1);
-
-        played = move_piece('N');
-    }
-
-    if (played == 'Y')
-    {
         print_board();
         std::cout << "        -----------------------------------------" << std::endl;
-        std::cout << "               MOVED " << player_name << std::endl;
+        std::cout << "               CONSECUTIVE KNOCK AVAILABLE " << std::endl;
         std::cout << "        -----------------------------------------" << std::endl;
+
+        do
+        {
+            std::cout << "        Enter target row# column# e.g 23: ";
+            std::cin >> choice[1];
+            choice_processing(1);
+
+            next = move_piece('Y');
+            if (next == 'N')
+            {
+                print_board();
+                std::cout << "        Invalid choice! Try again!" << std::endl;
+            }
+
+        } while (next == 'N');
     }
+
+    print_board();
+    std::cout << "        -----------------------------------------" << std::endl;
+    std::cout << "               MOVED " << player_name << std::endl;
+    std::cout << "        -----------------------------------------" << std::endl;
 }
 
 char choice_processing(int index)
@@ -348,7 +391,7 @@ char choice_processing(int index)
 
 char move_piece(char knock)
 {
-    char moved{};
+    char moved{'N'};
 
     // moving up without knock
     if (y[0] + 1 == y[1] && knock == 'N')
@@ -410,6 +453,7 @@ char move_piece(char knock)
             box[y[0]][x[0]] = '.';
         }
     }
+
     // moving down without knock
     else if (y[0] - 1 == y[1] && knock == 'N' && box[y[0]][x[0]] == 'S')
     {
@@ -442,6 +486,7 @@ char move_piece(char knock)
             box[y[0]][x[0]] = '.';
         }
     }
+
     // moving up with knock
     else if (y[0] + 2 == y[1])
     {
@@ -506,6 +551,7 @@ char move_piece(char knock)
             box[y[0] + 1][x[0] + 1] = '.';
         }
     }
+
     // moving down with knock
     else if (y[0] - 2 == y[1] && box[y[0]][x[0]] == 'S')
     {
@@ -632,29 +678,29 @@ char knocks(char player, int *total)
 
 char more_knocks()
 {
-    char present{'N'};
+    char knock_present{'N'};
 
     if (box[y[1]][x[1]] == 'x' || box[y[1]][x[1]] == 'X')
     {
         if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'o' || box[y[1] + 1][x[1] - 1] == 'O') &&
             (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
             (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
             (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'o' || box[y[1] + 1][x[1] + 1] == 'O') &&
             (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
     }
     if (box[y[1]][x[1]] == 'X')
@@ -662,22 +708,22 @@ char more_knocks()
         if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'o' || box[y[1] - 1][x[1] - 1] == 'O') &&
             (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
             (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
             (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'o' || box[y[1] - 1][x[1] + 1] == 'O') &&
             (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
     }
     if (box[y[1]][x[1]] == 'o' || box[y[1]][x[1]] == 'O')
@@ -685,22 +731,22 @@ char more_knocks()
         if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'x' || box[y[1] - 1][x[1] - 1] == 'X') &&
             (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
             (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
             (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'x' || box[y[1] - 1][x[1] + 1] == 'X') &&
             (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
     }
     if (box[y[1]][x[1]] == 'O')
@@ -708,24 +754,24 @@ char more_knocks()
         if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'x' || box[y[1] + 1][x[1] - 1] == 'X') &&
             (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
             (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
             (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
         if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'x' || box[y[1] + 1][x[1] + 1] == 'X') &&
             (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
         {
-            present = 'Y';
+            knock_present = 'Y';
         }
     }
 
-    return present;
+    return knock_present;
 }
