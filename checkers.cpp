@@ -3,36 +3,39 @@
 #include <cstdlib>
 
 char box[8][4]{};
-char temp_box[8][4]{};
+char temp_box1[8][4]{};
+char temp_box2[8][4]{};
+char temp_box3[8][4]{};
 const unsigned short int max_length{20};
 char player_name[max_length]{};
 short int play_mode{1};
 unsigned short int y[2];
 unsigned short int x[2];
-unsigned short int temp_y[10];
-unsigned short int temp_x[10];
+unsigned short int temp_y[20];
+unsigned short int temp_x[20];
 unsigned short int choice[3]{};
 
 void reset_board();
 void print_board();
-void virtual_board();
-
 void player();
-bool choice_processing(int index);
+bool choice_processing(int);
 bool select_piece();
-bool move_piece();
-bool more_knocks();
-
+bool movePiece_player();
+bool more_knocks(bool, char);
 void computer();
-bool knocks(int *total, bool to_move);
-void select_en_move(char knock);
+bool knocks(int *, bool);
+void movePiece_comp(char);
 int unknock_moves();
 void row_select();
 void column_select();
-// bool more_knocks();
+int virtualMove_comp(char);
+int virtualMove_player();
+int playerNext_knock();
+int totalMoves_comp();
 
 int main()
 {
+    srand(time(0));
     /*
     bool end{true};
     bool winner{false};
@@ -68,7 +71,19 @@ int main()
 */
 
     reset_board();
-    computer();
+    
+    int total_knocks = virtualMove_comp('Y');
+    std::cout << "max_knocks: " << total_knocks << std::endl;
+
+    for (size_t i = 0; i < 8; i++)
+    {
+        for (size_t j = 0; j < 4; j++)
+        {
+            box[i][j] = temp_box3[i][j];
+        }
+    }
+
+    print_board();
 
     return 0;
 }
@@ -80,6 +95,9 @@ void reset_board()
         for (size_t column{}; column < 4; column++)
         {
             box[row][column] = ' ';
+            temp_box1[row][column] = ' ';
+            temp_box2[row][column] = ' ';
+            temp_box3[row][column] = ' ';
         }
     }
 
@@ -112,6 +130,11 @@ void reset_board()
     box[6][1] = 'x';
     box[6][2] = 'x';
     box[6][0] = 'x';
+
+    y[0] = 1;
+    y[1] = 3;
+    x[0] = 2;
+    x[1] = 3;
 }
 
 void print_board()
@@ -139,20 +162,6 @@ void print_board()
     std::cout << "" << std::endl;
     std::cout << "              1   2   3   4   5   6   7   8  " << std::endl;
     std::cout << "" << std::endl;
-}
-
-void virtual_board()
-{
-    for (size_t m = 0; m < 8; m++)
-    {
-        for (size_t n = 0; n < 4; m++)
-        {
-            temp_box[m][n] = box[m][n];
-        }
-    }
-
-    temp_y[0] = y[0];
-    temp_x[0] = x[0];
 }
 
 void player()
@@ -226,7 +235,7 @@ void player()
 
         } while (invalid_choice);
 
-        not_played = move_piece();
+        not_played = movePiece_player();
         if (not_played)
         {
             print_board();
@@ -235,7 +244,7 @@ void player()
 
     } while (not_played);
 
-    while (knock_available = more_knocks())
+    while (knock_available = more_knocks(false, 'P'))
     {
         if (box[y[1]][x[1]] == 'X')
         {
@@ -270,7 +279,7 @@ void player()
 
             } while (invalid_choice);
 
-            not_played = move_piece();
+            not_played = movePiece_player();
             if (not_played)
             {
                 print_board();
@@ -525,7 +534,7 @@ bool select_piece()
     return unselected;
 }
 
-bool move_piece()
+bool movePiece_player()
 {
     bool not_moved{true};
     bool unchanged{true};
@@ -769,100 +778,287 @@ bool move_piece()
     return not_moved;
 }
 
-bool more_knocks()
+bool more_knocks(bool virtual_game, char player)
 {
     bool knock_present{false};
 
-    if (box[y[1]][x[1]] == 'x' || box[y[1]][x[1]] == 'X')
+    if (virtual_game == false)
     {
-        if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'o' || box[y[1] + 1][x[1] - 1] == 'O') &&
-            (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+        if ((box[y[1]][x[1]] == 'x' || box[y[1]][x[1]] == 'X') && player == 'P')
         {
-            knock_present = true;
+            if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'o' || box[y[1] + 1][x[1] - 1] == 'O') &&
+                (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
+                (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
+                (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'o' || box[y[1] + 1][x[1] + 1] == 'O') &&
+                (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
         }
-        if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
-            (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+        if (box[y[1]][x[1]] == 'X' && player == 'P')
         {
-            knock_present = true;
+            if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'o' || box[y[1] - 1][x[1] - 1] == 'O') &&
+                (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
+                (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
+                (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'o' || box[y[1] - 1][x[1] + 1] == 'O') &&
+                (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
         }
-        if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'o' || box[y[1] + 1][x[1]] == 'O') &&
-            (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+        if ((box[y[1]][x[1]] == 'o' || box[y[1]][x[1]] == 'O') && player == 'C')
         {
-            knock_present = true;
+            if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'x' || box[y[1] - 1][x[1] - 1] == 'X') &&
+                (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
+                (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
+                (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'x' || box[y[1] - 1][x[1] + 1] == 'X') &&
+                (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
         }
-        if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'o' || box[y[1] + 1][x[1] + 1] == 'O') &&
-            (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+        if (box[y[1]][x[1]] == 'O' && player == 'C')
         {
-            knock_present = true;
+            if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'x' || box[y[1] + 1][x[1] - 1] == 'X') &&
+                (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
+                (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
+                (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
+            {
+                knock_present = true;
+            }
+            if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'x' || box[y[1] + 1][x[1] + 1] == 'X') &&
+                (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
+            {
+                knock_present = true;
+            }
         }
     }
-    if (box[y[1]][x[1]] == 'X')
+
+    else if (virtual_game)
     {
-        if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'o' || box[y[1] - 1][x[1] - 1] == 'O') &&
-            (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+        if ((temp_box2[temp_y[18]][temp_x[18]] == 'x' || temp_box2[temp_y[18]][temp_x[18]] == 'X') && player == 'P')
         {
-            knock_present = true;
+            choice[0] = rand() % 4;
+            auto temp_num = choice[0];
+
+            do
+            {
+                if (choice[0] == 0 && (temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box2[temp_y[18] + 1][temp_x[18] - 1] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18] - 1] == 'O') &&
+                    (temp_box2[temp_y[18] + 2][temp_x[18] - 1] == ' ' || temp_box2[temp_y[18] + 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_y[18] - 1;
+                }
+                else if (choice[0] == 1 && (temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box2[temp_y[18] + 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18]] == 'O') &&
+                         (temp_box2[temp_y[18] + 2][temp_x[18] + 1] == ' ' || temp_box2[temp_y[18] + 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_y[18] + 1;
+                }
+                else if (choice[0] == 2 && (temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box2[temp_y[18] + 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18]] == 'O') &&
+                         (temp_box2[temp_y[18] + 2][temp_x[18] - 1] == ' ' || temp_box2[temp_y[18] + 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_y[18] - 1;
+                }
+                else if (choice[0] == 3 && (temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box2[temp_y[18] + 1][temp_x[18] + 1] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18] + 1] == 'O') &&
+                         (temp_box2[temp_y[18] + 2][temp_x[18] + 1] == ' ' || temp_box2[temp_y[18] + 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_y[18] + 1;
+                }
+
+                choice[0]++;
+                if (choice[0] == 4)
+                    choice[0] = 0;
+                if (choice[0] == temp_num)
+                    break;
+
+            } while (true);
         }
-        if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
-            (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+        if (temp_box2[temp_y[18]][temp_x[18]] == 'X' && player == 'P' && knock_present == false)
         {
-            knock_present = true;
+            choice[0] = rand() % 4;
+            auto temp_num = choice[0];
+
+            do
+            {
+                if (choice[0] == 0 && (temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box2[temp_y[18] - 1][temp_x[18] - 1] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18] - 1] == 'O') &&
+                    (temp_box2[temp_y[18] - 2][temp_x[18] - 1] == ' ' || temp_box2[temp_y[18] - 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_y[18] - 1;
+                }
+                else if (choice[0] == 1 && (temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box2[temp_y[18] - 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18]] == 'O') &&
+                         (temp_box2[temp_y[18] - 2][temp_x[18] + 1] == ' ' || temp_box2[temp_y[18] - 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_y[18] + 1;
+                }
+                else if (choice[0] == 2 && (temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box2[temp_y[18] - 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18]] == 'O') &&
+                         (temp_box2[temp_y[18] - 2][temp_x[18] - 1] == ' ' || temp_box2[temp_y[18] - 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_y[18] - 1;
+                }
+                else if (choice[0] == 3 && (temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box2[temp_y[18] - 1][temp_x[18] + 1] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18] + 1] == 'O') &&
+                         (temp_box2[temp_y[18] - 2][temp_x[18] + 1] == ' ' || temp_box2[temp_y[18] - 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_y[18] + 1;
+                }
+
+                choice[0]++;
+                if (choice[0] == 4)
+                    choice[0] = 0;
+                if (choice[0] == temp_num)
+                    break;
+
+            } while (true);
         }
-        if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'o' || box[y[1] - 1][x[1]] == 'O') &&
-            (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
+
+        if ((temp_box1[temp_y[18]][temp_x[18]] == 'o' || temp_box1[temp_y[18]][temp_x[18]] == 'O') && player == 'C')
         {
-            knock_present = true;
+            choice[0] = rand() % 4;
+            //std::cout << "choice[0]: " << choice[0] << std::endl;
+            auto temp_num = choice[0];
+
+            do
+            {
+                if (choice[0] == 0 && (temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box1[temp_y[18] - 1][temp_x[18] - 1] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18] - 1] == 'X') &&
+                    (temp_box1[temp_y[18] - 2][temp_x[18] - 1] == ' ' || temp_box1[temp_y[18] - 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_x[18] - 1;
+                }
+                else if (choice[0] == 1 && (temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box1[temp_y[18] - 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[18] - 2][temp_x[18] + 1] == ' ' || temp_box1[temp_y[18] - 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_x[18] + 1;
+                }
+                else if (choice[0] == 2 && (temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box1[temp_y[18] - 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[18] - 2][temp_x[18] - 1] == ' ' || temp_box1[temp_y[18] - 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_x[18] - 1;
+                }
+                else if (choice[0] == 3 && (temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box1[temp_y[18] - 1][temp_x[18] + 1] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18] + 1] == 'X') &&
+                         (temp_box1[temp_y[18] - 2][temp_x[18] + 1] == ' ' || temp_box1[temp_y[18] - 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] - 2;
+                    temp_x[19] = temp_x[18] + 1;
+                }
+
+                choice[0]++;
+                if (choice[0] == 4)
+                    choice[0] = 0;
+                if (choice[0] == temp_num)
+                    break;
+
+            } while (true);
         }
-        if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'o' || box[y[1] - 1][x[1] + 1] == 'O') &&
-            (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
+
+        if (temp_box1[temp_y[18]][temp_x[18]] == 'O' && player == 'C' && knock_present == false)
         {
-            knock_present = true;
-        }
-    }
-    if (box[y[1]][x[1]] == 'o' || box[y[1]][x[1]] == 'O')
-    {
-        if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] - 1][x[1] - 1] == 'x' || box[y[1] - 1][x[1] - 1] == 'X') &&
-            (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 7 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
-            (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] - 1][x[1]] == 'x' || box[y[1] - 1][x[1]] == 'X') &&
-            (box[y[1] - 2][x[1] - 1] == ' ' || box[y[1] - 2][x[1] - 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 6 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] - 1][x[1] + 1] == 'x' || box[y[1] - 1][x[1] + 1] == 'X') &&
-            (box[y[1] - 2][x[1] + 1] == ' ' || box[y[1] - 2][x[1] + 1] == '.'))
-        {
-            knock_present = true;
-        }
-    }
-    if (box[y[1]][x[1]] == 'O')
-    {
-        if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 0 && (box[y[1] + 1][x[1] - 1] == 'x' || box[y[1] + 1][x[1] - 1] == 'X') &&
-            (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 1 || y[1] == 3 || y[1] == 5) && x[1] != 3 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
-            (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 0 && (box[y[1] + 1][x[1]] == 'x' || box[y[1] + 1][x[1]] == 'X') &&
-            (box[y[1] + 2][x[1] - 1] == ' ' || box[y[1] + 2][x[1] - 1] == '.'))
-        {
-            knock_present = true;
-        }
-        if ((y[1] == 0 || y[1] == 2 || y[1] == 4) && x[1] != 3 && (box[y[1] + 1][x[1] + 1] == 'x' || box[y[1] + 1][x[1] + 1] == 'X') &&
-            (box[y[1] + 2][x[1] + 1] == ' ' || box[y[1] + 2][x[1] + 1] == '.'))
-        {
-            knock_present = true;
+            choice[0] = rand() % 4;
+            //std::cout << "choice[0]: " << choice[0] << std::endl;
+            auto temp_num = choice[0];
+
+            do
+            {
+                if (choice[0] == 0 && (temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box1[temp_y[18] + 1][temp_x[18] - 1] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18] - 1] == 'X') &&
+                    (temp_box1[temp_y[18] + 2][temp_x[18] - 1] == ' ' || temp_box1[temp_y[18] + 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_x[18] - 1;
+                }
+                else if (choice[0] == 1 && (temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box1[temp_y[18] + 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[18] + 2][temp_x[18] + 1] == ' ' || temp_box1[temp_y[18] + 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_x[18] + 1;
+                }
+                else if (choice[0] == 2 && (temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box1[temp_y[18] + 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[18] + 2][temp_x[18] - 1] == ' ' || temp_box1[temp_y[18] + 2][temp_x[18] - 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_x[18] - 1;
+                }
+                else if (choice[0] == 3 && (temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box1[temp_y[18] + 1][temp_x[18] + 1] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18] + 1] == 'X') &&
+                         (temp_box1[temp_y[18] + 2][temp_x[18] + 1] == ' ' || temp_box1[temp_y[18] + 2][temp_x[18] + 1] == '.'))
+                {
+                    knock_present = true;
+                    temp_y[19] = temp_y[18] + 2;
+                    temp_x[19] = temp_x[18] + 1;
+                }
+
+                choice[0]++;
+                if (choice[0] == 4)
+                    choice[0] = 0;
+                if (choice[0] == temp_num)
+                    break;
+
+            } while (true);
         }
     }
 
@@ -877,13 +1073,13 @@ void computer()
     std::cout << "        ========================================= ";
 
     // removing '.'
-    for (y[0] = 0; y[0] < 8; y[0]++)
+    for (size_t f{}; f < 8; f++)
     {
-        for (x[0] = 0; x[0] < 4; x[0]++)
+        for (size_t g{}; g < 4; g++)
         {
-            if (box[y[0]][x[0]] == '.')
+            if (box[f][g] == '.')
             {
-                box[y[0]][x[0]] = ' ';
+                box[f][g] = ' ';
             }
         }
     }
@@ -891,8 +1087,6 @@ void computer()
     int total_knocks{};
     unsigned short int rand_num{};
     bool knock_present = knocks(&total_knocks, false);
-
-    srand(time(0));
 
     if (play_mode == 1)
     {
@@ -920,11 +1114,13 @@ void computer()
             y[1] = temp_y[1];
             x[1] = temp_x[1];
 
-            select_en_move('Y');
+            movePiece_comp('Y');
         }
         else
         {
-            select_en_move('N');
+            row_select();
+            column_select();
+            movePiece_comp('N');
         }
     }
 
@@ -954,24 +1150,26 @@ void computer()
             y[1] = temp_y[1];
             x[1] = temp_x[1];
 
-            select_en_move('Y');
+            movePiece_comp('Y');
         }
         else
         {
-            select_en_move('N');
+            row_select();
+            column_select();
+            movePiece_comp('N');
         }
     }
 
     // king
-    for (x[0] = 0; x[0] < 4; x[0]++)
+    for (size_t a{}; a < 4; a++)
     {
-        if (box[0][x[0]] == '.')
+        if (box[0][a] == 'o')
         {
-            box[0][x[0]] = ' ';
+            box[0][a] = 'O';
         }
     }
 
-    while ((knock_present = more_knocks()))
+    while ((knock_present = more_knocks(false, 'C')))
     {
         temp_y[0] = y[1];
         temp_x[0] = x[1];
@@ -984,7 +1182,7 @@ void computer()
         y[1] = temp_y[1];
         x[1] = temp_x[1];
 
-        select_en_move('Y');
+        movePiece_comp('Y');
     }
 
     std::cout << '\n';
@@ -998,67 +1196,67 @@ bool knocks(int *total, bool to_move)
 
     if (to_move == false)
     {
-        for (y[0] = 0; y[0] <= 7; y[0]++)
+        for (size_t q = 0; q <= 7; q++)
         {
-            for (x[0] = 0; x[0] < 4; x[0]++)
+            for (size_t r = 0; r < 4; r++)
             {
                 // checking upwards
-                if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] + 1][x[0] + 1] == 'x' || box[y[0] + 1][x[0] + 1] == 'X') &&
-                    (box[y[0] + 2][x[0] + 1] == ' ' || box[y[0] + 2][x[0] + 1] == '.') && box[y[0]][x[0]] == 'O')
+                if ((q == 0 || q == 2 || q == 4) && r != 3 && (box[q + 1][r + 1] == 'x' || box[q + 1][r + 1] == 'X') &&
+                    (box[q + 2][r + 1] == ' ' || box[q + 2][r + 1] == '.') && box[q][r] == 'O')
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] + 1][x[0]] == 'x' || box[y[0] + 1][x[0]] == 'X') &&
-                    (box[y[0] + 2][x[0] - 1] == ' ' || box[y[0] + 2][x[0] - 1] == '.') && box[y[0]][x[0]] == 'O')
+                if ((q == 0 || q == 2 || q == 4) && r != 0 && (box[q + 1][r] == 'x' || box[q + 1][r] == 'X') &&
+                    (box[q + 2][r - 1] == ' ' || box[q + 2][r - 1] == '.') && box[q][r] == 'O')
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] + 1][x[0]] == 'x' || box[y[0] + 1][x[0]] == 'X') &&
-                    (box[y[0] + 2][x[0] + 1] == ' ' || box[y[0] + 2][x[0] + 1] == '.') && box[y[0]][x[0]] == 'O')
+                if ((q == 1 || q == 3 || q == 5) && r != 3 && (box[q + 1][r] == 'x' || box[q + 1][r] == 'X') &&
+                    (box[q + 2][r + 1] == ' ' || box[q + 2][r + 1] == '.') && box[q][r] == 'O')
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == 'x' || box[y[0] + 1][x[0] - 1] == 'X') &&
-                    (box[y[0] + 2][x[0] - 1] == ' ' || box[y[0] + 2][x[0] - 1] == '.') && box[y[0]][x[0]] == 'O')
+                if ((q == 1 || q == 3 || q == 5) && r != 0 && (box[q + 1][r - 1] == 'x' || box[q + 1][r - 1] == 'X') &&
+                    (box[q + 2][r - 1] == ' ' || box[q + 2][r - 1] == '.') && box[q][r] == 'O')
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
                 // checking downwards
-                if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] - 1][x[0] + 1] == 'x' || box[y[0] - 1][x[0] + 1] == 'X') &&
-                    (box[y[0] - 2][x[0] + 1] == ' ' || box[y[0] - 2][x[0] + 1] == '.') && (box[y[0]][x[0]] == 'o' || box[y[0]][x[0]] == 'O'))
+                if ((q == 6 || q == 2 || q == 4) && r != 3 && (box[q - 1][r + 1] == 'x' || box[q - 1][r + 1] == 'X') &&
+                    (box[q - 2][r + 1] == ' ' || box[q - 2][r + 1] == '.') && (box[q][r] == 'o' || box[q][r] == 'O'))
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] - 1][x[0]] == 'x' || box[y[0] - 1][x[0]] == 'X') &&
-                    (box[y[0] - 2][x[0] - 1] == ' ' || box[y[0] - 2][x[0] - 1] == '.') && (box[y[0]][x[0]] == 'o' || box[y[0]][x[0]] == 'O'))
+                if ((q == 6 || q == 2 || q == 4) && r != 0 && (box[q - 1][r] == 'x' || box[q - 1][r] == 'X') &&
+                    (box[q - 2][r - 1] == ' ' || box[q - 2][r - 1] == '.') && (box[q][r] == 'o' || box[q][r] == 'O'))
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] - 1][x[0]] == 'x' || box[y[0] - 1][x[0]] == 'X') &&
-                    (box[y[0] - 2][x[0] + 1] == ' ' || box[y[0] - 2][x[0] + 1] == '.') && (box[y[0]][x[0]] == 'o' || box[y[0]][x[0]] == 'O'))
+                if ((q == 7 || q == 3 || q == 5) && r != 3 && (box[q - 1][r] == 'x' || box[q - 1][r] == 'X') &&
+                    (box[q - 2][r + 1] == ' ' || box[q - 2][r + 1] == '.') && (box[q][r] == 'o' || box[q][r] == 'O'))
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
-                if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == 'x' || box[y[0] - 1][x[0] - 1] == 'X') &&
-                    (box[y[0] - 2][x[0] - 1] == ' ' || box[y[0] - 2][x[0] - 1] == '.') && (box[y[0]][x[0]] == 'o' || box[y[0]][x[0]] == 'O'))
+                if ((q == 7 || q == 3 || q == 5) && r != 0 && (box[q - 1][r - 1] == 'x' || box[q - 1][r - 1] == 'X') &&
+                    (box[q - 2][r - 1] == ' ' || box[q - 2][r - 1] == '.') && (box[q][r] == 'o' || box[q][r] == 'O'))
                 {
+                    temp_y[count] = q;
+                    temp_x[count] = r;
                     count++;
-                    temp_y[count - 1] = y[0];
-                    temp_x[count - 1] = x[0];
                 }
             }
         }
@@ -1067,7 +1265,6 @@ bool knocks(int *total, bool to_move)
     // for choosing destination
     else if (to_move)
     {
-        srand(time(0));
         choice[0] = rand() % 8;
         count = 0;
 
@@ -1151,14 +1348,8 @@ bool knocks(int *total, bool to_move)
     return knock_present;
 }
 
-void select_en_move(char knock)
+void movePiece_comp(char knock)
 {
-    if (knock == 'N')
-    {
-        row_select();
-        column_select();
-    }
-
     // moving up without knock
     if (y[0] + 1 == y[1] && knock == 'N' && box[y[0]][x[0]] == 'O')
     {
@@ -1351,7 +1542,6 @@ void select_en_move(char knock)
 
 void row_select()
 {
-    srand(time(0));
     char next{'N'};
 
     auto count = unknock_moves();
@@ -1557,7 +1747,6 @@ void column_select()
 
     while (next == 'N')
     {
-        srand(time(0));
         x[0] = rand() % 4;
 
         if (temp_play_mode == 1)
@@ -1881,6 +2070,636 @@ int unknock_moves()
                 count++;
             }
             if (c == 0 && box[c][x[0]] == 'O' && box[c + 1][x[0]] == ' ')
+            {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+int virtualMove_comp(char knock)
+{
+    bool knock_present{false};
+    int max_knocks{};
+    int total_knocks{};
+
+    for (size_t times = 0; times < 1000000; times++)
+    {
+        for (size_t m{}; m < 8; m++)
+        {
+            for (size_t n{}; n < 4; n++)
+            {
+                temp_box1[m][n] = box[m][n];
+            }
+        }
+
+        temp_y[18] = y[0];
+        temp_x[18] = x[0];
+        temp_y[19] = y[1];
+        temp_x[19] = x[1];
+
+        do
+        {
+            // moving up without knock
+            if (temp_y[18] + 1 == temp_y[19] && knock == 'N' && temp_box1[temp_y[18]][temp_x[18]] == 'O')
+            {
+                if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] != 3 &&
+                    (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && (temp_x[18] == temp_x[19] || temp_x[18] + 1 == temp_x[19]))
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] == 3 && temp_x[18] == temp_x[19] &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && (temp_x[18] == temp_x[19] || temp_x[18] - 1 == temp_x[19]))
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] == 0 && temp_x[18] == temp_x[19] &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+            }
+
+            // moving down without knock
+            else if (temp_y[18] - 1 == temp_y[19] && knock == 'N')
+            {
+                if ((temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] != 3 && (temp_x[18] == temp_x[19] || temp_x[18] + 1 == temp_x[19]) &&
+                    (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] == 3 && temp_x[18] == temp_x[19] &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5 || temp_y[18] == 7) && temp_x[18] != 0 && (temp_x[18] == temp_x[19] || temp_x[18] - 1 == temp_x[19]) &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5 || temp_y[18] == 7) && temp_x[18] == 0 && temp_x[18] == temp_x[19] &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.'))
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+            }
+
+            // moving up with knock
+            else if (temp_y[18] + 2 == temp_y[19] && temp_box1[temp_y[18]][temp_x[18]] == 'O' && knock == 'Y')
+            {
+                if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box1[temp_y[18] + 1][temp_x[18] - 1] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18] - 1] == 'X') &&
+                    (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                    temp_box1[temp_y[18] + 1][temp_x[18] - 1] = '.';
+                }
+                else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box1[temp_y[18] + 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                    temp_box1[temp_y[18] + 1][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box1[temp_y[18] + 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                    temp_box1[temp_y[18] + 1][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box1[temp_y[18] + 1][temp_x[18] + 1] == 'x' || temp_box1[temp_y[18] + 1][temp_x[18] + 1] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                {
+                    temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                    temp_box1[temp_y[18] + 1][temp_x[18] + 1] = '.';
+                }
+            }
+
+            // moving down with knock
+            else if (temp_y[18] - 2 == temp_y[19] && knock == 'Y')
+            {
+                if ((temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box1[temp_y[18] - 1][temp_x[18] - 1] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18] - 1] == 'X') &&
+                    (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18] - 1][temp_x[18] - 1] = '.';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box1[temp_y[18] - 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18] - 1][temp_x[18]] = '.';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box1[temp_y[18] - 1][temp_x[18]] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18]] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18] - 1][temp_x[18]] = '.';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+                else if ((temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box1[temp_y[18] - 1][temp_x[18] + 1] == 'x' || temp_box1[temp_y[18] - 1][temp_x[18] + 1] == 'X') &&
+                         (temp_box1[temp_y[19]][temp_x[19]] == ' ' || temp_box1[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                {
+                    if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'O';
+                    }
+                    else
+                    {
+                        temp_box1[temp_y[19]][temp_x[19]] = 'o';
+                    }
+                    temp_box1[temp_y[18] - 1][temp_x[18] + 1] = '.';
+                    temp_box1[temp_y[18]][temp_x[18]] = '.';
+                }
+            }
+
+            // king
+            for (size_t i = 0; i < 4; i++)
+            {
+                if (temp_box1[0][i] == 'o')
+                {
+                    temp_box1[0][i] = 'O';
+                }
+            }
+
+            if (knock == 'Y')
+            {
+                total_knocks++;
+
+                if (total_knocks > max_knocks)
+                {
+                    for (size_t g = 0; g < 8; g++)
+                    {
+                        for (size_t h = 0; h < 4; h++)
+                        {
+                            temp_box3[g][h] = temp_box1[g][h];
+                        }
+                    }
+
+                    max_knocks = total_knocks;
+                }
+
+                temp_y[18] = temp_y[19];
+                temp_x[18] = temp_x[19];
+            }
+
+        } while (knock_present = more_knocks(true, 'C'));
+
+        total_knocks = 0;
+    }
+
+    return max_knocks;
+}
+
+int virtualMove_player()
+{
+    auto total_moves = playerNext_knock();
+    int total_knocks[2]{};
+    int max_knocks{};
+
+    if (total_moves > 0)
+    {
+        auto rand_num = rand() % total_moves;
+
+        int index{};
+
+        while (true)
+        {
+            auto temp_num = rand_num;
+
+            temp_y[18] = temp_y[rand_num];
+            temp_x[18] = temp_x[rand_num];
+
+            for (size_t v = 0; v < 8; v++)
+            {
+                for (size_t w = 0; w < 4; w++)
+                {
+                    temp_box2[v][w] = temp_box1[v][w];
+                }
+            }
+
+            bool knock_present{false};
+
+            for (size_t times = 0; times < 6; times++)
+            {
+                while ((knock_present = more_knocks(true, 'P')))
+                {
+                    // moving up without knock
+                    if (temp_y[18] + 1 == temp_y[19])
+                    {
+                        if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] != 3 &&
+                            (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && (temp_x[18] == temp_x[19] || temp_x[18] + 1 == temp_x[19]))
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] == 3 && temp_x[18] == temp_x[19] &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && (temp_x[18] == temp_x[19] || temp_x[18] - 1 == temp_x[19]))
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] == 0 && temp_x[18] == temp_x[19] &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                    }
+
+                    // moving down without knock
+                    else if (temp_y[18] - 1 == temp_y[19] && temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                    {
+                        if ((temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] != 3 && (temp_x[18] == temp_x[19] || temp_x[18] + 1 == temp_x[19]) &&
+                            (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 2 || temp_y[18] == 4 || temp_y[18] == 6) && temp_x[18] == 3 && temp_x[18] == temp_x[19] &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5 || temp_y[18] == 7) && temp_x[18] != 0 && (temp_x[18] == temp_x[19] || temp_x[18] - 1 == temp_x[19]) &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5 || temp_y[18] == 7) && temp_x[18] == 0 && temp_x[18] == temp_x[19] &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.'))
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                    }
+
+                    // moving up with knock
+                    else if (temp_y[18] + 2 == temp_y[19])
+                    {
+                        if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box2[temp_y[18] + 1][temp_x[18] - 1] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18] - 1] == 'O') &&
+                            (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                            temp_box2[temp_y[18] + 1][temp_x[18] - 1] = '.';
+                        }
+                        else if ((temp_y[18] == 1 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box2[temp_y[18] + 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18]] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                            temp_box2[temp_y[18] + 1][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box2[temp_y[18] + 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18]] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                            temp_box2[temp_y[18] + 1][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 0 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box2[temp_y[18] + 1][temp_x[18] + 1] == 'o' || temp_box2[temp_y[18] + 1][temp_x[18] + 1] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                        {
+                            if (temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            }
+                            else
+                            {
+                                temp_box2[temp_y[19]][temp_x[19]] = 'x';
+                            }
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                            temp_box2[temp_y[18] + 1][temp_x[18] + 1] = '.';
+                        }
+                    }
+
+                    // moving down with knock
+                    else if (temp_y[18] - 2 == temp_y[19] && temp_box2[temp_y[18]][temp_x[18]] == 'X')
+                    {
+                        if ((temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 0 && (temp_box2[temp_y[18] - 1][temp_x[18] - 1] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18] - 1] == 'O') &&
+                            (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18] - 1][temp_x[18] - 1] = '.';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 7 || temp_y[18] == 3 || temp_y[18] == 5) && temp_x[18] != 3 && (temp_box2[temp_y[18] - 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18]] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18] - 1][temp_x[18]] = '.';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 0 && (temp_box2[temp_y[18] - 1][temp_x[18]] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18]] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] - 1 == temp_x[19])
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18] - 1][temp_x[18]] = '.';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                        else if ((temp_y[18] == 6 || temp_y[18] == 2 || temp_y[18] == 4) && temp_x[18] != 3 && (temp_box2[temp_y[18] - 1][temp_x[18] + 1] == 'o' || temp_box2[temp_y[18] - 1][temp_x[18] + 1] == 'O') &&
+                                 (temp_box2[temp_y[19]][temp_x[19]] == ' ' || temp_box2[temp_y[19]][temp_x[19]] == '.') && temp_x[18] + 1 == temp_x[19])
+                        {
+                            temp_box2[temp_y[19]][temp_x[19]] = 'X';
+                            temp_box2[temp_y[18] - 1][temp_x[18] + 1] = '.';
+                            temp_box2[temp_y[18]][temp_x[18]] = '.';
+                        }
+                    }
+
+                    // king
+                    for (size_t w = 0; w < 4; w++)
+                    {
+                        if (temp_box2[7][w] == 'x')
+                            temp_box2[7][w] = 'X';
+                    }
+
+                    total_knocks[index]++;
+                    max_knocks = (total_knocks[0] > total_knocks[1]) ? total_knocks[0] : total_knocks[1];
+                }
+
+                for (size_t v = 0; v < 8; v++)
+                {
+                    for (size_t w = 0; w < 4; w++)
+                    {
+                        temp_box2[v][w] = temp_box1[v][w];
+                    }
+                }
+
+                total_knocks[index] = 0;
+            }
+
+            temp_y[18] = temp_y[19];
+            temp_x[18] = temp_x[19];
+
+            rand_num++;
+            if (rand_num == total_moves)
+            {
+                rand_num = 0;
+            }
+            if (rand_num == temp_num)
+            {
+                break;
+            }
+
+            index = (index == 0) ? 1 : 0;
+        }
+    }
+
+    return max_knocks;
+}
+
+int playerNext_knock()
+{
+    int index{};
+
+    for (size_t q = 0; q <= 7; q++)
+    {
+        for (size_t r = 0; r < 4; r++)
+        {
+            // checking upwards
+            if ((q == 0 || q == 2 || q == 4) && r != 3 && (box[q + 1][r + 1] == 'o' || box[q + 1][r + 1] == 'O') &&
+                (box[q + 2][r + 1] == ' ' || box[q + 2][r + 1] == '.') && (box[q][r] == 'x' || box[q][r] == 'X'))
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 0 || q == 2 || q == 4) && r != 0 && (box[q + 1][r] == 'o' || box[q + 1][r] == 'O') &&
+                (box[q + 2][r - 1] == ' ' || box[q + 2][r - 1] == '.') && (box[q][r] == 'x' || box[q][r] == 'X'))
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 1 || q == 3 || q == 5) && r != 3 && (box[q + 1][r] == 'o' || box[q + 1][r] == 'O') &&
+                (box[q + 2][r + 1] == ' ' || box[q + 2][r + 1] == '.') && (box[q][r] == 'x' || box[q][r] == 'X'))
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 1 || q == 3 || q == 5) && r != 0 && (box[q + 1][r - 1] == 'o' || box[q + 1][r - 1] == 'O') &&
+                (box[q + 2][r - 1] == ' ' || box[q + 2][r - 1] == '.') && (box[q][r] == 'x' || box[q][r] == 'X'))
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+
+            // checking downwards
+            if ((q == 6 || q == 2 || q == 4) && r != 3 && (box[q - 1][r + 1] == 'o' || box[q - 1][r + 1] == 'O') &&
+                (box[q - 2][r + 1] == ' ' || box[q - 2][r + 1] == '.') && box[q][r] == 'X')
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 6 || q == 2 || q == 4) && r != 0 && (box[q - 1][r] == 'o' || box[q - 1][r] == 'O') &&
+                (box[q - 2][r - 1] == ' ' || box[q - 2][r - 1] == '.') && box[q][r] == 'X')
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 7 || q == 3 || q == 5) && r != 3 && (box[q - 1][r] == 'o' || box[q - 1][r] == 'O') &&
+                (box[q - 2][r + 1] == ' ' || box[q - 2][r + 1] == '.') && box[q][r] == 'X')
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+            if ((q == 7 || q == 3 || q == 5) && r != 0 && (box[q - 1][r - 1] == 'o' || box[q - 1][r - 1] == 'O') &&
+                (box[q - 2][r - 1] == ' ' || box[q - 2][r - 1] == '.') && box[q][r] == 'X')
+            {
+                temp_y[index] = q;
+                temp_x[index] = r;
+                index++;
+            }
+        }
+    }
+
+    return index;
+}
+
+int totalMoves_comp()
+{
+    int count{};
+
+    for (size_t u = 0; u < 8; u++)
+    {
+        for (size_t v{}; v < 4; v++)
+        {
+            // downwards rightwards - odd
+            if ((u == 7 || u == 5 || u == 3 || u == 1) && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // downwards leftwards - odd
+            if ((u == 7 || u == 5 || u == 3 || u == 1) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v - 1] == ' ')
+            {
+                count++;
+            }
+
+            // downwards rightwards - even
+            if ((u == 6 || u == 4 || u == 2) && v != 3 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v + 1] == ' ')
+            {
+                count++;
+            }
+
+            // downwards leftwards - even
+            if ((u == 6 || u == 4 || u == 2) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // upwards rightwards - odd
+            if ((u == 1 || u == 5 || u == 3) && box[u][v] == 'O' && box[u + 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // upwards leftwards - odd
+            if ((u == 1 || u == 5 || u == 3) && v != 0 && box[u][v] == 'O' && box[u + 1][v - 1] == ' ')
+            {
+                count++;
+            }
+
+            // upwards rightwards - even
+            if ((u == 0 || u == 4 || u == 2 || u == 6) && v != 3 && box[u][v] == 'O' && box[u + 1][v + 1] == ' ')
+            {
+                count++;
+            }
+
+            // upwards leftwards - even
+            if ((u == 0 || u == 4 || u == 2) && box[u][v] == 'O' && box[u + 1][v] == ' ')
             {
                 count++;
             }
