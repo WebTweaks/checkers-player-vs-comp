@@ -956,7 +956,8 @@ void computer()
                         auto total_comp_knocks = future_maxKnocks_comp();
                         auto total_player_knocks = future_maxKnocks_player();
 
-                        if(total_player_knocks > total_comp_knocks) std::cout << "player knocks more\n" ;
+                        if (total_player_knocks > total_comp_knocks)
+                            std::cout << "player knocks more\n";
 
                         if (total_comp_knocks > max_knocks && total_player_knocks <= total_comp_knocks)
                         {
@@ -1004,7 +1005,7 @@ void computer()
                     row_select();
                     column_select();
 
-                    bool future_knock {future_Knock_byPlayer()};
+                    bool future_knock{future_Knock_byPlayer()};
                     if (!future_knock)
                     {
                         for (short int c = 0; c < 8; c++)
@@ -1495,8 +1496,6 @@ void column_select()
                 if (choice[0] == 7 && (y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1504,8 +1503,6 @@ void column_select()
                 if (choice[0] == 6 && (y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && x[0] != 0 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0] - 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0] - 1;
                     break;
                 }
 
@@ -1513,8 +1510,6 @@ void column_select()
                 if (choice[0] == 5 && (y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 3 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0] + 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0] + 1;
                     break;
                 }
 
@@ -1522,8 +1517,6 @@ void column_select()
                 if (choice[0] == 4 && (y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 0 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1531,8 +1524,6 @@ void column_select()
                 if (choice[0] == 3 && (y[0] == 1 || y[0] == 5 || y[0] == 3) && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1540,8 +1531,6 @@ void column_select()
                 if (choice[0] == 2 && (y[0] == 1 || y[0] == 5 || y[0] == 3) && x[0] != 0 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0] - 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0] - 1;
                     break;
                 }
 
@@ -1549,8 +1538,6 @@ void column_select()
                 if (choice[0] == 2 && (y[0] == 0 || y[0] == 4 || y[0] == 2 || y[0] == 6) && x[0] != 3 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0] + 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0] + 1;
                     break;
                 }
 
@@ -1558,8 +1545,6 @@ void column_select()
                 if (choice[0] == 0 && (y[0] == 0 || y[0] == 4 || y[0] == 2) && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1583,21 +1568,16 @@ void column_select()
                     (box[y[0]][x[0] + 1] != 'X' || (box[y[0]][x[0] + 1] == 'X' && box[y[0] - 2][x[0]] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 14 && y[0] == 1 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 13 && (y[0] == 7 || y[0] == 5 || y[0] == 3) && x[0] == 3 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
                 {
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
+                    chosen = true;
                     break;
                 }
 
@@ -1607,15 +1587,11 @@ void column_select()
                     (box[y[0]][x[0] - 1] != 'X' || (box[y[0]][x[0] - 1] == 'X' && box[y[0] - 2][x[0]] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0] - 1;
                     break;
                 }
                 if (choice[0] == 11 && y[0] == 1 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0] - 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0] - 1;
                     break;
                 }
 
@@ -1625,8 +1601,6 @@ void column_select()
                     (box[y[0]][x[0] + 1] != 'X' || (box[y[0]][x[0] + 1] == 'X' && box[y[0] - 2][x[0]] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0] + 1;
                     break;
                 }
 
@@ -1636,15 +1610,11 @@ void column_select()
                     (box[y[0]][x[0] - 1] != 'X' || (box[y[0]][x[0] - 1] == 'X' && box[y[0] - 2][x[0]] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 8 && (y[0] == 6 || y[0] == 4 || y[0] == 2) && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] - 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1654,15 +1624,11 @@ void column_select()
                     (box[y[0] + 2][x[0]] != 'X' || (box[y[0] + 2][x[0]] == 'X' && box[y[0]][x[0] + 1] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 6 && (y[0] == 1 || y[0] == 5 || y[0] == 3) && x[0] == 3 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] + 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1672,8 +1638,6 @@ void column_select()
                     (box[y[0] + 2][x[0]] != 'X' || (box[y[0] + 2][x[0]] == 'X' && box[y[0]][x[0] - 1] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0] - 1;
                     break;
                 }
 
@@ -1683,15 +1647,11 @@ void column_select()
                     (box[y[0] + 2][x[0]] != 'X' || (box[y[0] + 2][x[0]] == 'X' && box[y[0]][x[0] + 1] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0] + 1;
                     break;
                 }
                 if (choice[0] == 3 && y[0] == 6 && x[0] != 3 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0] + 1] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0] + 1;
                     break;
                 }
 
@@ -1701,22 +1661,16 @@ void column_select()
                     (box[y[0] + 2][x[0]] != 'X' || (box[y[0] + 2][x[0]] == 'X' && box[y[0]][x[0] - 1] != ' ')))
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 1 && (y[0] == 0 || y[0] == 4 || y[0] == 2) && x == 0 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
                 if (choice[0] == 0 && y[0] == 0 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
                 {
                     chosen = true;
-                    y[1] = y[0] + 1;
-                    x[1] = x[0];
                     break;
                 }
 
@@ -1728,6 +1682,107 @@ void column_select()
             } while (count <= 16);
         }
     }
+}
+
+void target_select()
+{
+    unsigned short int count{};
+    auto temp_play_mode{play_mode};
+
+
+
+
+    // checking downwards rightwards - odd
+    if ((y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // checking downwards leftwards - odd
+    if ((y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && x[0] != 0 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0] - 1] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0] - 1;
+        count++;
+    }
+
+    // checking downwards rightwards - even
+    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 3 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0] + 1] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0] + 1;
+        count++;
+    }
+
+    // checking downwards leftwards - even
+    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 0 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0];
+        count++;;
+    }
+
+    // checking upwards rightwards - odd
+    if ((y[0] == 1 || y[0] == 5 || y[0] == 3) && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // checking upwards leftwards - odd
+    if ((y[0] == 1 || y[0] == 5 || y[0] == 3) && x[0] != 0 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0] - 1] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0] - 1;
+        count++;
+    }
+
+    // checking upwards rightwards - even
+    if ((y[0] == 0 || y[0] == 4 || y[0] == 2 || y[0] == 6) && x[0] != 3 && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0] + 1] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0] + 1;
+        count++;
+    }
+
+    // checking upwards leftwards - even
+    if ((y[0] == 0 || y[0] == 4 || y[0] == 2) && box[y[0]][x[0]] == 'O' && box[y[0] + 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // CHOOSING TARGET
+
+    if (count == 1)
+    {
+        y[1] = temp_y[0];
+        x[1] = temp_x[0];
+    }
+    else if (count == 2)
+    {
+        short int rand_num = rand() % 2;
+        y[1] = temp_y[rand_num];
+        x[1] = temp_x[rand_num];
+    }
+    else if (count == 3)
+    {
+        short int rand_num = rand() % 3;
+        y[1] = temp_y[rand_num];
+        x[1] = temp_x[rand_num];
+    }
+    else
+    {
+        short int rand_num = rand() % 4;
+        y[1] = temp_y[rand_num];
+        x[1] = temp_x[rand_num];
+    }
+    
+    
 }
 
 void movePiece_comp(char knock)
