@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <limits>
 
 char box[8][4]{};
 char temp_box1[8][4]{};
@@ -22,7 +23,7 @@ void reset_board();
 void print_board();
 
 void player();
-bool choice_processing(int index);
+void choice_processing(int index);
 bool selectPiece_player();
 bool movePiece_player();
 bool more_knocks();
@@ -52,7 +53,7 @@ int main()
     char temp_name[max_length]{};
     std::cin.getline(temp_name, max_length);
 
-    for (size_t i{}; i < std::size(temp_name); ++i)
+    for (short int i{}; i < std::size(temp_name); ++i)
     {
         if (temp_name[i] == ' ')
         {
@@ -76,22 +77,23 @@ int main()
     }
 */
     reset_board();
-    print_board();
-    for (size_t i = 0; i < 1; i++)
+    for (short int i = 0; i < 1; i++)
     {
         // auto sdfsdsfsdf = future_Knock_byPlayer();
         // std::cout << " future knock: " << sdfsdsfsdf << std::endl;
-        computer();
+        //player();
+         computer();
     }
 
+    std::cout << "        PROGRAM ENDS WELL" << std::endl;
     return 0;
 }
 
 void reset_board()
 {
-    for (size_t row{}; row < 8; row++)
+    for (short int row{}; row < 8; row++)
     {
-        for (size_t column{}; column < 4; column++)
+        for (short int column{}; column < 4; column++)
         {
             box[row][column] = ' ';
             temp_box1[row][column] = ' ';
@@ -100,29 +102,32 @@ void reset_board()
     }
 
     // players pieces
-    for (size_t row{}; row < 3; row++)
+    for (short int row{}; row < 3; row++)
     {
-        for (size_t column{}; column < 4; column++)
+        for (short int column{}; column < 4; column++)
         {
             box[row][column] = ' ';
         }
     }
 
     // comp pieces
-    for (size_t row{5}; row <= 7; row++)
+    for (short int row{5}; row <= 7; row++)
     {
-        for (size_t column{}; column < 4; column++)
+        for (short int column{}; column < 4; column++)
         {
             box[row][column] = ' ';
         }
     }
-
-    box[2][0] = 'X';
-    box[2][2] = 'X';
-    box[4][1] = 'O';
-    box[5][2] = ' ';
-    box[6][0] = 'X';
-    box[6][2] = 'x';
+    box[0][3] = 'O';
+    box[1][1] = 'x';
+    box[1][2] = 'x';
+    box[1][3] = 'x';
+    box[3][1] = 'x';
+    box[3][2] = 'x';
+    box[3][3] = 'x';
+    box[5][1] = 'x';
+    box[5][2] = 'x';
+    box[5][3] = 'x';
 }
 
 void print_board()
@@ -161,9 +166,9 @@ void player()
     print_board();
 
     // removing '.'
-    for (size_t i = 0; i < 8; i++)
+    for (short int i = 0; i < 8; i++)
     {
-        for (size_t j = 0; j < 4; j++)
+        for (short int j = 0; j < 4; j++)
         {
             if (box[i][j] == '.')
             {
@@ -172,35 +177,40 @@ void player()
         }
     }
 
-    bool not_played{true};
-    bool invalid_choice{true};
+    bool moved{false};
     bool knock_available{false};
-    bool unselected{true};
+    bool selected{false};
 
     do
     {
         do
         {
-            std::cout << "        Enter piece  row# column# e.g 12: ";
-            std::cin >> choice[0];
-            invalid_choice = choice_processing(0);
+            std::cout << "        Enter piece row# column# e.g 12: ";
 
-            if (invalid_choice)
+            if (!(std::cin >> choice[0]))
             {
+                std::cout << "        Invalid input! Try again!" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
                 print_board();
-                std::cout << "        Invalid piece entry! Try again!" << std::endl;
+            }
+            else
+            {
+                choice_processing(0);
+                break;
             }
 
-        } while (invalid_choice);
+        } while (true);
 
-        unselected = selectPiece_player();
-        if (unselected)
+        selected = selectPiece_player();
+        if (!selected)
         {
             print_board();
             std::cout << "        Invalid piece entry! Try again!" << std::endl;
         }
 
-    } while (unselected);
+    } while (!selected);
 
     std::cout << "        -----------------------------------------" << std::endl;
     std::cout << "          SELECTED " << player_name << std::endl;
@@ -212,25 +222,26 @@ void player()
         do
         {
             std::cout << "        Enter target row# column# e.g 23: ";
-            std::cin >> choice[1];
-            invalid_choice = choice_processing(1);
 
-            if (invalid_choice)
+            if (!(std::cin >> choice[1]))
             {
+                std::cout << "        Invalid input! Try again!" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
                 print_board();
-                std::cout << "        Invalid target entry! Try again!" << std::endl;
+            }
+            else
+            {
+                choice_processing(1);
+                break;
             }
 
-        } while (invalid_choice);
+        } while (true);
 
-        not_played = movePiece_player();
-        if (not_played)
-        {
-            print_board();
-            std::cout << "        Invalid target entry! Try again!" << std::endl;
-        }
+        moved = movePiece_player();
 
-    } while (not_played);
+    } while (!moved);
 
     while (knock_available = more_knocks())
     {
@@ -238,7 +249,7 @@ void player()
         {
             box[y[1]][x[1]] = 'S';
         }
-        else
+        else if (box[y[1]][x[1]] == 'x')
         {
             box[y[1]][x[1]] = 's';
         }
@@ -256,25 +267,26 @@ void player()
             do
             {
                 std::cout << "        Enter target row# column# e.g 23: ";
-                std::cin >> choice[1];
-                invalid_choice = choice_processing(1);
 
-                if (invalid_choice)
+                if (!(std::cin >> choice[1]))
                 {
+                    std::cout << "        Invalid input! Try again!" << std::endl;
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
                     print_board();
-                    std::cout << "        Invalid target entry! Try again!" << std::endl;
+                }
+                else
+                {
+                    choice_processing(1);
+                    break;
                 }
 
-            } while (invalid_choice);
+            } while (true);
 
-            not_played = movePiece_player();
-            if (not_played)
-            {
-                print_board();
-                std::cout << "        Invalid target entry! Try again!" << std::endl;
-            }
+            moved = movePiece_player();
 
-        } while (not_played);
+        } while (!moved);
     }
 
     std::cout << "        -----------------------------------------" << std::endl;
@@ -283,19 +295,9 @@ void player()
     print_board();
 }
 
-bool choice_processing(int index)
+void choice_processing(int index)
 {
-    bool invalid_choice{true};
-
-    if (choice[index] == 11 || choice[index] == 13 || choice[index] == 15 || choice[index] == 17 || choice[index] == 22 || choice[index] == 24 || choice[index] == 26 || choice[index] == 28 || choice[index] == 31 || choice[index] == 33 || choice[index] == 35 || choice[index] == 37 || choice[index] == 42 || choice[index] == 44 || choice[index] == 46 || choice[index] == 48)
-    {
-        invalid_choice = true;
-    }
-    else if (choice[index] == 51 || choice[index] == 53 || choice[index] == 55 || choice[index] == 57 || choice[index] == 62 || choice[index] == 64 || choice[index] == 66 || choice[index] == 68 || choice[index] == 71 || choice[index] == 73 || choice[index] == 75 || choice[index] == 77 || choice[index] == 82 || choice[index] == 84 || choice[index] == 86 || choice[index] == 88)
-    {
-        invalid_choice = true;
-    }
-    else if (choice[index] >= 12 && choice[index] <= 87)
+    if (choice[index] >= 12 && choice[index] <= 87)
     {
         // converting choice from 1D to 2D
 
@@ -321,7 +323,6 @@ bool choice_processing(int index)
                 x[index] = 3;
             }
             y[index] = y[index] - 1;
-            invalid_choice = false;
         }
         else if (y[index] == 7 || y[index] == 5 || y[index] == 3 || y[index] == 1)
         {
@@ -342,17 +343,18 @@ bool choice_processing(int index)
                 x[index] = 3;
             }
             y[index] = y[index] - 1;
-
-            invalid_choice = false;
         }
     }
-
-    return invalid_choice;
+    else
+    {
+        y[index] = 0;
+        x[index] = 0;
+    }
 }
 
 bool selectPiece_player()
 {
-    bool unselected{true};
+    bool selected{false};
 
     // selecting to move up
     if (box[y[0]][x[0]] == 'x' || box[y[0]][x[0]] == 'X')
@@ -369,7 +371,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (box[y[0] + 1][x[0] + 1] == ' ' || box[y[0] + 1][x[0] + 1] == '.'))
         {
@@ -382,7 +384,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && (box[y[0] + 1][x[0]] == ' ' || box[y[0] + 1][x[0]] == '.'))
         {
@@ -395,7 +397,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == ' ' || box[y[0] + 1][x[0] - 1] == '.'))
         {
@@ -408,7 +410,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         // moving up with knock
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] + 1][x[0] + 1] == 'o' || box[y[0] + 1][x[0] + 1] == 'O') &&
@@ -423,7 +425,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] + 1][x[0]] == 'o' || box[y[0] + 1][x[0]] == 'O') &&
                  (box[y[0] + 2][x[0] - 1] == ' ' || box[y[0] + 2][x[0] - 1] == '.'))
@@ -437,7 +439,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] + 1][x[0]] == 'o' || box[y[0] + 1][x[0]] == 'O') &&
                  (box[y[0] + 2][x[0] + 1] == ' ' || box[y[0] + 2][x[0] + 1] == '.'))
@@ -451,7 +453,7 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == 'o' || box[y[0] + 1][x[0] - 1] == 'O') &&
                  (box[y[0] + 2][x[0] - 1] == ' ' || box[y[0] + 2][x[0] - 1] == '.'))
@@ -465,31 +467,31 @@ bool selectPiece_player()
                 box[y[0]][x[0]] = 'S';
             }
 
-            unselected = false;
+            selected = true;
         }
     }
-    if (box[y[0]][x[0]] == 'X' && unselected == 'N')
+    if (box[y[0]][x[0]] == 'X' && !selected)
     {
         // moving down without knock
         if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && (box[y[0] - 1][x[0]] == ' ' || box[y[0] - 1][x[0]] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (box[y[0] - 1][x[0] + 1] == ' ' || box[y[0] - 1][x[0] + 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && (box[y[0] - 1][x[0]] == ' ' || box[y[0] - 1][x[0]] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == ' ' || box[y[0] - 1][x[0] - 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
 
         // moving down with knock
@@ -497,54 +499,42 @@ bool selectPiece_player()
                  (box[y[0] - 2][x[0] + 1] == ' ' || box[y[0] - 2][x[0] + 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] - 1][x[0]] == 'o' || box[y[0] - 1][x[0]] == 'O') &&
                  (box[y[0] - 2][x[0] - 1] == ' ' || box[y[0] - 2][x[0] - 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] - 1][x[0]] == 'o' || box[y[0] - 1][x[0]] == 'O') &&
                  (box[y[0] - 2][x[0] + 1] == ' ' || box[y[0] - 2][x[0] + 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
         else if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == 'o' || box[y[0] - 1][x[0] - 1] == 'O') &&
                  (box[y[0] - 2][x[0] - 1] == ' ' || box[y[0] - 2][x[0] - 1] == '.'))
         {
             box[y[0]][x[0]] = 'S';
-            unselected = false;
+            selected = true;
         }
     }
 
-    return unselected;
+    return selected;
 }
 
 bool movePiece_player()
 {
-    bool not_moved{true};
-    bool unchanged{true};
-
-    if (box[y[0]][x[0]] == 'S')
-    {
-        box[y[0]][x[0]] = 'X';
-        unchanged = false;
-    }
-    else if (box[y[0]][x[0]] == 's')
-    {
-        box[y[0]][x[0]] = 'x';
-        unchanged = false;
-    }
+    bool moved{false};
 
     // moving up without knock
-    if (y[0] + 1 == y[1])
+    if (y[0] + 1 == y[1] && (box[y[0]][x[0]] == 'S' || box[y[0]][x[0]] == 's'))
     {
         if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 &&
             (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && (x[0] == x[1] || x[0] + 1 == x[1]))
         {
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -553,15 +543,13 @@ bool movePiece_player()
                 box[y[1]][x[1]] = 'x';
             }
             box[y[0]][x[0]] = '.';
-
-            not_moved = false;
+            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -570,13 +558,13 @@ bool movePiece_player()
                 box[y[1]][x[1]] = 'x';
             }
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && (x[0] == x[1] || x[0] - 1 == x[1]))
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -585,13 +573,13 @@ bool movePiece_player()
                 box[y[1]][x[1]] = 'x';
             }
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] == 0 && x[0] == x[1] &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -600,51 +588,51 @@ bool movePiece_player()
                 box[y[1]][x[1]] = 'x';
             }
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
     }
 
     // moving down without knock
-    else if (y[0] - 1 == y[1] && box[y[0]][x[0]] == 'X')
+    else if (y[0] - 1 == y[1] && box[y[0]][x[0]] == 'S')
     {
         if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (x[0] == x[1] || x[0] + 1 == x[1]) &&
             (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] != 0 && (x[0] == x[1] || x[0] - 1 == x[1]) &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] == 0 && x[0] == x[1] &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
     }
 
     // moving up with knock
-    else if (y[0] + 2 == y[1])
+    else if (y[0] + 2 == y[1] && (box[y[0]][x[0]] == 'S' || box[y[0]][x[0]] == 's'))
     {
         if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == 'o' || box[y[0] + 1][x[0] - 1] == 'O') &&
             (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -654,13 +642,13 @@ bool movePiece_player()
             }
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0] - 1] = '.';
+            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] + 1][x[0]] == 'o' || box[y[0] + 1][x[0]] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -670,13 +658,13 @@ bool movePiece_player()
             }
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] + 1][x[0]] == 'o' || box[y[0] + 1][x[0]] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -686,13 +674,13 @@ bool movePiece_player()
             }
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] + 1][x[0] + 1] == 'o' || box[y[0] + 1][x[0] + 1] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
         {
-            not_moved = false;
 
-            if (box[y[0]][x[0]] == 'X')
+            if (box[y[0]][x[0]] == 'S')
             {
                 box[y[1]][x[1]] = 'X';
             }
@@ -702,60 +690,49 @@ bool movePiece_player()
             }
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0] + 1] = '.';
+            moved = true;
         }
     }
 
     // moving down with knock
-    else if (y[0] - 2 == y[1] && box[y[0]][x[0]] == 'X')
+    else if (y[0] - 2 == y[1] && box[y[0]][x[0]] == 'S')
     {
         if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == 'o' || box[y[0] - 1][x[0] - 1] == 'O') &&
             (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0] - 1][x[0] - 1] = '.';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] - 1][x[0]] == 'o' || box[y[0] - 1][x[0]] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0] - 1][x[0]] = '.';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] - 1][x[0]] == 'o' || box[y[0] - 1][x[0]] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0] - 1][x[0]] = '.';
             box[y[0]][x[0]] = '.';
+            moved = true;
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] - 1][x[0] + 1] == 'o' || box[y[0] - 1][x[0] + 1] == 'O') &&
                  (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
         {
-            not_moved = false;
             box[y[1]][x[1]] = 'X';
             box[y[0] - 1][x[0] + 1] = '.';
             box[y[0]][x[0]] = '.';
-        }
-    }
-
-    if (unchanged == false)
-    {
-        if (box[y[0]][x[0]] == 'X')
-        {
-            box[y[0]][x[0]] = 's';
-        }
-        else if (box[y[0]][x[0]] == 'x')
-        {
-            box[y[0]][x[0]] = 's';
+            moved = true;
         }
     }
 
     // king
-    for (size_t column = 0; column < 4; column++)
+    for (short int column = 0; column < 4; column++)
     {
         if (box[7][column] == 'x')
         {
@@ -763,7 +740,7 @@ bool movePiece_player()
         }
     }
 
-    return not_moved;
+    return moved;
 }
 
 bool more_knocks()
@@ -877,9 +854,9 @@ void computer()
     char temp_box3[8][4]{};
 
     // removing '.'
-    for (size_t f{}; f < 8; f++)
+    for (short int f{}; f < 8; f++)
     {
-        for (size_t g{}; g < 4; g++)
+        for (short int g{}; g < 4; g++)
         {
             if (box[f][g] == '.')
             {
@@ -894,8 +871,10 @@ void computer()
     bool selected{false};
     bool moved{false};
 
+    std::cout << "3\n"; 
     bool knock_present = knocks_checking(&total_knocks);
 
+    std::cout << "2\n";
     if (play_mode == 1)
     {
         rand_num = rand() % 4;
@@ -938,6 +917,7 @@ void computer()
 
         if ((rand_num == 1 || rand_num == 2) && knock_present)
         {
+            std::cout << "1\n";
             rand_num = rand() % 2;
 
             if (rand_num == 0 || rand_num == 1)
@@ -1000,7 +980,8 @@ void computer()
 
                     rand_num = rand() % 1;
                     bool future_knock(true);
-                    if (rand_num == 0) future_knock = future_Knock_byPlayer();
+                    if (rand_num == 0)
+                        future_knock = future_Knock_byPlayer();
                     if (!future_knock)
                     {
                         for (short int c = 0; c < 8; c++)
@@ -1039,10 +1020,11 @@ bool knocks_checking(int *total_knocks)
     bool knock_present{false};
     *total_knocks = 0;
 
-    for (size_t q = 0; q <= 7; q++)
+    for (short int q = 0; q <= 7; q++)
     {
-        for (size_t r = 0; r < 4; r++)
+        for (short int r = 0; r < 4; r++)
         {
+            std::cout << "r:" << r << '\n';
             // checking upwards
 
             if ((q == 0 || q == 2 || q == 4) && r != 3 && (box[q + 1][r + 1] == 'x' || box[q + 1][r + 1] == 'X') &&
@@ -1121,7 +1103,7 @@ bool knocks_checking(int *total_knocks)
             }
         }
     }
-
+std::cout << "fuck\n";
     if (*total_knocks > 0)
         knock_present = true;
 
@@ -1619,7 +1601,7 @@ void movePiece_comp(char knock)
     }
 
     // king
-    for (size_t i = 0; i < 4; i++)
+    for (short int i = 0; i < 4; i++)
     {
         if (box[0][i] == 'o')
         {
@@ -1805,9 +1787,9 @@ int future_maxKnocks_comp()
 
         int total_knocks{};
 
-        for (size_t m{}; m < 8; m++)
+        for (short int m{}; m < 8; m++)
         {
-            for (size_t n{}; n < 4; n++)
+            for (short int n{}; n < 4; n++)
             {
                 temp_box1[m][n] = box[m][n];
             }
@@ -1945,16 +1927,16 @@ int future_maxKnocks_comp()
                         {
                             max_knocks = total_knocks;
 
-                            for (size_t m{}; m < 8; m++)
+                            for (short int m{}; m < 8; m++)
                             {
-                                for (size_t n{}; n < 4; n++)
+                                for (short int n{}; n < 4; n++)
                                 {
                                     temp_box2[m][n] = temp_box1[m][n];
                                 }
                             }
                         }
                         // king
-                        for (size_t i = 0; i < 4; i++)
+                        for (short int i = 0; i < 4; i++)
                         {
                             if (temp_box1[0][i] == 'o')
                             {
@@ -1973,9 +1955,9 @@ int future_maxKnocks_comp()
                 temp_y[18] = initial_Y;
                 temp_x[18] = initial_X;
 
-                for (size_t m{}; m < 8; m++)
+                for (short int m{}; m < 8; m++)
                 {
-                    for (size_t n{}; n < 4; n++)
+                    for (short int n{}; n < 4; n++)
                     {
                         temp_box1[m][n] = box[m][n];
                     }
@@ -2185,9 +2167,9 @@ int future_maxKnocks_player()
         {
             for (temp_x[18] = 0; temp_x[18] < 4; temp_x[18]++)
             {
-                for (size_t m{}; m < 8; m++)
+                for (short int m{}; m < 8; m++)
                 {
-                    for (size_t n{}; n < 4; n++)
+                    for (short int n{}; n < 4; n++)
                     {
                         temp_box1[m][n] = temp_box2[m][n];
                     }
@@ -2330,7 +2312,7 @@ int future_maxKnocks_player()
                                     temp_x[18] = temp_x[19];
 
                                     // king
-                                    for (size_t i = 0; i < 4; i++)
+                                    for (short int i = 0; i < 4; i++)
                                     {
                                         if (temp_box1[7][i] == 'x')
                                         {
@@ -2348,9 +2330,9 @@ int future_maxKnocks_player()
                             temp_y[18] = initial_Y;
                             temp_x[18] = initial_X;
 
-                            for (size_t m{}; m < 8; m++)
+                            for (short int m{}; m < 8; m++)
                             {
-                                for (size_t n{}; n < 4; n++)
+                                for (short int n{}; n < 4; n++)
                                 {
                                     temp_box1[m][n] = temp_box2[m][n];
                                 }
@@ -2373,9 +2355,9 @@ int totalMoves_comp()
 {
     int count{};
 
-    for (size_t u = 0; u < 8; u++)
+    for (short int u = 0; u < 8; u++)
     {
-        for (size_t v{}; v < 4; v++)
+        for (short int v{}; v < 4; v++)
         {
             // downwards rightwards - odd
             if ((u == 7 || u == 5 || u == 3 || u == 1) && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
