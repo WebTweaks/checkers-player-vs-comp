@@ -10,10 +10,11 @@ char temp_box2[8][4]{};
 const unsigned short int max_length{20};
 char player_name[max_length]{};
 
-unsigned short int play_mode{2};
+unsigned short int play_mode{};
 unsigned short int choice[3]{};
 unsigned short int y[2];
 unsigned short int x[2];
+bool moved_by_knock{false};
 unsigned short int temp_y[20]{};
 unsigned short int temp_x[20]{};
 unsigned short int y1_store[20]{};
@@ -23,22 +24,22 @@ void reset_board();
 void print_board();
 
 void player();
-void choice_processing(int index);
+bool choice_processing(int index);
 bool selectPiece_player();
+bool auto_playerMove();
 bool movePiece_player();
 bool more_knocks();
 
 void computer();
 bool knocks_checking(int *total_knocks);
+unsigned short int totalMoves_comp();
 unsigned short int total_unknockMoves();
 void selectPiece_comp();
 void movePiece_comp(char knock);
-bool future_Knock_byPlayer();
+bool future_knock_byPlayer();
 int future_maxKnocks_comp();
 bool future_more_knocks();
 int future_maxKnocks_player();
-
-int totalMoves_comp();
 
 int main()
 {
@@ -61,7 +62,7 @@ int main()
         }
         temp_name[i] = std::toupper(temp_name[i]);
         player_name[i] = temp_name[i];
-    }
+    }*/
 
     std::cout << std::endl;
     std::cout << "           ID  |  MODE" << std::endl;
@@ -70,19 +71,18 @@ int main()
     std::cout << "            2  |  Normal" << std::endl;
     std::cout << "            3  |  Hard" << std::endl;
     std::cout << std::endl;
+
     while (play_mode != 1 && play_mode != 2 && play_mode != 3)
     {
         std::cout << "        Enter mode ID: ";
         std::cin >> play_mode;
     }
-*/
+
     reset_board();
-    for (short int i = 0; i < 1; i++)
+    for (short int i = 0; i < 1000000; i++)
     {
-        // auto sdfsdsfsdf = future_Knock_byPlayer();
-        // std::cout << " future knock: " << sdfsdsfsdf << std::endl;
-        //player();
-         computer();
+        player();
+        computer();
     }
 
     std::cout << "        PROGRAM ENDS WELL" << std::endl;
@@ -106,7 +106,7 @@ void reset_board()
     {
         for (short int column{}; column < 4; column++)
         {
-            box[row][column] = ' ';
+            box[row][column] = 'x';
         }
     }
 
@@ -115,10 +115,11 @@ void reset_board()
     {
         for (short int column{}; column < 4; column++)
         {
-            box[row][column] = ' ';
+            box[row][column] = 'o';
         }
     }
-    box[0][3] = 'O';
+    /*box[0][3] = 'O';
+    box[7][3] = 'o';
     box[1][1] = 'x';
     box[1][2] = 'x';
     box[1][3] = 'x';
@@ -127,7 +128,7 @@ void reset_board()
     box[3][3] = 'x';
     box[5][1] = 'x';
     box[5][2] = 'x';
-    box[5][3] = 'x';
+    box[5][3] = 'x';*/
 }
 
 void print_board()
@@ -180,6 +181,8 @@ void player()
     bool moved{false};
     bool knock_available{false};
     bool selected{false};
+    bool invalid_input{false};
+    moved_by_knock = false;
 
     do
     {
@@ -197,11 +200,15 @@ void player()
             }
             else
             {
-                choice_processing(0);
-                break;
+                invalid_input = choice_processing(0);
+                if (invalid_input)
+                {
+                    std::cout << "        Invalid input! Try again!" << std::endl;
+                    print_board();
+                }
             }
 
-        } while (true);
+        } while (invalid_input);
 
         selected = selectPiece_player();
         if (!selected)
@@ -233,17 +240,21 @@ void player()
             }
             else
             {
-                choice_processing(1);
-                break;
+                invalid_input = choice_processing(1);
+                if (invalid_input)
+                {
+                    std::cout << "        Invalid input! Try again!" << std::endl;
+                    print_board();
+                }
             }
 
-        } while (true);
+        } while (invalid_input);
 
         moved = movePiece_player();
 
     } while (!moved);
 
-    while (knock_available = more_knocks())
+    while ((knock_available = more_knocks()) && moved_by_knock)
     {
         if (box[y[1]][x[1]] == 'X')
         {
@@ -276,13 +287,18 @@ void player()
 
                     print_board();
                 }
+
                 else
                 {
-                    choice_processing(1);
-                    break;
+                    invalid_input = choice_processing(1);
+                    if (invalid_input)
+                    {
+                        std::cout << "        Invalid input! Try again!" << std::endl;
+                        print_board();
+                    }
                 }
 
-            } while (true);
+            } while (invalid_input);
 
             moved = movePiece_player();
 
@@ -295,9 +311,19 @@ void player()
     print_board();
 }
 
-void choice_processing(int index)
+bool choice_processing(int index)
 {
-    if (choice[index] >= 12 && choice[index] <= 87)
+    bool invalid_choice{true};
+
+    if (choice[index] == 11 || choice[index] == 13 || choice[index] == 15 || choice[index] == 17 || choice[index] == 22 || choice[index] == 24 || choice[index] == 26 || choice[index] == 28 || choice[index] == 31 || choice[index] == 33 || choice[index] == 35 || choice[index] == 37 || choice[index] == 42 || choice[index] == 44 || choice[index] == 46 || choice[index] == 48)
+    {
+        invalid_choice = true;
+    }
+    else if (choice[index] == 51 || choice[index] == 53 || choice[index] == 55 || choice[index] == 57 || choice[index] == 62 || choice[index] == 64 || choice[index] == 66 || choice[index] == 68 || choice[index] == 71 || choice[index] == 73 || choice[index] == 75 || choice[index] == 77 || choice[index] == 82 || choice[index] == 84 || choice[index] == 86 || choice[index] == 88)
+    {
+        invalid_choice = true;
+    }
+    else if (choice[index] >= 12 && choice[index] <= 87)
     {
         // converting choice from 1D to 2D
 
@@ -323,6 +349,7 @@ void choice_processing(int index)
                 x[index] = 3;
             }
             y[index] = y[index] - 1;
+            invalid_choice = false;
         }
         else if (y[index] == 7 || y[index] == 5 || y[index] == 3 || y[index] == 1)
         {
@@ -343,13 +370,12 @@ void choice_processing(int index)
                 x[index] = 3;
             }
             y[index] = y[index] - 1;
+
+            invalid_choice = false;
         }
     }
-    else
-    {
-        y[index] = 0;
-        x[index] = 0;
-    }
+
+    return invalid_choice;
 }
 
 bool selectPiece_player()
@@ -524,6 +550,13 @@ bool selectPiece_player()
     return selected;
 }
 
+bool auto_playerMove()
+{
+    bool target_selected{false};
+
+    // checking available moves
+}
+
 bool movePiece_player()
 {
     bool moved{false};
@@ -692,6 +725,8 @@ bool movePiece_player()
             box[y[0] + 1][x[0] + 1] = '.';
             moved = true;
         }
+
+        moved_by_knock = true;
     }
 
     // moving down with knock
@@ -729,6 +764,8 @@ bool movePiece_player()
             box[y[0]][x[0]] = '.';
             moved = true;
         }
+
+        moved_by_knock = true;
     }
 
     // king
@@ -861,7 +898,6 @@ void computer()
             if (box[f][g] == '.')
             {
                 box[f][g] = ' ';
-                temp_box3[f][g] = ' ';
             }
         }
     }
@@ -871,16 +907,21 @@ void computer()
     bool selected{false};
     bool moved{false};
 
-    std::cout << "3\n"; 
     bool knock_present = knocks_checking(&total_knocks);
 
-    std::cout << "2\n";
     if (play_mode == 1)
     {
         rand_num = rand() % 4;
+        auto total_moves = totalMoves_comp();
+
+        if (total_moves == 0 && knock_present)
+        {
+            rand_num = 2;
+        }
 
         if (rand_num == 2 && knock_present)
         {
+            knocks_checking(&total_knocks);
             rand_num = rand() % total_knocks;
 
             y[0] = temp_y[rand_num];
@@ -889,6 +930,19 @@ void computer()
             x[1] = x1_store[rand_num];
 
             movePiece_comp('Y');
+
+            while (knock_present = knocks_checking(&total_knocks))
+            {
+                rand_num = rand() % total_knocks;
+
+                y[0] = temp_y[rand_num];
+                x[0] = temp_x[rand_num];
+                y[1] = y1_store[rand_num];
+                x[1] = x1_store[rand_num];
+
+                movePiece_comp('Y');
+            }
+
             moved = true;
         }
 
@@ -897,30 +951,24 @@ void computer()
             selectPiece_comp();
             movePiece_comp('N');
         }
-
-        while (knock_present = knocks_checking(&total_knocks))
-        {
-            rand_num = rand() % total_knocks;
-
-            y[0] = temp_y[rand_num];
-            x[0] = temp_x[rand_num];
-            y[1] = y1_store[rand_num];
-            x[1] = x1_store[rand_num];
-
-            movePiece_comp('Y');
-        }
     }
 
     else if (play_mode == 2)
     {
-        rand_num = rand() % 3;
+        rand_num = rand() % 10;
 
-        if ((rand_num == 1 || rand_num == 2) && knock_present)
+        auto unknock_moves = total_unknockMoves();
+        if (unknock_moves == 0 && knock_present)
         {
-            std::cout << "1\n";
-            rand_num = rand() % 2;
+            rand_num = 2;
+        }
 
-            if (rand_num == 0 || rand_num == 1)
+        if (rand_num != 4 && knock_present)
+        {
+            knocks_checking(&total_knocks);
+            rand_num = rand() % 1;
+
+            if (rand_num != 0)
             {
                 while (!selected)
                 {
@@ -967,21 +1015,41 @@ void computer()
                     }
                 }
             }
+            else if (rand_num == 0)
+            {
+                rand_num = rand() % total_knocks;
+
+                y[0] = temp_y[rand_num];
+                x[0] = temp_x[rand_num];
+                y[1] = y1_store[rand_num];
+                x[1] = x1_store[rand_num];
+
+                movePiece_comp('Y');
+
+                while (knock_present = knocks_checking(&total_knocks))
+                {
+                    rand_num = rand() % total_knocks;
+
+                    y[0] = temp_y[rand_num];
+                    x[0] = temp_x[rand_num];
+                    y[1] = y1_store[rand_num];
+                    x[1] = x1_store[rand_num];
+
+                    movePiece_comp('Y');
+                }
+                moved = true;
+            }
         }
 
         if (!moved)
         {
-
             do
             {
                 for (short int re_do = 0; re_do < 11; re_do++)
                 {
                     selectPiece_comp();
+                    bool future_knock = future_knock_byPlayer();
 
-                    rand_num = rand() % 1;
-                    bool future_knock(true);
-                    if (rand_num == 0)
-                        future_knock = future_Knock_byPlayer();
                     if (!future_knock)
                     {
                         for (short int c = 0; c < 8; c++)
@@ -1024,7 +1092,6 @@ bool knocks_checking(int *total_knocks)
     {
         for (short int r = 0; r < 4; r++)
         {
-            std::cout << "r:" << r << '\n';
             // checking upwards
 
             if ((q == 0 || q == 2 || q == 4) && r != 3 && (box[q + 1][r + 1] == 'x' || box[q + 1][r + 1] == 'X') &&
@@ -1042,7 +1109,7 @@ bool knocks_checking(int *total_knocks)
                 temp_y[*total_knocks] = q;
                 temp_x[*total_knocks] = r;
                 y1_store[*total_knocks] = q + 2;
-                x1_store[*total_knocks] = r = 1;
+                x1_store[*total_knocks] = r - 1; // *x1_store[*total_knocks] = r = 1;*  expensive error I made
                 *total_knocks = *total_knocks + 1;
             }
             if ((q == 1 || q == 3 || q == 5) && r != 3 && (box[q + 1][r] == 'x' || box[q + 1][r] == 'X') &&
@@ -1103,11 +1170,72 @@ bool knocks_checking(int *total_knocks)
             }
         }
     }
-std::cout << "fuck\n";
+
     if (*total_knocks > 0)
         knock_present = true;
 
     return knock_present;
+}
+
+unsigned short int totalMoves_comp()
+{
+    int count{};
+
+    for (short int u = 0; u < 8; u++)
+    {
+        for (short int v{}; v < 4; v++)
+        {
+            // downwards rightwards - odd
+            if ((u == 7 || u == 5 || u == 3 || u == 1) && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // downwards leftwards - odd
+            if ((u == 7 || u == 5 || u == 3 || u == 1) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v - 1] == ' ')
+            {
+                count++;
+            }
+
+            // downwards rightwards - even
+            if ((u == 6 || u == 4 || u == 2) && v != 3 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v + 1] == ' ')
+            {
+                count++;
+            }
+
+            // downwards leftwards - even
+            if ((u == 6 || u == 4 || u == 2) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // upwards rightwards - odd
+            if ((u == 1 || u == 5 || u == 3) && box[u][v] == 'O' && box[u + 1][v] == ' ')
+            {
+                count++;
+            }
+
+            // upwards leftwards - odd
+            if ((u == 1 || u == 5 || u == 3) && v != 0 && box[u][v] == 'O' && box[u + 1][v - 1] == ' ')
+            {
+                count++;
+            }
+
+            // upwards rightwards - even
+            if ((u == 0 || u == 4 || u == 2 || u == 6) && v != 3 && box[u][v] == 'O' && box[u + 1][v + 1] == ' ')
+            {
+                count++;
+            }
+
+            // upwards leftwards - even
+            if ((u == 0 || u == 4 || u == 2) && box[u][v] == 'O' && box[u + 1][v] == ' ')
+            {
+                count++;
+            }
+        }
+    }
+
+    return count;
 }
 
 unsigned short int total_unknockMoves()
@@ -1246,17 +1374,20 @@ unsigned short int total_unknockMoves()
 void selectPiece_comp()
 {
     auto temp_play_mode{play_mode};
-    auto total_moves{total_unknockMoves()};
 
-    if (total_moves == 0)
+    if (play_mode == 2 || play_mode == 3)
     {
-        temp_play_mode = 1;
-    }
-    else if (total_moves > 0)
-    {
-        auto rand_num{rand() % total_moves};
-        y[0] = temp_y[rand_num];
-        x[0] = temp_x[rand_num];
+        auto total_moves{total_unknockMoves()};
+
+        if (total_moves == 0)
+            temp_play_mode = 1;
+
+        else if (total_moves > 0)
+        {
+            auto rand_num{rand() % total_moves};
+            y[0] = temp_y[rand_num];
+            x[0] = temp_x[rand_num];
+        }
     }
 
     int count{};
@@ -1266,7 +1397,7 @@ void selectPiece_comp()
     {
         y[0] = rand() % 8;
 
-        for (short int w = 0; w < 100; w++)
+        for (short int w = 0; w < 500; w++)
         {
             x[0] = rand() % 4;
             choice[0] = rand() % 8;
@@ -1421,25 +1552,23 @@ void movePiece_comp(char knock)
     if (y[0] + 1 == y[1] && knock == 'N' && box[y[0]][x[0]] == 'O')
     {
         if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 &&
-            (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && (x[0] == x[1] || x[0] + 1 == x[1]))
+            box[y[1]][x[1]] == ' ' && (x[0] == x[1] || x[0] + 1 == x[1]))
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
         }
-        else if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+        else if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] && box[y[1]][x[1]] == ' ')
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
         }
-        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && (x[0] == x[1] || x[0] - 1 == x[1]))
+        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && box[y[1]][x[1]] == ' ' && (x[0] == x[1] || x[0] - 1 == x[1]))
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] == 0 && x[0] == x[1] &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+                 box[y[1]][x[1]] == ' ')
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
@@ -1448,10 +1577,9 @@ void movePiece_comp(char knock)
 
     // moving down without knock
 
-    else if (y[0] - 1 == y[1] && knock == 'N')
+    else if (y[0] - 1 == y[1] && knock == 'N' && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o'))
     {
-        if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (x[0] == x[1] || x[0] + 1 == x[1]) &&
-            (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+        if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (x[0] == x[1] || x[0] + 1 == x[1]) && box[y[1]][x[1]] == ' ')
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1461,10 +1589,10 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0]][x[0]] = '.';
         }
-        else if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+        else if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] && box[y[1]][x[1]] == ' ')
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1474,10 +1602,10 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0]][x[0]] = '.';
         }
-        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] != 0 && (x[0] == x[1] || x[0] - 1 == x[1]) &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] != 0 && (x[0] == x[1] || x[0] - 1 == x[1]) && box[y[1]][x[1]] == ' ')
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1487,10 +1615,10 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0]][x[0]] = '.';
         }
-        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] == 0 && x[0] == x[1] &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.'))
+        else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] == 0 && x[0] == x[1] && box[y[1]][x[1]] == ' ')
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1500,6 +1628,7 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0]][x[0]] = '.';
         }
     }
@@ -1509,28 +1638,28 @@ void movePiece_comp(char knock)
     else if (y[0] + 2 == y[1] && box[y[0]][x[0]] == 'O' && knock == 'Y')
     {
         if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == 'x' || box[y[0] + 1][x[0] - 1] == 'X') &&
-            (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
+            box[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0] - 1] = '.';
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] + 1][x[0]] == 'x' || box[y[0] + 1][x[0]] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0]] = '.';
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] + 1][x[0]] == 'x' || box[y[0] + 1][x[0]] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
             box[y[0] + 1][x[0]] = '.';
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] + 1][x[0] + 1] == 'x' || box[y[0] + 1][x[0] + 1] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
         {
             box[y[1]][x[1]] = 'O';
             box[y[0]][x[0]] = '.';
@@ -1540,10 +1669,10 @@ void movePiece_comp(char knock)
 
     // moving down with knock
 
-    else if (y[0] - 2 == y[1] && knock == 'Y')
+    else if (y[0] - 2 == y[1] && knock == 'Y' && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o'))
     {
         if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == 'x' || box[y[0] - 1][x[0] - 1] == 'X') &&
-            (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
+            box[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1553,11 +1682,12 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0] - 1][x[0] - 1] = '.';
             box[y[0]][x[0]] = '.';
         }
         else if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (box[y[0] - 1][x[0]] == 'x' || box[y[0] - 1][x[0]] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1567,11 +1697,12 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0] - 1][x[0]] = '.';
             box[y[0]][x[0]] = '.';
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (box[y[0] - 1][x[0]] == 'x' || box[y[0] - 1][x[0]] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] - 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1581,11 +1712,12 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0] - 1][x[0]] = '.';
             box[y[0]][x[0]] = '.';
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (box[y[0] - 1][x[0] + 1] == 'x' || box[y[0] - 1][x[0] + 1] == 'X') &&
-                 (box[y[1]][x[1]] == ' ' || box[y[1]][x[1]] == '.') && x[0] + 1 == x[1])
+                 box[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
         {
             if (box[y[0]][x[0]] == 'O')
             {
@@ -1595,6 +1727,7 @@ void movePiece_comp(char knock)
             {
                 box[y[1]][x[1]] = 'o';
             }
+
             box[y[0] - 1][x[0] + 1] = '.';
             box[y[0]][x[0]] = '.';
         }
@@ -1610,7 +1743,7 @@ void movePiece_comp(char knock)
     }
 }
 
-bool future_Knock_byPlayer()
+bool future_knock_byPlayer()
 {
     temp_y[18] = y[0];
     temp_x[18] = x[0];
@@ -2349,65 +2482,4 @@ int future_maxKnocks_player()
     }
 
     return max_knocks;
-}
-
-int totalMoves_comp()
-{
-    int count{};
-
-    for (short int u = 0; u < 8; u++)
-    {
-        for (short int v{}; v < 4; v++)
-        {
-            // downwards rightwards - odd
-            if ((u == 7 || u == 5 || u == 3 || u == 1) && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
-            {
-                count++;
-            }
-
-            // downwards leftwards - odd
-            if ((u == 7 || u == 5 || u == 3 || u == 1) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v - 1] == ' ')
-            {
-                count++;
-            }
-
-            // downwards rightwards - even
-            if ((u == 6 || u == 4 || u == 2) && v != 3 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v + 1] == ' ')
-            {
-                count++;
-            }
-
-            // downwards leftwards - even
-            if ((u == 6 || u == 4 || u == 2) && v != 0 && (box[u][v] == 'O' || box[u][v] == 'o') && box[u - 1][v] == ' ')
-            {
-                count++;
-            }
-
-            // upwards rightwards - odd
-            if ((u == 1 || u == 5 || u == 3) && box[u][v] == 'O' && box[u + 1][v] == ' ')
-            {
-                count++;
-            }
-
-            // upwards leftwards - odd
-            if ((u == 1 || u == 5 || u == 3) && v != 0 && box[u][v] == 'O' && box[u + 1][v - 1] == ' ')
-            {
-                count++;
-            }
-
-            // upwards rightwards - even
-            if ((u == 0 || u == 4 || u == 2 || u == 6) && v != 3 && box[u][v] == 'O' && box[u + 1][v + 1] == ' ')
-            {
-                count++;
-            }
-
-            // upwards leftwards - even
-            if ((u == 0 || u == 4 || u == 2) && box[u][v] == 'O' && box[u + 1][v] == ' ')
-            {
-                count++;
-            }
-        }
-    }
-
-    return count;
 }
