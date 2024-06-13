@@ -11,9 +11,9 @@ const unsigned short int max_length{20};
 char player_name[max_length]{"JOHN"};
 
 unsigned short int play_mode{};
-unsigned short int choice[3]{};
-unsigned short int y[2];
-unsigned short int x[2];
+unsigned short int choice[2]{};
+unsigned short int y[3];
+unsigned short int x[3];
 bool moved_by_knock{false};
 unsigned short int temp_y[20]{};
 unsigned short int temp_x[20]{};
@@ -108,7 +108,7 @@ void reset_board()
         }
     }
 
-    // players pieces
+    // player
     for (short int row{}; row < 3; row++)
     {
         for (short int column{}; column < 4; column++)
@@ -117,7 +117,7 @@ void reset_board()
         }
     }
 
-    // comp pieces
+    // comp
     for (short int row{5}; row <= 7; row++)
     {
         for (short int column{}; column < 4; column++)
@@ -287,7 +287,7 @@ void player()
                 {
                     invalid_input = choice_processing(1);
                     if (invalid_input)
-                    { 
+                    {
                         std::cout << "           Invalid input! Try again!" << std::endl;
                         print_board();
                     }
@@ -318,8 +318,6 @@ bool choice_processing(int index)
     }
     else if (choice[index] >= 12 && choice[index] <= 87)
     {
-        // converting choice from 1D to 2D
-
         y[index] = choice[index] / 10;
         x[index] = choice[index] % 10;
 
@@ -375,7 +373,6 @@ bool selectPiece_player()
 {
     bool selected{false};
 
-    // selecting to move up
     if (box[y[0]][x[0]] == 'x' || box[y[0]][x[0]] == 'X')
     {
         // moving up without knock
@@ -547,7 +544,6 @@ bool movePiece_player()
 {
     bool moved{false};
 
-    // moving up without knock
     if (y[0] + 1 == y[1] && (box[y[0]][x[0]] == 'S' || box[y[0]][x[0]] == 's'))
     {
         if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 &&
@@ -613,7 +609,6 @@ bool movePiece_player()
         moved_by_knock = false;
     }
 
-    // moving down without knock
     else if (y[0] - 1 == y[1] && box[y[0]][x[0]] == 'S')
     {
         if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 && (x[0] == x[1] || x[0] + 1 == x[1]) &&
@@ -648,7 +643,7 @@ bool movePiece_player()
         moved_by_knock = false;
     }
 
-    // moving up with knock
+    // up --> knock
     else if (y[0] + 2 == y[1] && (box[y[0]][x[0]] == 'S' || box[y[0]][x[0]] == 's'))
     {
         if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] + 1][x[0] - 1] == 'o' || box[y[0] + 1][x[0] - 1] == 'O') &&
@@ -719,7 +714,7 @@ bool movePiece_player()
         moved_by_knock = true;
     }
 
-    // moving down with knock
+    // down --> knock
     else if (y[0] - 2 == y[1] && box[y[0]][x[0]] == 'S')
     {
         if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (box[y[0] - 1][x[0] - 1] == 'o' || box[y[0] - 1][x[0] - 1] == 'O') &&
@@ -758,7 +753,6 @@ bool movePiece_player()
         moved_by_knock = true;
     }
 
-    // king
     for (short int column = 0; column < 4; column++)
     {
         if (box[7][column] == 'x')
@@ -878,7 +872,6 @@ void computer()
 
     char temp_box3[8][4]{};
 
-    // removing '.'
     for (short int f{}; f < 8; f++)
     {
         for (short int g{}; g < 4; g++)
@@ -945,9 +938,9 @@ void computer()
     {
         if (knock_present)
         {
-            rand_num = rand() % 3;
+            rand_num = rand() % 4;
 
-            if (rand_num != 0)
+            if (rand_num == 2 || rand_num == 3)
             {
                 short int max_knocks{};
                 short int index{};
@@ -991,7 +984,7 @@ void computer()
                     moved = true;
                 }
             }
-            else if (rand_num == 0)
+            else if (rand_num == 0 || rand_num == 1)
             {
                 knocks_checking(&total_knocks);
                 rand_num = rand() % total_knocks;
@@ -2460,4 +2453,537 @@ int future_maxKnocks_player()
     }
 
     return max_knocks;
+}
+
+bool remove_playersKnock()
+{
+    bool removed_knock{false};
+
+    short int count{};
+
+    for (int a = 0; a < 8; a++)
+    {
+        for (int b = 0; b < 4; b++)
+        {
+            if ((a == 0 || a == 2 || a == 4) && b != 3 && (box[a + 1][b + 1] == 'o' || box[a + 1][b + 1] == 'O') &&
+                (box[a + 2][b + 1] == ' ' || box[a + 2][b + 1] == '.') && (box[a][b] == 'x' || box[a][b] == 'X'))
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a + 2;
+                x1_store[count] = b + 1;
+                count++;
+            }
+            if ((a == 0 || a == 2 || a == 4) && b != 0 && (box[a + 1][b] == 'o' || box[a + 1][b] == 'O') &&
+                (box[a + 2][b - 1] == ' ' || box[a + 2][b - 1] == '.') && (box[a][b] == 'x' || box[a][b] == 'X'))
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a + 2;
+                x1_store[count] = b - 1;
+                count++;
+            }
+            if ((a == 1 || a == 3 || a == 5) && b != 3 && (box[a + 1][b] == 'o' || box[a + 1][b] == 'O') &&
+                (box[a + 2][b + 1] == ' ' || box[a + 2][b + 1] == '.') && (box[a][b] == 'x' || box[a][b] == 'X'))
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a + 2;
+                x1_store[count] = b + 1;
+                count++;
+            }
+            if ((a == 1 || a == 3 || a == 5) && b != 0 && (box[a + 1][b - 1] == 'o' || box[a + 1][b - 1] == 'O') &&
+                (box[a + 2][b - 1] == ' ' || box[a + 2][b - 1] == '.') && (box[a][b] == 'x' || box[a][b] == 'X'))
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a + 2;
+                x1_store[count] = b + 1;
+                count++;
+            }
+
+            if ((a == 6 || a == 2 || a == 4) && b != 3 && (box[a - 1][b + 1] == 'o' || box[a - 1][b + 1] == 'O') &&
+                (box[a - 2][b + 1] == ' ' || box[a - 2][b + 1] == '.') && box[a][b] == 'X')
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a - 2;
+                x1_store[count] = b + 1;
+                count++;
+            }
+            if ((a == 6 || a == 2 || a == 4) && b != 0 && (box[a - 1][b] == 'o' || box[a - 1][b] == 'O') &&
+                (box[a - 2][b - 1] == ' ' || box[a - 2][b - 1] == '.') && box[a][b] == 'X')
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a - 2;
+                x1_store[count] = b - 1;
+                count++;
+            }
+            if ((a == 7 || a == 3 || a == 5) && b != 3 && (box[a - 1][b] == 'o' || box[a - 1][b] == 'O') &&
+                (box[a - 2][b + 1] == ' ' || box[a - 2][b + 1] == '.') && box[a][b] == 'X')
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a - 2;
+                x1_store[count] = b + 1;
+                count++;
+            }
+            if ((a == 7 || a == 3 || a == 5) && b != 0 && (box[a - 1][b - 1] == 'o' || box[a - 1][b - 1] == 'O') &&
+                (box[a - 2][b - 1] == ' ' || box[a - 2][b - 1] == '.') && box[a][b] == 'X')
+            {
+                temp_y[count] = a;
+                temp_x[count] = b;
+                y1_store[count] = a - 2;
+                x1_store[count] = b - 1;
+                count++;
+            }
+        }
+    }
+
+    if (count > 0)
+    {
+        auto rand_num{rand() % count};
+
+        y[0] = temp_y[rand_num];
+        x[0] = temp_x[rand_num];
+        y[1] = y1_store[rand_num];
+        x[1] = x1_store[rand_num];
+
+        count = 0;
+    }
+
+    // downwards rightwards... y0 --> 7
+    if (y[0] == 7 && y[1] == y[0] - 2 && x[1] == x[0] + 1 && x[0] != 3)
+    {
+        if (x[0] == 0)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0)
+                {
+                    if (box[y[0] - 1][x[0]] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0]] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] + 1] == 'O')
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X' &&
+                         ((box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X') || ((box[y[0] - 3][x[0]] == 'x' || box[y[0] - 3][x[0]] == 'X') && box[y[0] - 1][x[0] + 1] != ' ')) &&
+                         (box[y[0] - 1][x[0] + 1] != 'X' || (box[y[0] - 1][x[0] + 1] == 'X' && box[y[0] - 3][x[0]] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0]] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0]] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+        else if (x[0] == 1 || x[0] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0] - 1] != 'x' && box[y[0] - 3][x[0] - 1] != 'X' &&
+                    ((box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X') || ((box[y[0] - 3][x[0]] == 'x' || box[y[0] - 3][x[0]] == 'X') && box[y[0] - 1][x[0] - 1] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 1] != 'X' || (box[y[0] - 1][x[0] - 1] == 'X' && box[y[0] - 3][x[0]] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0]] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0]] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0]] == 'O')
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X' &&
+                         ((box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X') || ((box[y[0] - 3][x[0]] == 'x' || box[y[0] - 3][x[0]] == 'X') && box[y[0] - 1][x[0] + 1] != ' ')) &&
+                         (box[y[0] - 1][x[0] + 1] != 'X' || (box[y[0] - 1][x[0] + 1] == 'X' && box[y[0] - 3][x[0]] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0]] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0]] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+    }
+
+    // downwards leftwards... y0 --> 7
+    else if (y[0] == 7 && y[1] == y[0] - 2 && x[1] == x[0] - 1 && x[0] != 0)
+    {
+        if (x[0] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0] - 1] == ' ' && choice[0] == 0)
+                {
+                    if (box[y[0] - 1][x[0] - 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] - 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] - 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] - 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] - 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] - 1] == 'O')
+                {
+                    box[y[0]][x[0] - 1] = 'O';
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                         ((box[y[0] - 3][x[0] - 1] != 'x' && box[y[0] - 3][x[0] - 1] != 'X') || ((box[y[0] - 3][x[0] - 1] == 'x' || box[y[0] - 3][x[0] - 1] == 'X') && box[y[0] - 1][x[0]] != ' ')) &&
+                         (box[y[0] - 1][x[0]] != 'X' || (box[y[0] - 1][x[0]] == 'X' && box[y[0] - 3][x[0] - 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] - 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] - 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+        else if (x[0] == 2 || x[0] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0] - 1] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0] - 2] != 'x' && box[y[0] - 3][x[0] - 2] != 'X' &&
+                    ((box[y[0] - 3][x[0] - 1] != 'x' && box[y[0] - 3][x[0] - 1] != 'X') || ((box[y[0] - 3][x[0] - 1] == 'x' || box[y[0] - 3][x[0] - 1] == 'X') && box[y[0] - 1][x[0] - 2] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 2] != 'X' || (box[y[0] - 1][x[0] - 2] == 'X' && box[y[0] - 3][x[0] - 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] - 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] - 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] - 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] - 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] - 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] - 1] == 'O')
+                {
+                    box[y[0]][x[0] - 1] = 'O';
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                         ((box[y[0] - 3][x[0] - 1] != 'x' && box[y[0] - 3][x[0] - 1] != 'X') || ((box[y[0] - 3][x[0] - 1] == 'x' || box[y[0] - 3][x[0] - 1] == 'X') && box[y[0] - 1][x[0]] != ' ')) &&
+                         (box[y[0] - 1][x[0]] != 'X' || (box[y[0] - 1][x[0]] == 'X' && box[y[0] - 3][x[0] - 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] - 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] - 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+    }
+
+    // downwards rightwards... y0 --> 6
+    else if (y[0] == 6 && y[1] == y[0] - 2 && x[1] == x[0] + 1 && x[0] != 3)
+    {
+        if (x[0] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                    ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] - 1] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 1] != 'X' || (box[y[0] - 1][x[0] - 1] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] + 1] == 'O')
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2)
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+        else if (x[0] == 0 || x[0] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                    ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] - 1] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 1] != 'X' || (box[y[0] - 1][x[0] - 1] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] + 1] == 'O' && box[y[0] + 1][x[0] + 1] != 'x' && box[y[0] + 1][x[0] + 1] != 'X' &&
+                         ((box[y[0] - 1][x[0] + 2] != 'x' && box[y[0] - 1][x[0] + 2] != 'X') || ((box[y[0] - 1][x[0] + 2] == 'x' || box[y[0] - 1][x[0] + 2] == 'X') && box[y[0] + 1][x[0] + 1] != ' ')) &&
+                         (box[y[0] + 1][x[0] + 1] != 'X' || (box[y[0] + 1][x[0] + 1] == 'X' && box[y[0] - 1][x[0] + 2] != ' ')))
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0] + 2] != 'x' && box[y[0] - 3][x[0] + 2] != 'X' &&
+                         ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] + 2] != ' ')) &&
+                         (box[y[0] - 1][x[0] + 2] != 'X' || (box[y[0] - 1][x[0] + 2] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+    }
+
+    // downwards leftwards... y0 --> 6
+    else if (y[0] == 6 && y[1] == y[0] - 2 && x[1] == x[0] + 1 && x[0] != 3)
+    {
+        if (x[0] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                    ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] - 1] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 1] != 'X' || (box[y[0] - 1][x[0] - 1] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] + 1] == 'O')
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2)
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+        else if (x[0] == 0 || x[0] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (box[y[0] - 2][x[0]] == ' ' && choice[0] == 0 && box[y[0] - 3][x[0]] != 'x' && box[y[0] - 3][x[0]] != 'X' &&
+                    ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] - 1] != ' ')) &&
+                    (box[y[0] - 1][x[0] - 1] != 'X' || (box[y[0] - 1][x[0] - 1] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0]] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0]] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0]][x[0] + 1] == ' ' && choice[0] == 1 && box[y[0] - 1][x[0] + 1] == 'O' && box[y[0] + 1][x[0] + 1] != 'x' && box[y[0] + 1][x[0] + 1] != 'X' &&
+                         ((box[y[0] - 1][x[0] + 2] != 'x' && box[y[0] - 1][x[0] + 2] != 'X') || ((box[y[0] - 1][x[0] + 2] == 'x' || box[y[0] - 1][x[0] + 2] == 'X') && box[y[0] + 1][x[0] + 1] != ' ')) &&
+                         (box[y[0] + 1][x[0] + 1] != 'X' || (box[y[0] + 1][x[0] + 1] == 'X' && box[y[0] - 1][x[0] + 2] != ' ')))
+                {
+                    box[y[0]][x[0] + 1] = 'O';
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (box[y[0] - 2][x[0] + 1] == ' ' && choice[0] == 2 && box[y[0] - 3][x[0] + 2] != 'x' && box[y[0] - 3][x[0] + 2] != 'X' &&
+                         ((box[y[0] - 3][x[0] + 1] != 'x' && box[y[0] - 3][x[0] + 1] != 'X') || ((box[y[0] - 3][x[0] + 1] == 'x' || box[y[0] - 3][x[0] + 1] == 'X') && box[y[0] - 1][x[0] + 2] != ' ')) &&
+                         (box[y[0] - 1][x[0] + 2] != 'X' || (box[y[0] - 1][x[0] + 2] == 'X' && box[y[0] - 3][x[0] + 1] != ' ')))
+                {
+                    if (box[y[0] - 1][x[0] + 1] == 'O')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'O';
+                    }
+                    else if (box[y[0] - 1][x[0] + 1] == 'o')
+                    {
+                        box[y[0] - 2][x[0] + 1] = 'o';
+                    }
+
+                    box[y[0] - 1][x[0] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4);
+        }
+    }
+
+    return removed_knock;
 }
