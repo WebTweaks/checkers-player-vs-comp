@@ -10,7 +10,7 @@ char temp_box2[8][4]{};
 const unsigned short int max_length{20};
 char player_name[max_length]{"JOHN"};
 
-unsigned short int play_mode{2};
+unsigned short int play_mode{3};
 unsigned short int choice[2]{};
 unsigned short int y[4];
 unsigned short int x[4];
@@ -89,19 +89,10 @@ int main()
     std::cout << '\n';*/
     reset_board();
 
-    for (short int i = 0; i < 1; i++)
+    for (short int i = 0; i < 40; i++)
     {
-        // computer();
+        computer();
         // player();
-        remove_or_block_knock();
-        for (size_t i = 0; i < 8; i++)
-        {
-            for (size_t j = 0; j < 4; j++)
-            {
-                box[i][j] = temp_box1[i][j];
-            }
-        }
-        print_board();
     }
 
     std::cout << "\n        PROGRAM ENDS WELL" << std::endl;
@@ -134,14 +125,9 @@ void reset_board()
     {
         for (short int column{}; column < 4; column++)
         {
-            box[row][column] = ' ';
+            box[row][column] = 'o';
         }
     }
-
-    box[0][1] = 'x';
-    box[0][2] = 'x';
-    box[1][2] = 'o';
-    box[3][2] = 'O';
 }
 
 void print_board()
@@ -282,10 +268,10 @@ void player()
         y[0] = y[1];
         x[0] = x[1];
 
+        print_board();
         std::cout << "        -----------------------------------------" << std::endl;
         std::cout << "               CONSECUTIVE KNOCK AVAILABLE " << std::endl;
         std::cout << "        -----------------------------------------" << std::endl;
-        print_board();
 
         do
         {
@@ -957,6 +943,7 @@ void computer()
         {
             select_piece_comp();
             move_piece_comp('N');
+            moved = true;
         }
     }
 
@@ -1109,7 +1096,7 @@ void computer()
             short int max_knocks{};
             short int index{};
 
-            do
+            while (index < total_knocks)
             {
                 y[0] = temp_y[index];
                 x[0] = temp_x[index];
@@ -1129,11 +1116,11 @@ void computer()
                     }
 
                     selected = true;
+                    std::cout << "        knock_present... selected!" << "\n";
                 }
 
                 index++;
-
-            } while (index < total_knocks);
+            }
 
             if (selected)
             {
@@ -1146,12 +1133,14 @@ void computer()
                 }
 
                 moved = true;
+                std::cout << "        moved = true" << "\n";
             }
         }
 
         if (!moved)
         {
             bool removed_or_blocked_knock = remove_or_block_knock();
+
             if (removed_or_blocked_knock)
             {
                 for (short int s = 0; s < 8; s++)
@@ -1498,6 +1487,7 @@ void select_piece_comp()
     if (play_mode == 2 || play_mode == 3)
     {
         auto total_moves{total_unknock_moves()};
+        // std::cout << "total_moves: " << total_moves;
 
         if (total_moves == 0)
             temp_play_mode = 1;
@@ -1508,6 +1498,7 @@ void select_piece_comp()
             y[0] = temp_y[rand_num];
             x[0] = temp_x[rand_num];
         }
+        // std::cout << " y[0]:" << y[0] << " x[0]:" << x[0] << '\n';
     }
 
     int count{};
@@ -1601,7 +1592,7 @@ void select_piece_comp()
     }
 
     // downwards leftwards - even
-    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 0 && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
+    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && (box[y[0]][x[0]] == 'O' || box[y[0]][x[0]] == 'o') && box[y[0] - 1][x[0]] == ' ')
     {
         temp_y[count] = y[0] - 1;
         temp_x[count] = x[0];
@@ -1640,12 +1631,9 @@ void select_piece_comp()
         count++;
     }
 
-    if (count > 0)
-    {
-        short int rand_num = rand() % count;
-        y[1] = temp_y[rand_num];
-        x[1] = temp_x[rand_num];
-    }
+    short int rand_num = rand() % count;
+    y[1] = temp_y[rand_num];
+    x[1] = temp_x[rand_num];
 
     // std::cout << "\n        y[0]:" << y[0] << " x[0]:" << x[0] << " y[1]:" << y[1] << " x[1]:" << x[1] << '\n';
 }
@@ -1865,11 +1853,13 @@ void move_piece_comp(char knock)
         }
     }
 
-    if (!moved)
-    {
-        std::cout << "\n        WARNING!!! COMP PIECE NOT MOVED!" << std::endl;
-        std::cout << "\n        y[0]:" << y[0] << " x[0]:" << x[0] << " y[1]:" << y[1] << " x[1]:" << x[1] << '\n';
-    }
+    // std::cout << "\n        WARNING!!! COMP PIECE NOT MOVED!" << std::endl;
+    // std::cout << "\n        y[0]:" << y[0] << " x[0]:" << x[0] << " y[1]:" << y[1] << " x[1]:" << x[1] << '\n';
+}
+
+void best_move()
+{
+    
 }
 
 bool future_knock_byPlayer(char with_variables)
@@ -1938,7 +1928,7 @@ bool future_knock_byPlayer(char with_variables)
             }
 
             // leftwards - even
-            else if ((temp_y[18] == 6 || temp_y[18] == 4 || temp_y[18] == 2) && temp_x[18] != 0 && (temp_box1[temp_y[18]][temp_x[18]] == 'O' || temp_box1[temp_y[18]][temp_x[18]] == 'o') && temp_box1[temp_y[19]][temp_x[19]] == ' ' && temp_x[18] == temp_x[19])
+            else if ((temp_y[18] == 6 || temp_y[18] == 4 || temp_y[18] == 2) && (temp_box1[temp_y[18]][temp_x[18]] == 'O' || temp_box1[temp_y[18]][temp_x[18]] == 'o') && temp_box1[temp_y[19]][temp_x[19]] == ' ' && temp_x[18] == temp_x[19])
             {
                 if (temp_box1[temp_y[18]][temp_x[18]] == 'O')
                 {
@@ -1983,6 +1973,14 @@ bool future_knock_byPlayer(char with_variables)
                 temp_box1[temp_y[19]][temp_x[19]] = 'O';
                 temp_box1[temp_y[18]][temp_x[18]] = '.';
             }
+        }
+    }
+
+    for (short int t = 0; t < 4; t++)
+    {
+        if (temp_box1[0][t] == 'o')
+        {
+            temp_box1[0][t] = 'O';
         }
     }
 
@@ -4168,8 +4166,8 @@ bool remove_players_knock()
         }
     }
 
-    if (removed_knock)
-        std::cout << "\n        players knock removed\n";
+    //if (removed_knock)
+    //    std::cout << "\n        players knock removed\n";
 
     return removed_knock;
 }
@@ -4631,8 +4629,8 @@ bool block_players_knock()
         }
     }
 
-    if (blocked_knock)
-        std::cout << "\n        players knock blocked\n";
+    //if (blocked_knock)
+    //    std::cout << "\n        players knock blocked\n";
 
     return blocked_knock;
 }
@@ -4824,8 +4822,8 @@ bool remove_or_block_knock()
         }
     }
 
-    if (removed_or_blocked_knock)
-        std::cout << "\n        removed/blocked knock\n";
+    //if (removed_or_blocked_knock)
+    //    std::cout << "\n        removed/blocked knock\n";
 
     return removed_or_blocked_knock;
 }
