@@ -1,25 +1,34 @@
+
+
+/*
+    AUTHOR: JOHN KALOKI
+    ORIGIN: KENYA
+    EMAIL:  me.johnkaloki@gmail.com
+*/
+
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <limits>
+#include <cmath>
 
 char board[8][4]{};
 char temp_board1[8][4]{};
 char temp_board2[8][4]{};
 char temp_board3[8][4]{};
-
-const unsigned short int max_length{20};
-char player_name[max_length]{};
-
+std::string player_name{};
 short int play_mode{};
 short int choice[2]{};
-short int y[4];
-short int x[4];
+short int y[4]{};
+short int x[4]{};
 bool moved_by_knock{false};
 short int temp_y[30]{};
 short int temp_x[30]{};
 short int y1_store[30]{};
 short int x1_store[30]{};
+short int s{};
+short int t{};
+short int draw_count[5]{};
 
 void reset_board();
 void print_board();
@@ -35,7 +44,7 @@ bool knocks_checking(int *);
 short int total_compMoves();
 short int total_unknock_moves();
 void select_piece_comp();
-void move_piece_comp(char);
+void move_piece_comp(char knock);
 void best_move();
 short int triple_play();
 bool future_playersKnock();
@@ -47,29 +56,35 @@ bool playersKnock_block();
 bool knock_antidote();
 bool x_chase();
 
-short int check_winner();
+short int check_winner(bool count);
 void print_winner(int winner);
+void print_heart();
 
 int main()
 {
     srand(time(0));
 
     bool end{false};
+    char play_again{};
+    short int winner{};
+    const unsigned short int max_length{20};
 
-    std::cout << '\n';
-    std::cout << "        Enter your name dear: ";
+    std::cout << "\n        Enter your name dear: ";
 
-    char temp_name[max_length]{};
-    std::cin.getline(temp_name, max_length);
+    char temp_name1[max_length]{};
+    char temp_name2[max_length]{};
 
-    for (short int s = 0; s < std::size(temp_name); ++s)
+    std::cin.getline(temp_name1, max_length);
+    for (s = 0; s < std::size(temp_name1); ++s)
     {
-        if (temp_name[s] == ' ')
+        if (temp_name1[s] == ' ')
             break;
 
-        temp_name[s] = std::toupper(temp_name[s]);
-        player_name[s] = temp_name[s];
+        temp_name1[s] = std::toupper(temp_name1[s]);
+        temp_name2[s] = temp_name1[s];
     }
+
+    player_name = temp_name2;
 
     while (!end)
     {
@@ -82,7 +97,7 @@ int main()
         std::cout << "        --------------------|--------------------" << std::endl;
         std::cout << std::endl;
 
-        while (play_mode != 1 && play_mode != 2 && play_mode != 3)
+        do
         {
             std::cout << "                     Enter mode ID: ";
             if (!(std::cin >> play_mode))
@@ -91,44 +106,47 @@ int main()
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
-        }
+
+        } while (play_mode != 1 && play_mode != 2 && play_mode != 3);
 
         std::cout << '\n';
-        char play_again{};
-        short int winner{};
-
         reset_board();
-        while (winner == 0)
+
+        do
         {
             computer();
-            winner = check_winner();
+            winner = check_winner(false);
             if (winner != 0)
                 break;
 
             player();
-            winner = check_winner();
-        }
+            winner = check_winner(true);
+
+        } while (winner == 0);
 
         print_winner(winner);
 
-        std::cout << "        " << player_name << " would you like to play again? (Y/N) ";
+        std::cout << "        Would You Like To Play Again? (Y/N) ";
         std::cin >> play_again;
 
-        if (play_again == 'y' && play_again == 'Y')
+        if (play_again == 'y' || play_again == 'Y')
             end = false;
-        else end = true;
+        else
+            end = true;
     }
 
-    std::cout << "\n        Thank You " << player_name << " for Playing!" << std::endl;
+    std::cout << "        Thank You " << player_name << " For Playing!" << std::endl;
+    print_heart();
+
     std::cout << std::endl;
     return 0;
 }
 
 void reset_board()
 {
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             board[s][t] = ' ';
             temp_board1[s][t] = ' ';
@@ -138,25 +156,25 @@ void reset_board()
     }
 
     // player
-    for (short int s = 0; s < 3; s++)
+    for (s = 0; s < 3; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             board[s][t] = ' ';
         }
     }
 
     // comp
-    for (short int s = 5; s <= 7; s++)
+    for (s = 5; s <= 7; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             board[s][t] = ' ';
         }
     }
-    board[1][1] = 'O';
-    board[2][1] = 'X';
-    board[4][1] = 'X';
+
+    board[1][1] = 'X';
+    board[0][0] = 'O';
 }
 
 void print_board()
@@ -195,9 +213,9 @@ void player()
 
     char reselect_board[8][4]{};
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             reselect_board[s][t] = board[s][t];
             if (board[s][t] == '.')
@@ -205,6 +223,21 @@ void player()
                 board[s][t] = ' ';
             }
         }
+    }
+
+    switch (draw_count[4])
+    {
+    case 6:
+        std::cout << "        Six More Non-Knock Moves To Draw!!!" << std::endl;
+        break;
+    case 9:
+        std::cout << "        Three More Non-Knock Moves To Draw!!!" << std::endl;
+        break;
+    case 11:
+        std::cout << "        One More Non-Knock Move To Draw!!!" << std::endl;
+        break;
+    default:
+        break;
     }
 
     bool moved{false};
@@ -273,9 +306,9 @@ void player()
                     if (choice[1] == 00)
                     {
                         selected = false;
-                        for (short int s = 0; s < 8; s++)
+                        for (s = 0; s < 8; s++)
                         {
-                            for (short int t = 0; t < 4; t++)
+                            for (t = 0; t < 4; t++)
                             {
                                 board[s][t] = reselect_board[s][t];
                             }
@@ -306,9 +339,9 @@ void player()
             else
             {
                 print_board();
-                for (short int s = 0; s < 8; s++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int t = 0; t < 4; t++)
+                    for (t = 0; t < 4; t++)
                     {
                         if (board[s][t] == '.')
                         {
@@ -416,6 +449,7 @@ bool choice_processing(int index)
             {
                 x[index] = 3;
             }
+
             y[index] = y[index] - 1;
             invalid_choice = false;
         }
@@ -452,7 +486,6 @@ bool select_piece_player()
 
     if (board[y[0]][x[0]] == 'x' || board[y[0]][x[0]] == 'X')
     {
-        // moving up without knock
         if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && (board[y[0] + 1][x[0]] == ' ' || board[y[0] + 1][x[0]] == '.'))
         {
             if (board[y[0]][x[0]] == 'x')
@@ -505,7 +538,6 @@ bool select_piece_player()
 
             selected = true;
         }
-        // moving up with knock
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (board[y[0] + 1][x[0] + 1] == 'o' || board[y[0] + 1][x[0] + 1] == 'O') &&
                  (board[y[0] + 2][x[0] + 1] == ' ' || board[y[0] + 2][x[0] + 1] == '.'))
         {
@@ -565,7 +597,6 @@ bool select_piece_player()
     }
     if (board[y[0]][x[0]] == 'X' && !selected)
     {
-        // moving down without knock
         if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && (board[y[0] - 1][x[0]] == ' ' || board[y[0] - 1][x[0]] == '.'))
         {
             board[y[0]][x[0]] = 'S';
@@ -586,8 +617,6 @@ bool select_piece_player()
             board[y[0]][x[0]] = 'S';
             selected = true;
         }
-
-        // moving down with knock
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (board[y[0] - 1][x[0] + 1] == 'o' || board[y[0] - 1][x[0] + 1] == 'O') &&
                  (board[y[0] - 2][x[0] + 1] == ' ' || board[y[0] - 2][x[0] + 1] == '.'))
         {
@@ -634,6 +663,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             moved = true;
         }
@@ -649,6 +679,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             moved = true;
         }
@@ -664,6 +695,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             moved = true;
         }
@@ -679,6 +711,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             moved = true;
         }
@@ -735,6 +768,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0] - 1] = '.';
             moved = true;
@@ -751,6 +785,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0]] = '.';
             moved = true;
@@ -767,6 +802,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0]] = '.';
             moved = true;
@@ -783,6 +819,7 @@ bool move_piece_player()
             {
                 board[y[1]][x[1]] = 'x';
             }
+
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0] + 1] = '.';
             moved = true;
@@ -830,11 +867,11 @@ bool move_piece_player()
         moved_by_knock = true;
     }
 
-    for (short int column = 0; column < 4; column++)
+    for (t = 0; t < 4; t++)
     {
-        if (board[7][column] == 'x')
+        if (board[7][t] == 'x')
         {
-            board[7][column] = 'X';
+            board[7][t] = 'X';
         }
     }
 
@@ -947,19 +984,17 @@ void computer()
     std::cout << "                      COMP'S TURN" << std::endl;
     std::cout << "        ========================================= ";
 
-    for (short int f{}; f < 8; f++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int g{}; g < 4; g++)
+        for (t = 0; t < 4; t++)
         {
-            if (board[f][g] == '.')
+            if (board[s][t] == '.')
             {
-                board[f][g] = ' ';
+                board[s][t] = ' ';
             }
         }
     }
 
-    int total_knocks{};
-    short int rand_num{};
     bool selected{false};
     bool moved{false};
     bool future_knock{false};
@@ -967,6 +1002,13 @@ void computer()
     bool blocked_knock{false};
     bool chased{false};
     char temp_board[8][4]{};
+
+    int total_knocks{};
+    short int rand_num{};
+    short int max_knocks{};
+    short int index{};
+    short total_comp_knocks{};
+    short total_player_knocks{};
 
     bool knock_present = knocks_checking(&total_knocks);
 
@@ -1018,27 +1060,27 @@ void computer()
         if (knock_present)
         {
             rand_num = rand() % 4;
-            if (rand_num == 1 || rand_num == 3)
+            if (rand_num == 0)
             {
-                short int max_knocks{};
-                short int index{};
+                max_knocks = 0;
+                index = 0;
 
                 do
                 {
                     y[0] = temp_y[index];
                     x[0] = temp_x[index];
 
-                    auto total_comp_knocks = maxKnocks_comp();
-                    auto total_player_knocks = maxKnocks_player();
+                    total_comp_knocks = maxKnocks_comp();
+                    total_player_knocks = maxKnocks_player();
 
                     if (total_comp_knocks > max_knocks && total_player_knocks <= total_comp_knocks)
                     {
                         max_knocks = total_comp_knocks;
-                        for (short int c = 0; c < 8; c++)
+                        for (s = 0; s < 8; s++)
                         {
-                            for (short int d = 0; d < 4; d++)
+                            for (t = 0; t < 4; t++)
                             {
-                                temp_board[c][d] = temp_board2[c][d];
+                                temp_board[s][t] = temp_board2[s][t];
                             }
                         }
 
@@ -1051,18 +1093,18 @@ void computer()
 
                 if (selected)
                 {
-                    for (short int c = 0; c < 8; c++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int d = 0; d < 4; d++)
+                        for (t = 0; t < 4; t++)
                         {
-                            board[c][d] = temp_board[c][d];
+                            board[s][t] = temp_board[s][t];
                         }
                     }
 
                     moved = true;
                 }
             }
-            else if (rand_num == 0 || rand_num == 2)
+            else if (rand_num == 1 || rand_num == 2 || rand_num == 3)
             {
                 knocks_checking(&total_knocks);
                 rand_num = rand() % total_knocks;
@@ -1099,9 +1141,9 @@ void computer()
                 if (blocked_knock)
                 {
                     moved = true;
-                    for (short int s = 0; s < 8; s++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int t = 0; t < 4; t++)
+                        for (t = 0; t < 4; t++)
                         {
                             board[s][t] = temp_board1[s][t];
                         }
@@ -1111,9 +1153,9 @@ void computer()
             else if (removed_knock)
             {
                 moved = true;
-                for (short int s = 0; s < 8; s++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int t = 0; t < 4; t++)
+                    for (t = 0; t < 4; t++)
                     {
                         board[s][t] = temp_board1[s][t];
                     }
@@ -1132,11 +1174,11 @@ void computer()
 
                     if (!future_knock)
                     {
-                        for (short int c = 0; c < 8; c++)
+                        for (s = 0; s < 8; s++)
                         {
-                            for (short int d = 0; d < 4; d++)
+                            for (t = 0; t < 4; t++)
                             {
-                                board[c][d] = temp_board1[c][d];
+                                board[s][t] = temp_board1[s][t];
                             }
                         }
 
@@ -1161,25 +1203,25 @@ void computer()
     {
         if (knock_present)
         {
-            short int max_knocks{};
-            short int index{};
+            max_knocks = 0;
+            index = 0;
 
             while (index < total_knocks)
             {
                 y[0] = temp_y[index];
                 x[0] = temp_x[index];
 
-                auto total_comp_knocks = maxKnocks_comp();
-                auto total_player_knocks = maxKnocks_player();
+                total_comp_knocks = maxKnocks_comp();
+                total_player_knocks = maxKnocks_player();
 
                 if (total_comp_knocks > max_knocks && total_player_knocks <= total_comp_knocks)
                 {
                     max_knocks = total_comp_knocks;
-                    for (short int c = 0; c < 8; c++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int d = 0; d < 4; d++)
+                        for (t = 0; t < 4; t++)
                         {
-                            temp_board[c][d] = temp_board2[c][d];
+                            temp_board[s][t] = temp_board2[s][t];
                         }
                     }
 
@@ -1191,11 +1233,11 @@ void computer()
 
             if (selected)
             {
-                for (short int c = 0; c < 8; c++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int d = 0; d < 4; d++)
+                    for (t = 0; t < 4; t++)
                     {
-                        board[c][d] = temp_board[c][d];
+                        board[s][t] = temp_board[s][t];
                     }
                 }
 
@@ -1218,84 +1260,84 @@ bool knocks_checking(int *total_knocks)
     bool knock_present{false};
     *total_knocks = 0;
 
-    for (short int q = 0; q <= 7; q++)
+    for (s = 0; s <= 7; s++)
     {
-        for (short int r = 0; r < 4; r++)
+        for (t = 0; t < 4; t++)
         {
-            // checking upwards
+            // ^^^
 
-            if ((q == 0 || q == 2 || q == 4) && r != 3 && (board[q + 1][r + 1] == 'x' || board[q + 1][r + 1] == 'X') &&
-                (board[q + 2][r + 1] == ' ' || board[q + 2][r + 1] == '.') && board[q][r] == 'O')
+            if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'x' || board[s + 1][t + 1] == 'X') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && board[s][t] == 'O')
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q + 2;
-                x1_store[*total_knocks] = r + 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s + 2;
+                x1_store[*total_knocks] = t + 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 0 || q == 2 || q == 4) && r != 0 && (board[q + 1][r] == 'x' || board[q + 1][r] == 'X') &&
-                (board[q + 2][r - 1] == ' ' || board[q + 2][r - 1] == '.') && board[q][r] == 'O')
+            if ((s == 0 || s == 2 || s == 4) && t != 0 && (board[s + 1][t] == 'x' || board[s + 1][t] == 'X') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && board[s][t] == 'O')
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q + 2;
-                x1_store[*total_knocks] = r - 1; // *x1_store[*total_knocks] = r = 1;*  expensive error
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s + 2;
+                x1_store[*total_knocks] = t - 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 1 || q == 3 || q == 5) && r != 3 && (board[q + 1][r] == 'x' || board[q + 1][r] == 'X') &&
-                (board[q + 2][r + 1] == ' ' || board[q + 2][r + 1] == '.') && board[q][r] == 'O')
+            if ((s == 1 || s == 3 || s == 5) && t != 3 && (board[s + 1][t] == 'x' || board[s + 1][t] == 'X') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && board[s][t] == 'O')
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q + 2;
-                x1_store[*total_knocks] = r + 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s + 2;
+                x1_store[*total_knocks] = t + 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 1 || q == 3 || q == 5) && r != 0 && (board[q + 1][r - 1] == 'x' || board[q + 1][r - 1] == 'X') &&
-                (board[q + 2][r - 1] == ' ' || board[q + 2][r - 1] == '.') && board[q][r] == 'O')
+            if ((s == 1 || s == 3 || s == 5) && t != 0 && (board[s + 1][t - 1] == 'x' || board[s + 1][t - 1] == 'X') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && board[s][t] == 'O')
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q + 2;
-                x1_store[*total_knocks] = r - 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s + 2;
+                x1_store[*total_knocks] = t - 1;
                 *total_knocks = *total_knocks + 1;
             }
-            // checking downwards
+            // vv
 
-            if ((q == 6 || q == 2 || q == 4) && r != 3 && (board[q - 1][r + 1] == 'x' || board[q - 1][r + 1] == 'X') &&
-                (board[q - 2][r + 1] == ' ' || board[q - 2][r + 1] == '.') && (board[q][r] == 'o' || board[q][r] == 'O'))
+            if ((s == 6 || s == 2 || s == 4) && t != 3 && (board[s - 1][t + 1] == 'x' || board[s - 1][t + 1] == 'X') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && (board[s][t] == 'o' || board[s][t] == 'O'))
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q - 2;
-                x1_store[*total_knocks] = r + 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s - 2;
+                x1_store[*total_knocks] = t + 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 6 || q == 2 || q == 4) && r != 0 && (board[q - 1][r] == 'x' || board[q - 1][r] == 'X') &&
-                (board[q - 2][r - 1] == ' ' || board[q - 2][r - 1] == '.') && (board[q][r] == 'o' || board[q][r] == 'O'))
+            if ((s == 6 || s == 2 || s == 4) && t != 0 && (board[s - 1][t] == 'x' || board[s - 1][t] == 'X') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && (board[s][t] == 'o' || board[s][t] == 'O'))
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q - 2;
-                x1_store[*total_knocks] = r - 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s - 2;
+                x1_store[*total_knocks] = t - 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 7 || q == 3 || q == 5) && r != 3 && (board[q - 1][r] == 'x' || board[q - 1][r] == 'X') &&
-                (board[q - 2][r + 1] == ' ' || board[q - 2][r + 1] == '.') && (board[q][r] == 'o' || board[q][r] == 'O'))
+            if ((s == 7 || s == 3 || s == 5) && t != 3 && (board[s - 1][t] == 'x' || board[s - 1][t] == 'X') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && (board[s][t] == 'o' || board[s][t] == 'O'))
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q - 2;
-                x1_store[*total_knocks] = r + 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s - 2;
+                x1_store[*total_knocks] = t + 1;
                 *total_knocks = *total_knocks + 1;
             }
-            if ((q == 7 || q == 3 || q == 5) && r != 0 && (board[q - 1][r - 1] == 'x' || board[q - 1][r - 1] == 'X') &&
-                (board[q - 2][r - 1] == ' ' || board[q - 2][r - 1] == '.') && (board[q][r] == 'o' || board[q][r] == 'O'))
+            if ((s == 7 || s == 3 || s == 5) && t != 0 && (board[s - 1][t - 1] == 'x' || board[s - 1][t - 1] == 'X') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && (board[s][t] == 'o' || board[s][t] == 'O'))
             {
-                temp_y[*total_knocks] = q;
-                temp_x[*total_knocks] = r;
-                y1_store[*total_knocks] = q - 2;
-                x1_store[*total_knocks] = r - 1;
+                temp_y[*total_knocks] = s;
+                temp_x[*total_knocks] = t;
+                y1_store[*total_knocks] = s - 2;
+                x1_store[*total_knocks] = t - 1;
                 *total_knocks = *total_knocks + 1;
             }
         }
@@ -1311,9 +1353,9 @@ short int total_compMoves()
 {
     int count{};
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             // downwards rightwards - odd
             if ((s == 7 || s == 5 || s == 3 || s == 1) && (board[s][t] == 'O' || board[s][t] == 'o') && board[s - 1][t] == ' ')
@@ -1372,9 +1414,9 @@ short int total_unknock_moves()
 {
     short int count{};
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             // upwards rightwards
             if ((s == 0 || s == 2 || s == 4) && t != 3 && board[s + 1][t + 1] == ' ' && board[s + 2][t + 1] != 'X' &&
@@ -1561,7 +1603,7 @@ void select_piece_comp()
     {
         y[0] = rand() % 8;
 
-        for (short int w = 0; w < 500; w++)
+        for (s = 0; s < 500; s++)
         {
             x[0] = rand() % 4;
             choice[0] = rand() % 8;
@@ -1687,16 +1729,10 @@ void select_piece_comp()
     short int rand_num = rand() % count;
     y[1] = temp_y[rand_num];
     x[1] = temp_x[rand_num];
-
-    // std::cout << "\n        y[0]:" << y[0] << " x[0]:" << x[0] << " y[1]:" << y[1] << " x[1]:" << x[1] << '\n';
 }
 
 void move_piece_comp(char knock)
 {
-    bool moved{false};
-
-    // moving up without knock
-
     if (y[0] + 1 == y[1] && knock == 'N' && board[y[0]][x[0]] == 'O')
     {
         if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] != 3 &&
@@ -1704,30 +1740,24 @@ void move_piece_comp(char knock)
         {
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] && board[y[1]][x[1]] == ' ')
         {
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && board[y[1]][x[1]] == ' ' && (x[0] == x[1] || x[0] - 1 == x[1]))
         {
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] == 0 && x[0] == x[1] &&
                  board[y[1]][x[1]] == ' ')
         {
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
     }
-
-    // moving down without knock
 
     else if (y[0] - 1 == y[1] && knock == 'N' && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o'))
     {
@@ -1743,7 +1773,6 @@ void move_piece_comp(char knock)
             }
 
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 2 || y[0] == 4 || y[0] == 6) && x[0] == 3 && x[0] == x[1] && board[y[1]][x[1]] == ' ')
         {
@@ -1757,7 +1786,6 @@ void move_piece_comp(char knock)
             }
 
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] != 0 && (x[0] == x[1] || x[0] - 1 == x[1]) && board[y[1]][x[1]] == ' ')
         {
@@ -1771,7 +1799,6 @@ void move_piece_comp(char knock)
             }
 
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5 || y[0] == 7) && x[0] == 0 && x[0] == x[1] && board[y[1]][x[1]] == ' ')
         {
@@ -1785,12 +1812,8 @@ void move_piece_comp(char knock)
             }
 
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
     }
-
-    // moving up with knock
-
     else if (y[0] + 2 == y[1] && board[y[0]][x[0]] == 'O' && knock == 'Y')
     {
         if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (board[y[0] + 1][x[0] - 1] == 'x' || board[y[0] + 1][x[0] - 1] == 'X') &&
@@ -1799,7 +1822,6 @@ void move_piece_comp(char knock)
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0] - 1] = '.';
-            moved = true;
         }
         else if ((y[0] == 1 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (board[y[0] + 1][x[0]] == 'x' || board[y[0] + 1][x[0]] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
@@ -1807,7 +1829,6 @@ void move_piece_comp(char knock)
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (board[y[0] + 1][x[0]] == 'x' || board[y[0] + 1][x[0]] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
@@ -1815,7 +1836,6 @@ void move_piece_comp(char knock)
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 0 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (board[y[0] + 1][x[0] + 1] == 'x' || board[y[0] + 1][x[0] + 1] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
@@ -1823,12 +1843,8 @@ void move_piece_comp(char knock)
             board[y[1]][x[1]] = 'O';
             board[y[0]][x[0]] = '.';
             board[y[0] + 1][x[0] + 1] = '.';
-            moved = true;
         }
     }
-
-    // moving down with knock
-
     else if (y[0] - 2 == y[1] && knock == 'Y' && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o'))
     {
         if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 0 && (board[y[0] - 1][x[0] - 1] == 'x' || board[y[0] - 1][x[0] - 1] == 'X') &&
@@ -1845,7 +1861,6 @@ void move_piece_comp(char knock)
 
             board[y[0] - 1][x[0] - 1] = '.';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 7 || y[0] == 3 || y[0] == 5) && x[0] != 3 && (board[y[0] - 1][x[0]] == 'x' || board[y[0] - 1][x[0]] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
@@ -1861,7 +1876,6 @@ void move_piece_comp(char knock)
 
             board[y[0] - 1][x[0]] = '.';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 0 && (board[y[0] - 1][x[0]] == 'x' || board[y[0] - 1][x[0]] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] - 1 == x[1])
@@ -1877,7 +1891,6 @@ void move_piece_comp(char knock)
 
             board[y[0] - 1][x[0]] = '.';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
         else if ((y[0] == 6 || y[0] == 2 || y[0] == 4) && x[0] != 3 && (board[y[0] - 1][x[0] + 1] == 'x' || board[y[0] - 1][x[0] + 1] == 'X') &&
                  board[y[1]][x[1]] == ' ' && x[0] + 1 == x[1])
@@ -1893,21 +1906,16 @@ void move_piece_comp(char knock)
 
             board[y[0] - 1][x[0] + 1] = '.';
             board[y[0]][x[0]] = '.';
-            moved = true;
         }
     }
 
-    // king
-    for (short int i = 0; i < 4; i++)
+    for (s = 0; s < 4; s++)
     {
-        if (board[0][i] == 'o')
+        if (board[0][s] == 'o')
         {
-            board[0][i] = 'O';
+            board[0][s] = 'O';
         }
     }
-
-    // std::cout << "\n        WARNING!!! COMP PIECE NOT MOVED!" << std::endl;
-    // std::cout << "\n        y[0]:" << y[0] << " x[0]:" << x[0] << " y[1]:" << y[1] << " x[1]:" << x[1] << '\n';
 }
 
 void best_move()
@@ -1920,9 +1928,9 @@ void best_move()
     std::cout << "\n        knock_chosen: " << std::boolalpha << knock_chosen;
     if (knock_chosen)
     {
-        for (short int s = 0; s < 8; s++)
+        for (s = 0; s < 8; s++)
         {
-            for (short int t = 0; t < 4; t++)
+            for (t = 0; t < 4; t++)
             {
                 final_board[s][t] = temp_board1[s][t];
             }
@@ -2028,9 +2036,9 @@ void best_move()
             total_comp_knocks[1] = triple_play();
             if (total_comp_knocks[1] > total_comp_knocks[0])
             {
-                for (short int s = 0; s < 8; s++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int t = 0; t < 4; t++)
+                    for (t = 0; t < 4; t++)
                     {
                         final_board[s][t] = temp_board2[s][t];
                     }
@@ -2057,9 +2065,9 @@ void best_move()
                 total_comp_knocks[0] = triple_play();
                 if (total_comp_knocks[0] > total_comp_knocks[1])
                 {
-                    for (short int s = 0; s < 8; s++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int t = 0; t < 4; t++)
+                        for (t = 0; t < 4; t++)
                         {
                             final_board[s][t] = temp_board2[s][t];
                             target_chosen = true;
@@ -2080,9 +2088,9 @@ void best_move()
                 total_comp_knocks[1] = triple_play();
                 if (total_comp_knocks[1] > total_comp_knocks[0])
                 {
-                    for (short int s = 0; s < 8; s++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int t = 0; t < 4; t++)
+                        for (t = 0; t < 4; t++)
                         {
                             final_board[s][t] = temp_board2[s][t];
                             target_chosen = true;
@@ -2091,6 +2099,16 @@ void best_move()
                 }
 
                 count++;
+            }
+        }
+        else
+        {
+            for (s = 0; s < 4; s++)
+            {
+                if (board[0][s] == 'o')
+                {
+                    board[0][s] = 'O';
+                }
             }
         }
 
@@ -2112,9 +2130,9 @@ void best_move()
 
                 if (!future_knock)
                 {
-                    for (short int s = 0; s < 8; s++)
+                    for (s = 0; s < 8; s++)
                     {
-                        for (short int t = 0; t < 4; t++)
+                        for (t = 0; t < 4; t++)
                         {
                             board[s][t] = temp_board1[s][t];
                         }
@@ -2142,11 +2160,15 @@ void best_move()
 
     if (target_chosen)
     {
-        for (short int s = 0; s < 8; s++)
+        for (s = 0; s < 8; s++)
         {
-            for (short int t = 0; t < 4; t++)
+            for (t = 0; t < 4; t++)
             {
                 board[s][t] = final_board[s][t];
+                if (board[0][t] == 'o')
+                {
+                    board[0][t] = 'O';
+                }
             }
         }
     }
@@ -2159,9 +2181,9 @@ short int triple_play()
     bool knock_available{false};
     future_playersKnock();
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             temp_board2[s][t] = temp_board1[s][t];
         }
@@ -2178,11 +2200,11 @@ short int triple_play()
         {
             for (temp_x[28] = 0; temp_x[28] < 4; temp_x[28]++)
             {
-                for (short int m{}; m < 8; m++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int n{}; n < 4; n++)
+                    for (t = 0; t < 4; t++)
                     {
-                        temp_board1[m][n] = temp_board3[m][n];
+                        temp_board1[s][t] = temp_board3[s][t];
                     }
                 }
 
@@ -2314,7 +2336,7 @@ short int triple_play()
 
                                     total_comp_knocks = (total_knocks > total_comp_knocks) ? total_knocks : total_comp_knocks;
 
-                                    for (short int t = 0; t < 4; t++)
+                                    for (t = 0; t < 4; t++)
                                     {
                                         if (temp_board1[0][t] == 'o')
                                         {
@@ -2332,11 +2354,11 @@ short int triple_play()
                             temp_y[28] = initial_Y;
                             temp_x[28] = initial_X;
 
-                            for (short int m{}; m < 8; m++)
+                            for (s = 0; s < 8; s++)
                             {
-                                for (short int n{}; n < 4; n++)
+                                for (t = 0; t < 4; t++)
                                 {
-                                    temp_board1[m][n] = temp_board3[m][n];
+                                    temp_board1[s][t] = temp_board3[s][t];
                                 }
                             }
 
@@ -2356,11 +2378,11 @@ short int triple_play()
 }
 bool future_playersKnock()
 {
-    for (int c = 0; c < 8; c++)
+    for (s = 0; s < 8; s++)
     {
-        for (int d = 0; d < 4; d++)
+        for (t = 0; t < 4; t++)
         {
-            temp_board1[c][d] = board[c][d];
+            temp_board1[s][t] = board[s][t];
         }
     }
 
@@ -2369,10 +2391,8 @@ bool future_playersKnock()
     temp_y[29] = y[1];
     temp_x[29] = x[1];
 
-    // MOVING DOWNWARDS WITHOUT KNOCK
     if (temp_y[28] - 1 == temp_y[29])
     {
-        // rightwards - odd
         if ((temp_y[28] == 7 || temp_y[28] == 5 || temp_y[28] == 3 || temp_y[28] == 1) && (temp_board1[temp_y[28]][temp_x[28]] == 'O' || temp_board1[temp_y[28]][temp_x[28]] == 'o') && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] == temp_x[29])
         {
             if (temp_board1[temp_y[28]][temp_x[28]] == 'O')
@@ -2386,8 +2406,6 @@ bool future_playersKnock()
 
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // leftwards - odd
         else if ((temp_y[28] == 7 || temp_y[28] == 5 || temp_y[28] == 3 || temp_y[28] == 1) && temp_x[28] != 0 && (temp_board1[temp_y[28]][temp_x[28]] == 'O' || temp_board1[temp_y[28]][temp_x[28]] == 'o') && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] - 1 == temp_x[29])
         {
             if (temp_board1[temp_y[28]][temp_x[28]] == 'O')
@@ -2401,8 +2419,6 @@ bool future_playersKnock()
 
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // rightwards - even
         else if ((temp_y[28] == 6 || temp_y[28] == 4 || temp_y[28] == 2) && temp_x[28] != 3 && (temp_board1[temp_y[28]][temp_x[28]] == 'O' || temp_board1[temp_y[28]][temp_x[28]] == 'o') && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] + 1 == temp_x[29])
         {
             if (temp_board1[temp_y[28]][temp_x[28]] == 'O')
@@ -2416,8 +2432,6 @@ bool future_playersKnock()
 
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // leftwards - even
         else if ((temp_y[28] == 6 || temp_y[28] == 4 || temp_y[28] == 2) && (temp_board1[temp_y[28]][temp_x[28]] == 'O' || temp_board1[temp_y[28]][temp_x[28]] == 'o') && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] == temp_x[29])
         {
             if (temp_board1[temp_y[28]][temp_x[28]] == 'O')
@@ -2432,32 +2446,23 @@ bool future_playersKnock()
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
     }
-
-    // MOVING UPWARDS WITHOUT KNOCK
     else if (temp_y[28] + 1 == temp_y[29])
     {
-        // rightwards - odd
         if ((temp_y[28] == 1 || temp_y[28] == 5 || temp_y[28] == 3) && temp_board1[temp_y[28]][temp_x[28]] == 'O' && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] == temp_x[29])
         {
             temp_board1[temp_y[29]][temp_x[29]] = 'O';
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // checking upwards leftwards - odd
         else if ((temp_y[28] == 1 || temp_y[28] == 5 || temp_y[28] == 3) && temp_x[28] != 0 && temp_board1[temp_y[28]][temp_x[28]] == 'O' && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] - 1 == temp_x[29])
         {
             temp_board1[temp_y[29]][temp_x[29]] = 'O';
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // rightwards - even
         else if ((temp_y[28] == 0 || temp_y[28] == 4 || temp_y[28] == 2 || temp_y[28] == 6) && temp_x[28] != 3 && temp_board1[temp_y[28]][temp_x[28]] == 'O' && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] + 1 == temp_x[29])
         {
             temp_board1[temp_y[29]][temp_x[29]] = 'O';
             temp_board1[temp_y[28]][temp_x[28]] = '.';
         }
-
-        // leftwards - even
         else if ((temp_y[28] == 0 || temp_y[28] == 4 || temp_y[28] == 2) && temp_board1[temp_y[28]][temp_x[28]] == 'O' && temp_board1[temp_y[29]][temp_x[29]] == ' ' && temp_x[28] == temp_x[29])
         {
             temp_board1[temp_y[29]][temp_x[29]] = 'O';
@@ -2465,7 +2470,7 @@ bool future_playersKnock()
         }
     }
 
-    for (short int t = 0; t < 4; t++)
+    for (t = 0; t < 4; t++)
     {
         if (temp_board1[0][t] == 'o')
         {
@@ -2473,54 +2478,52 @@ bool future_playersKnock()
         }
     }
 
-    // checking for future player knock
-
     bool future_knock{false};
 
-    for (int a = 0; a < 8; a++)
+    for (s = 0; s < 8; s++)
     {
-        for (int b = 0; b < 4; b++)
+        for (t = 0; t < 4; t++)
         {
-            // checking upwards
-            if ((a == 0 || a == 2 || a == 4) && b != 3 && (temp_board1[a + 1][b + 1] == 'o' || temp_board1[a + 1][b + 1] == 'O') &&
-                (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+            // ^^
+            if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
+                (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
                 future_knock = true;
             }
-            if ((a == 0 || a == 2 || a == 4) && b != 0 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+            if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
                 future_knock = true;
             }
-            if ((a == 1 || a == 3 || a == 5) && b != 3 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+            if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
                 future_knock = true;
             }
-            if ((a == 1 || a == 3 || a == 5) && b != 0 && (temp_board1[a + 1][b - 1] == 'o' || temp_board1[a + 1][b - 1] == 'O') &&
-                (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+            if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
+                (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
                 future_knock = true;
             }
 
-            // checking downwards
-            if ((a == 6 || a == 2 || a == 4) && b != 3 && (temp_board1[a - 1][b + 1] == 'o' || temp_board1[a - 1][b + 1] == 'O') &&
-                (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+            // vv
+            if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
+                (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
             {
                 future_knock = true;
             }
-            if ((a == 6 || a == 2 || a == 4) && b != 0 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+            if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
             {
                 future_knock = true;
             }
-            if ((a == 7 || a == 3 || a == 5) && b != 3 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+            if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
             {
                 future_knock = true;
             }
-            if ((a == 7 || a == 3 || a == 5) && b != 0 && (temp_board1[a - 1][b - 1] == 'o' || temp_board1[a - 1][b - 1] == 'O') &&
-                (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+            if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
+                (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
             {
                 future_knock = true;
             }
@@ -2539,11 +2542,11 @@ int maxKnocks_comp()
 
         int total_knocks{};
 
-        for (short int m{}; m < 8; m++)
+        for (s = 0; s < 8; s++)
         {
-            for (short int n{}; n < 4; n++)
+            for (t = 0; t < 4; t++)
             {
-                temp_board1[m][n] = board[m][n];
+                temp_board1[s][t] = board[s][t];
             }
         }
 
@@ -2566,8 +2569,6 @@ int maxKnocks_comp()
 
                 do
                 {
-                    // std::cout << ".";
-                    // moving up with knock
                     if (temp_y[28] + 2 == temp_y[29] && temp_board1[temp_y[28]][temp_x[28]] == 'O')
                     {
                         if ((temp_y[28] == 1 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'x' || temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'X') &&
@@ -2603,7 +2604,6 @@ int maxKnocks_comp()
                             temp_board1[temp_y[28] + 1][temp_x[28] + 1] = '.';
                         }
                     }
-                    // moving down with knock
                     else if (temp_y[28] - 2 == temp_y[29])
                     {
                         if ((temp_y[28] == 7 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'x' || temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'X') &&
@@ -2618,6 +2618,7 @@ int maxKnocks_comp()
                             {
                                 temp_board1[temp_y[29]][temp_x[29]] = 'o';
                             }
+
                             temp_board1[temp_y[28] - 1][temp_x[28] - 1] = '.';
                             temp_board1[temp_y[28]][temp_x[28]] = '.';
                         }
@@ -2633,6 +2634,7 @@ int maxKnocks_comp()
                             {
                                 temp_board1[temp_y[29]][temp_x[29]] = 'o';
                             }
+
                             temp_board1[temp_y[28] - 1][temp_x[28]] = '.';
                             temp_board1[temp_y[28]][temp_x[28]] = '.';
                         }
@@ -2648,6 +2650,7 @@ int maxKnocks_comp()
                             {
                                 temp_board1[temp_y[29]][temp_x[29]] = 'o';
                             }
+
                             temp_board1[temp_y[28] - 1][temp_x[28]] = '.';
                             temp_board1[temp_y[28]][temp_x[28]] = '.';
                         }
@@ -2663,6 +2666,7 @@ int maxKnocks_comp()
                             {
                                 temp_board1[temp_y[29]][temp_x[29]] = 'o';
                             }
+
                             temp_board1[temp_y[28] - 1][temp_x[28] + 1] = '.';
                             temp_board1[temp_y[28]][temp_x[28]] = '.';
                         }
@@ -2678,22 +2682,21 @@ int maxKnocks_comp()
                         if (total_knocks > max_knocks)
                         {
                             max_knocks = total_knocks;
-
-                            for (short int m{}; m < 8; m++)
+                            for (s = 0; s < 8; s++)
                             {
-                                for (short int n{}; n < 4; n++)
+                                for (t = 0; t < 4; t++)
                                 {
-                                    temp_board2[m][n] = temp_board1[m][n];
+                                    temp_board2[s][t] = temp_board1[s][t];
                                 }
                             }
                         }
-                        // king
-                        for (short int i = 0; i < 4; i++)
+
+                        for (s = 0; s < 4; s++)
                         {
-                            if (temp_board1[0][i] == 'o')
+                            if (temp_board1[0][s] == 'o')
                             {
-                                temp_board1[0][i] = 'O';
-                                temp_board2[0][i] = 'O';
+                                temp_board1[0][s] = 'O';
+                                temp_board2[0][s] = 'O';
                             }
                         }
 
@@ -2707,11 +2710,11 @@ int maxKnocks_comp()
                 temp_y[28] = initial_Y;
                 temp_x[28] = initial_X;
 
-                for (short int m{}; m < 8; m++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int n{}; n < 4; n++)
+                    for (t = 0; t < 4; t++)
                     {
-                        temp_board1[m][n] = board[m][n];
+                        temp_board1[s][t] = board[s][t];
                     }
                 }
 
@@ -2919,11 +2922,11 @@ int maxKnocks_player()
         {
             for (temp_x[28] = 0; temp_x[28] < 4; temp_x[28]++)
             {
-                for (short int m{}; m < 8; m++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int n{}; n < 4; n++)
+                    for (t = 0; t < 4; t++)
                     {
-                        temp_board1[m][n] = temp_board2[m][n];
+                        temp_board1[s][t] = temp_board2[s][t];
                     }
                 }
 
@@ -2947,8 +2950,6 @@ int maxKnocks_player()
 
                             do
                             {
-                                // moving up with knock
-
                                 if (temp_y[28] + 2 == temp_y[29])
                                 {
                                     if ((temp_y[28] == 1 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'o' || temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'O') &&
@@ -2964,6 +2965,7 @@ int maxKnocks_player()
                                         {
                                             temp_board1[temp_y[29]][temp_x[29]] = 'x';
                                         }
+
                                         temp_board1[temp_y[28]][temp_x[28]] = '.';
                                         temp_board1[temp_y[28] + 1][temp_x[28] - 1] = '.';
                                     }
@@ -2980,6 +2982,7 @@ int maxKnocks_player()
                                         {
                                             temp_board1[temp_y[29]][temp_x[29]] = 'x';
                                         }
+
                                         temp_board1[temp_y[28]][temp_x[28]] = '.';
                                         temp_board1[temp_y[28] + 1][temp_x[28]] = '.';
                                     }
@@ -2996,6 +2999,7 @@ int maxKnocks_player()
                                         {
                                             temp_board1[temp_y[29]][temp_x[29]] = 'x';
                                         }
+
                                         temp_board1[temp_y[28]][temp_x[28]] = '.';
                                         temp_board1[temp_y[28] + 1][temp_x[28]] = '.';
                                     }
@@ -3012,13 +3016,11 @@ int maxKnocks_player()
                                         {
                                             temp_board1[temp_y[29]][temp_x[29]] = 'x';
                                         }
+
                                         temp_board1[temp_y[28]][temp_x[28]] = '.';
                                         temp_board1[temp_y[28] + 1][temp_x[28] + 1] = '.';
                                     }
                                 }
-
-                                // moving down with knock
-
                                 else if (temp_y[28] - 2 == temp_y[29] && temp_board1[temp_y[28]][temp_x[28]] == 'X')
                                 {
                                     if ((temp_y[28] == 7 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'o' || temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'O') &&
@@ -3066,9 +3068,9 @@ int maxKnocks_player()
                                     {
                                         max_knocks = total_knocks;
 
-                                        for (short int s = 0; s < 8; s++)
+                                        for (s = 0; s < 8; s++)
                                         {
-                                            for (short int t = 0; t < 4; t++)
+                                            for (t = 0; t < 4; t++)
                                             {
                                                 temp_board3[s][t] = temp_board1[s][t];
                                             }
@@ -3076,7 +3078,7 @@ int maxKnocks_player()
                                     }
 
                                     // king
-                                    for (short int t = 0; t < 4; t++)
+                                    for (t = 0; t < 4; t++)
                                     {
                                         if (temp_board1[7][t] == 'x')
                                         {
@@ -3095,11 +3097,11 @@ int maxKnocks_player()
                             temp_y[28] = initial_Y;
                             temp_x[28] = initial_X;
 
-                            for (short int m{}; m < 8; m++)
+                            for (s = 0; s < 8; s++)
                             {
-                                for (short int n{}; n < 4; n++)
+                                for (t = 0; t < 4; t++)
                                 {
-                                    temp_board1[m][n] = temp_board2[m][n];
+                                    temp_board1[s][t] = temp_board2[s][t];
                                 }
                             }
 
@@ -3123,89 +3125,89 @@ bool playersKnock_remove()
 
     if (play_mode != 3)
     {
-        for (short int s = 0; s < 8; s++)
+        for (s = 0; s < 8; s++)
         {
-            for (short int t = 0; t < 4; t++)
+            for (t = 0; t < 4; t++)
             {
                 temp_board1[s][t] = board[s][t];
             }
         }
 
-        for (int a = 0; a < 8; a++)
+        for (s = 0; s < 8; s++)
         {
-            for (int b = 0; b < 4; b++)
+            for (t = 0; t < 4; t++)
             {
-                if ((a == 0 || a == 2 || a == 4) && b != 3 && (temp_board1[a + 1][b + 1] == 'o' || temp_board1[a + 1][b + 1] == 'O') &&
-                    (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
+                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 0 || a == 2 || a == 4) && b != 0 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                    (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
-                if ((a == 1 || a == 3 || a == 5) && b != 3 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                    (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 1 || a == 3 || a == 5) && b != 0 && (temp_board1[a + 1][b - 1] == 'o' || temp_board1[a + 1][b - 1] == 'O') &&
-                    (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
+                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
 
-                if ((a == 6 || a == 2 || a == 4) && b != 3 && (temp_board1[a - 1][b + 1] == 'o' || temp_board1[a - 1][b + 1] == 'O') &&
-                    (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
+                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 6 || a == 2 || a == 4) && b != 0 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                    (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
-                if ((a == 7 || a == 3 || a == 5) && b != 3 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                    (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 7 || a == 3 || a == 5) && b != 0 && (temp_board1[a - 1][b - 1] == 'o' || temp_board1[a - 1][b - 1] == 'O') &&
-                    (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
+                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
             }
@@ -4668,9 +4670,6 @@ bool playersKnock_remove()
         }
     }
 
-    // if (removed_knock)
-    //     std::cout << "\n        players knock removed\n";
-
     return removed_knock;
 }
 
@@ -4681,89 +4680,89 @@ bool playersKnock_block()
 
     if (play_mode != 3)
     {
-        for (short int s = 0; s < 8; s++)
+        for (s = 0; s < 8; s++)
         {
-            for (short int t = 0; t < 4; t++)
+            for (t = 0; t < 4; t++)
             {
                 temp_board1[s][t] = board[s][t];
             }
         }
 
-        for (int a = 0; a < 8; a++)
+        for (s = 0; s < 8; s++)
         {
-            for (int b = 0; b < 4; b++)
+            for (t = 0; t < 4; t++)
             {
-                if ((a == 0 || a == 2 || a == 4) && b != 3 && (temp_board1[a + 1][b + 1] == 'o' || temp_board1[a + 1][b + 1] == 'O') &&
-                    (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
+                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 0 || a == 2 || a == 4) && b != 0 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                    (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
-                if ((a == 1 || a == 3 || a == 5) && b != 3 && (temp_board1[a + 1][b] == 'o' || temp_board1[a + 1][b] == 'O') &&
-                    (temp_board1[a + 2][b + 1] == ' ' || temp_board1[a + 2][b + 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
+                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 1 || a == 3 || a == 5) && b != 0 && (temp_board1[a + 1][b - 1] == 'o' || temp_board1[a + 1][b - 1] == 'O') &&
-                    (temp_board1[a + 2][b - 1] == ' ' || temp_board1[a + 2][b - 1] == '.') && (temp_board1[a][b] == 'x' || temp_board1[a][b] == 'X'))
+                if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
+                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a + 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s + 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
 
-                if ((a == 6 || a == 2 || a == 4) && b != 3 && (temp_board1[a - 1][b + 1] == 'o' || temp_board1[a - 1][b + 1] == 'O') &&
-                    (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
+                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 6 || a == 2 || a == 4) && b != 0 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                    (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
-                if ((a == 7 || a == 3 || a == 5) && b != 3 && (temp_board1[a - 1][b] == 'o' || temp_board1[a - 1][b] == 'O') &&
-                    (temp_board1[a - 2][b + 1] == ' ' || temp_board1[a - 2][b + 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
+                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b + 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t + 1;
                     count++;
                 }
-                if ((a == 7 || a == 3 || a == 5) && b != 0 && (temp_board1[a - 1][b - 1] == 'o' || temp_board1[a - 1][b - 1] == 'O') &&
-                    (temp_board1[a - 2][b - 1] == ' ' || temp_board1[a - 2][b - 1] == '.') && temp_board1[a][b] == 'X')
+                if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
+                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
                 {
-                    temp_y[count] = a;
-                    temp_x[count] = b;
-                    y1_store[count] = a - 2;
-                    x1_store[count] = b - 1;
+                    temp_y[count] = s;
+                    temp_x[count] = t;
+                    y1_store[count] = s - 2;
+                    x1_store[count] = t - 1;
                     count++;
                 }
             }
@@ -5149,9 +5148,6 @@ bool playersKnock_block()
         }
     }
 
-    // if (blocked_knock)
-    //     std::cout << "\n        players knock blocked\n";
-
     return blocked_knock;
 }
 
@@ -5160,81 +5156,81 @@ bool knock_antidote()
     short int count{};
     bool knock_chosen{false};
 
-    for (int a = 0; a < 8; a++)
+    for (s = 0; s < 8; s++)
     {
-        for (int b = 0; b < 4; b++)
+        for (int t = 0; t < 4; t++)
         {
-            if ((a == 0 || a == 2 || a == 4) && b != 3 && (board[a + 1][b + 1] == 'o' || board[a + 1][b + 1] == 'O') &&
-                (board[a + 2][b + 1] == ' ' || board[a + 2][b + 1] == '.') && (board[a][b] == 'x' || board[a][b] == 'X'))
+            if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'o' || board[s + 1][t + 1] == 'O') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a + 2;
-                x1_store[count] = b + 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s + 2;
+                x1_store[count] = t + 1;
                 count++;
             }
-            if ((a == 0 || a == 2 || a == 4) && b != 0 && (board[a + 1][b] == 'o' || board[a + 1][b] == 'O') &&
-                (board[a + 2][b - 1] == ' ' || board[a + 2][b - 1] == '.') && (board[a][b] == 'x' || board[a][b] == 'X'))
+            if ((s == 0 || s == 2 || s == 4) && t != 0 && (board[s + 1][t] == 'o' || board[s + 1][t] == 'O') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a + 2;
-                x1_store[count] = b - 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s + 2;
+                x1_store[count] = t - 1;
                 count++;
             }
-            if ((a == 1 || a == 3 || a == 5) && b != 3 && (board[a + 1][b] == 'o' || board[a + 1][b] == 'O') &&
-                (board[a + 2][b + 1] == ' ' || board[a + 2][b + 1] == '.') && (board[a][b] == 'x' || board[a][b] == 'X'))
+            if ((s == 1 || s == 3 || s == 5) && t != 3 && (board[s + 1][t] == 'o' || board[s + 1][t] == 'O') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a + 2;
-                x1_store[count] = b + 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s + 2;
+                x1_store[count] = t + 1;
                 count++;
             }
-            if ((a == 1 || a == 3 || a == 5) && b != 0 && (board[a + 1][b - 1] == 'o' || board[a + 1][b - 1] == 'O') &&
-                (board[a + 2][b - 1] == ' ' || board[a + 2][b - 1] == '.') && (board[a][b] == 'x' || board[a][b] == 'X'))
+            if ((s == 1 || s == 3 || s == 5) && t != 0 && (board[s + 1][t - 1] == 'o' || board[s + 1][t - 1] == 'O') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a + 2;
-                x1_store[count] = b - 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s + 2;
+                x1_store[count] = t - 1;
                 count++;
             }
 
-            if ((a == 6 || a == 2 || a == 4) && b != 3 && (board[a - 1][b + 1] == 'o' || board[a - 1][b + 1] == 'O') &&
-                (board[a - 2][b + 1] == ' ' || board[a - 2][b + 1] == '.') && board[a][b] == 'X')
+            if ((s == 6 || s == 2 || s == 4) && t != 3 && (board[s - 1][t + 1] == 'o' || board[s - 1][t + 1] == 'O') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && board[s][t] == 'X')
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a - 2;
-                x1_store[count] = b + 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s - 2;
+                x1_store[count] = t + 1;
                 count++;
             }
-            if ((a == 6 || a == 2 || a == 4) && b != 0 && (board[a - 1][b] == 'o' || board[a - 1][b] == 'O') &&
-                (board[a - 2][b - 1] == ' ' || board[a - 2][b - 1] == '.') && board[a][b] == 'X')
+            if ((s == 6 || s == 2 || s == 4) && t != 0 && (board[s - 1][t] == 'o' || board[s - 1][t] == 'O') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && board[s][t] == 'X')
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a - 2;
-                x1_store[count] = b - 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s - 2;
+                x1_store[count] = t - 1;
                 count++;
             }
-            if ((a == 7 || a == 3 || a == 5) && b != 3 && (board[a - 1][b] == 'o' || board[a - 1][b] == 'O') &&
-                (board[a - 2][b + 1] == ' ' || board[a - 2][b + 1] == '.') && board[a][b] == 'X')
+            if ((s == 7 || s == 3 || s == 5) && t != 3 && (board[s - 1][t] == 'o' || board[s - 1][t] == 'O') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && board[s][t] == 'X')
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a - 2;
-                x1_store[count] = b + 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s - 2;
+                x1_store[count] = t + 1;
                 count++;
             }
-            if ((a == 7 || a == 3 || a == 5) && b != 0 && (board[a - 1][b - 1] == 'o' || board[a - 1][b - 1] == 'O') &&
-                (board[a - 2][b - 1] == ' ' || board[a - 2][b - 1] == '.') && board[a][b] == 'X')
+            if ((s == 7 || s == 3 || s == 5) && t != 0 && (board[s - 1][t - 1] == 'o' || board[s - 1][t - 1] == 'O') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && board[s][t] == 'X')
             {
-                temp_y[count] = a;
-                temp_x[count] = b;
-                y1_store[count] = a - 2;
-                x1_store[count] = b - 1;
+                temp_y[count] = s;
+                temp_x[count] = t;
+                y1_store[count] = s - 2;
+                x1_store[count] = t - 1;
                 count++;
             }
         }
@@ -5259,18 +5255,18 @@ bool knock_antidote()
             temp_x[28] = x[2];
             temp_x[29] = x[3];
 
-            for (short int s = 0; s < 8; s++)
+            for (s = 0; s < 8; s++)
             {
-                for (short int t = 0; t < 4; t++)
+                for (t = 0; t < 4; t++)
                 {
                     temp_board1[s][t] = board[s][t];
                 }
             }
 
             bool knock_blocked = playersKnock_block();
-            for (short int s = 0; s < 8; s++)
+            for (s = 0; s < 8; s++)
             {
-                for (short int t = 0; t < 4; t++)
+                for (t = 0; t < 4; t++)
                 {
                     temp_board2[s][t] = temp_board1[s][t];
                 }
@@ -5281,9 +5277,9 @@ bool knock_antidote()
             if ((knock_blocked && !knock_chosen) || totalKnocks_b < totalKnocks_r)
             {
                 knock_chosen = true;
-                for (short int s = 0; s < 8; s++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int t = 0; t < 4; t++)
+                    for (t = 0; t < 4; t++)
                     {
                         final_board[s][t] = temp_board2[s][t];
                         temp_board1[s][t] = board[s][t];
@@ -5297,9 +5293,9 @@ bool knock_antidote()
             temp_x[29] = x[3];
 
             bool knock_removed = playersKnock_remove();
-            for (short int s = 0; s < 8; s++)
+            for (s = 0; s < 8; s++)
             {
-                for (short int t = 0; t < 4; t++)
+                for (t = 0; t < 4; t++)
                 {
                     temp_board2[s][t] = temp_board1[s][t];
                 }
@@ -5310,9 +5306,9 @@ bool knock_antidote()
             if ((knock_removed && !knock_chosen) || totalKnocks_r < totalKnocks_b)
             {
                 knock_chosen = true;
-                for (short int s = 0; s < 8; s++)
+                for (s = 0; s < 8; s++)
                 {
-                    for (short int t = 0; t < 4; t++)
+                    for (t = 0; t < 4; t++)
                     {
                         final_board[s][t] = temp_board2[s][t];
                     }
@@ -5324,18 +5320,15 @@ bool knock_antidote()
 
         if (knock_chosen)
         {
-            for (short int s = 0; s < 8; s++)
+            for (s = 0; s < 8; s++)
             {
-                for (short int t = 0; t < 4; t++)
+                for (t = 0; t < 4; t++)
                 {
                     temp_board1[s][t] = final_board[s][t];
                 }
             }
         }
     }
-
-    // if (knock_chosen)
-    //     std::cout << "\n        removed/blocked knock\n";
 
     return knock_chosen;
 }
@@ -5346,16 +5339,14 @@ bool x_chase()
     short int row1[30]{};
     short int column0[30]{};
     short int column1[30]{};
-
     short int row_o[20]{};
     short int column_o[20]{};
-
     short int count[4]{};
     short int section{};
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             // upwards rightwards
             if ((s == 0 || s == 2 || s == 4) && t != 3 && board[s + 1][t + 1] == ' ' && board[s + 2][t + 1] != 'O' && board[s + 2][t + 1] != 'o' &&
@@ -5609,9 +5600,9 @@ bool x_chase()
     auto total_moves = total_unknock_moves();
     std::cout << "\n        total_moves: " << total_moves;
 
-    for (short int s = 0; s < total_moves; s++)
+    for (s = 0; s < total_moves; s++)
     {
-        for (short int t = 0; t < count[1]; t++)
+        for (t = 0; t < count[1]; t++)
         {
             if (temp_y[s] == row_o[t] && temp_x[s] == column_o[t])
                 pass = true;
@@ -5639,7 +5630,7 @@ bool x_chase()
         x[0] = column0[round];
         x[1] = column1[round];
 
-        for (short int t = 0; t < count[2]; t++)
+        for (t = 0; t < count[2]; t++)
         {
             choice[0] = rand() % 20;
             number = 0;
@@ -5931,9 +5922,9 @@ bool x_chase()
     if (!chased && count[0] > 0 && count[2] > 0)
     {
         /* getting player's free target */
-        for (short int s = 7; s >= 0; s--)
+        for (s = 7; s >= 0; s--)
         {
-            for (short int t = 0; t < 4; t++)
+            for (t = 0; t < 4; t++)
             {
                 for (short int u = 0; u < count[0]; u++)
                 {
@@ -6016,13 +6007,13 @@ bool x_chase()
     return chased;
 }
 
-short int check_winner()
+short int check_winner(bool count)
 {
     short int player_moves{};
 
-    for (short int s = 0; s < 8; s++)
+    for (s = 0; s < 8; s++)
     {
-        for (short int t = 0; t < 4; t++)
+        for (t = 0; t < 4; t++)
         {
             // downwards rightwards - odd
             if ((s == 7 || s == 5 || s == 3 || s == 1) && board[s][t] == 'X' && board[s - 1][t] == ' ')
@@ -6076,25 +6067,46 @@ short int check_winner()
 
     auto comp_moves = total_compMoves();
 
-    if (player_moves == 0 && comp_moves > 0)
+    short int total_comp_pieces{};
+    short int total_player_pieces{};
+
+    draw_count[2] = draw_count[0];
+    draw_count[3] = draw_count[1];
+
+    for (s = 0; s < 8; s++)
     {
+        for (t = 0; t < 4; t++)
+        {
+            if (board[s][t] == 'O' || board[s][t] == 'o')
+                total_comp_pieces++;
+
+            else if (board[s][t] == 'X' || board[s][t] == 'x')
+                total_player_pieces++;
+        }
+    }
+
+    draw_count[0] = total_comp_pieces;
+    draw_count[1] = total_player_pieces;
+
+    if ((draw_count[2] == draw_count[0] && draw_count[3] == draw_count[0]) && total_comp_pieces < 4 && total_player_pieces < 4 && count)
+        draw_count[4]++;
+    else if (((draw_count[2] != draw_count[0] && draw_count[3] == draw_count[0]) || (draw_count[2] == draw_count[0] && draw_count[3] != draw_count[0]) || (draw_count[2] != draw_count[0] && draw_count[3] != draw_count[0])) && total_comp_pieces < 4 && total_player_pieces < 4 && count)
+        draw_count[4] = 0;
+
+    if (draw_count[4] == 12)
+        return 3;
+    else if (player_moves == 0 && comp_moves > 0)
         return 2;
-    }
     else if (comp_moves == 0 && player_moves > 0)
-    {
         return 1;
-    }
     else
-    {
         return 0;
-    }
 }
 
 void print_winner(int winner)
 {
     if (winner == 1)
     {
-        std::cout << std::endl;
         std::cout << "        =========================================\n";
         std::cout << "                     HURRAY! YOU WIN!\n";
         std::cout << "        =========================================\n";
@@ -6102,20 +6114,63 @@ void print_winner(int winner)
     }
     else if (winner == 2)
     {
-        std::cout << std::endl;
         std::cout << "        =========================================\n";
-        std::cout << "                      I'M THE WINNER!\n";
+        std::cout << "                       COMP WINS!\n";
         std::cout << "        =========================================\n";
         std::cout << std::endl;
     }
     else if (winner == 3)
     {
-        std::cout << std::endl;
         std::cout << "        =========================================\n";
         std::cout << "                      GAME DRAW! :)!\n";
         std::cout << "        =========================================\n";
         std::cout << std::endl;
     }
+}
 
-    // colourful print
+void print_heart()
+{
+    float x, y, size = 6;
+    int print_line = 4;
+
+    // ------------------------------- 1st half ------------------------------ //
+
+    std::cout << "\n                ";
+
+    for (x = 0; x < size; x++)
+    {
+        for (y = 0; y <= 4 * size; y++)
+        {
+            float distance1 = sqrt(pow(x - size, 2) + pow(y - size, 2));
+            float distance2 = sqrt(pow(x - size, 2) + pow(y - 3 * size, 2));
+
+            if (distance1 < size + 0.5 || distance2 < size + 0.5)
+            {
+                std::cout << "*";
+            }
+            else
+                std::cout << " ";
+        }
+
+        std::cout << "\n                ";
+    }
+
+    // -------------------------------- 2nd half ----------------------------- //
+
+    for (x = 1; x < 2 * size; x++)
+    {
+        for (y = 0; y < x; y++)
+            std::cout << " ";
+
+        for (y = 0; y < 4 * size + 1 - 2 * x; y++)
+        {
+            std::cout << "*";
+        }
+
+        std::cout << "\n                ";
+    }
+
+    std::cout << "            *" << std::endl;
+
+    // ----------------------------------------------------------------------- //
 }
