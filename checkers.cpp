@@ -12,16 +12,15 @@
 #include <limits>
 #include <cmath>
 
+std::string player_name{};
 char board[8][4]{};
 char temp_board1[8][4]{};
 char temp_board2[8][4]{};
 char temp_board3[8][4]{};
-std::string player_name{};
 short int play_mode{};
 short int choice[2]{};
 short int y[4]{};
 short int x[4]{};
-bool moved_by_knock{false};
 short int temp_y[30]{};
 short int temp_x[30]{};
 short int y1_store[30]{};
@@ -30,6 +29,19 @@ short int s{};
 short int t{};
 short int draw_count[5]{};
 short int rand_num{};
+short int total_moves{};
+short int winner{};
+int total_knocks{};
+
+bool moved_by_knock{false};
+bool knock_present{false};
+bool selected{false};
+bool removed_knock{false};
+bool blocked_knock{false};
+bool moved{false};
+bool future_knock{false};
+bool chased{false};
+bool proceed{false};
 
 void reset_board();
 void print_board();
@@ -58,7 +70,7 @@ bool knock_antidote();
 bool x_chase();
 
 short int check_winner(bool count);
-void print_winner(int winner);
+void print_winner();
 void print_heart();
 
 int main()
@@ -67,7 +79,6 @@ int main()
 
     bool end{false};
     char play_again{};
-    short int winner{};
     const unsigned short int max_length{20};
 
     std::cout << "\n        Enter your name dear: ";
@@ -125,7 +136,7 @@ int main()
 
         } while (winner == 0);
 
-        print_winner(winner);
+        print_winner();
 
         std::cout << "        Would You Like To Play Again? (Y/N) ";
         std::cin >> play_again;
@@ -238,9 +249,9 @@ void player()
         break;
     }
 
-    bool moved{false};
+    moved = false;
     bool knock_available{false};
-    bool selected{false};
+    selected = false;
 
     do
     {
@@ -442,7 +453,7 @@ void choice_processing(int index)
 
 bool select_piece_player()
 {
-    bool selected{false};
+    selected = false;
 
     if (board[y[0]][x[0]] == 'x' || board[y[0]][x[0]] == 'X')
     {
@@ -608,7 +619,7 @@ bool select_piece_player()
 
 bool move_piece_player()
 {
-    bool moved{false};
+    moved = false;
     moved_by_knock = false;
 
     if (y[0] + 1 == y[1] && (board[y[0]][x[0]] == 'S' || board[y[0]][x[0]] == 's'))
@@ -837,7 +848,7 @@ bool move_piece_player()
 
 bool more_knocks()
 {
-    bool knock_present{false};
+    knock_present = false;
 
     if ((board[y[1]][x[1]] == 'x' || board[y[1]][x[1]] == 'X'))
     {
@@ -952,33 +963,27 @@ void computer()
         }
     }
 
-    bool selected{false};
-    bool moved{false};
-    bool future_knock{false};
-    bool removed_knock{false};
-    bool blocked_knock{false};
-    bool chased{false};
-    char temp_board[8][4]{};
+    selected = false ;
+    moved = false;
+    future_knock = false;
+    removed_knock = false;
+    blocked_knock = false;
+    chased = false;
 
-    int total_knocks{};
+    char temp_board[8][4]{};
     short int max_knocks{};
     short int index{};
     short total_comp_knocks{};
     short total_player_knocks{};
 
-    bool knock_present = knocks_checking(&total_knocks);
+    knock_present = knocks_checking(&total_knocks);
 
     if (play_mode == 1)
     {
         rand_num = rand() % 2;
-        auto total_moves = total_compMoves();
+        total_moves = total_compMoves();
 
-        if (total_moves == 0 && knock_present)
-        {
-            rand_num = 1;
-        }
-
-        if (rand_num == 1 && knock_present)
+        if ((rand_num == 1 && knock_present) || (total_moves == 0 && knock_present))
         {
             knocks_checking(&total_knocks);
             rand_num = rand() % total_knocks;
@@ -1015,7 +1020,7 @@ void computer()
     {
         if (knock_present)
         {
-            rand_num = rand() % 4;
+            rand_num = rand() % 2;
             if (rand_num == 0)
             {
                 max_knocks = 0;
@@ -1060,7 +1065,7 @@ void computer()
                     moved = true;
                 }
             }
-            else if (rand_num == 1 || rand_num == 2 || rand_num == 3)
+            else if (rand_num == 1)
             {
                 knocks_checking(&total_knocks);
                 rand_num = rand() % total_knocks;
@@ -1123,7 +1128,7 @@ void computer()
 
             while (!moved && !chased)
             {
-                for (short int re_do = 0; re_do < 100000; re_do++)
+                for (s = 0; s < 100000; s++)
                 {
                     select_piece_comp();
                     future_knock = future_playersKnock();
@@ -1143,7 +1148,7 @@ void computer()
 
                     if (moved)
                         break;
-                    else if (!moved && re_do == 100)
+                    else if (!moved && s == 100)
                     {
                         select_piece_comp();
                         move_piece_comp('N');
@@ -1213,15 +1218,13 @@ void computer()
 
 bool knocks_checking(int *total_knocks)
 {
-    bool knock_present{false};
+    knock_present = false;
     *total_knocks = 0;
 
     for (s = 0; s <= 7; s++)
     {
         for (t = 0; t < 4; t++)
         {
-            // ^^^
-
             if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'x' || board[s + 1][t + 1] == 'X') &&
                 (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && board[s][t] == 'O')
             {
@@ -1258,8 +1261,6 @@ bool knocks_checking(int *total_knocks)
                 x1_store[*total_knocks] = t - 1;
                 *total_knocks = *total_knocks + 1;
             }
-            // vv
-
             if ((s == 6 || s == 2 || s == 4) && t != 3 && (board[s - 1][t + 1] == 'x' || board[s - 1][t + 1] == 'X') &&
                 (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && (board[s][t] == 'o' || board[s][t] == 'O'))
             {
@@ -1533,11 +1534,11 @@ short int total_unknock_moves()
 
 void select_piece_comp()
 {
-    bool selected{false};
+    selected = false;
 
     if (play_mode == 2)
     {
-        auto total_moves{total_unknock_moves()};
+        total_moves = total_unknock_moves();
         if (total_moves > 0)
         {
             rand_num = rand() % total_moves;
@@ -1891,7 +1892,7 @@ void best_move()
         target_chosen = true;
     }
 
-    auto total_moves = total_unknock_moves();
+    total_moves = total_unknock_moves();
     if (total_moves == 0)
     {
         for (y[0] = 0; y[0] < 8; y[0]++)
@@ -1968,7 +1969,7 @@ void best_move()
     std::cout << "\n        total_moves: " << total_moves;
 
     short int count{};
-    bool chased{false};
+    chased = false;
 
     if (target_chosen)
     {
@@ -2060,7 +2061,7 @@ void best_move()
 
         if (!target_chosen && !chased)
         {
-            bool future_knock{false};
+            future_knock = false;
 
             for (s = 0; s < 10000; s++)
             {
@@ -2158,7 +2159,7 @@ short int triple_play()
                     const unsigned short int initial_Y = temp_y[28];
                     const unsigned short int initial_X = temp_x[28];
 
-                    int total_knocks{};
+                    total_knocks = 0;
 
                     for (temp_y[29] = 0; temp_y[29] < 8; temp_y[29]++)
                     {
@@ -2168,8 +2169,8 @@ short int triple_play()
                         {
                             const unsigned short int temp_x19 = temp_x[29];
 
-                            bool knock_present{false};
-                            bool proceed{false};
+                            knock_present = false;
+                            proceed = false;
 
                             do
                             {
@@ -2423,7 +2424,7 @@ bool future_playersKnock()
         }
     }
 
-    bool future_knock{false};
+    future_knock = false;
 
     for (s = 0; s < 8; s++)
     {
@@ -2485,7 +2486,7 @@ int maxKnocks_comp()
     for (short int re_do = 0; re_do < 51; re_do++)
     {
 
-        int total_knocks{};
+        total_knocks = 0;
 
         for (s = 0; s < 8; s++)
         {
@@ -2509,8 +2510,8 @@ int maxKnocks_comp()
             {
                 const unsigned short int temp_x19 = temp_x[29];
 
-                bool knock_present{false};
-                bool proceed{false};
+                knock_present = false;
+                proceed = false;
 
                 do
                 {
@@ -2675,7 +2676,7 @@ int maxKnocks_comp()
 
 bool future_more_knocks()
 {
-    bool knock_present{false};
+    knock_present = false;
 
     choice[0] = rand() % 8;
 
@@ -2777,8 +2778,6 @@ bool future_more_knocks()
 
         while (count < 8)
         {
-            // upwards
-
             if (choice[0] == 0 && (temp_y[28] == 1 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'o' || temp_board1[temp_y[28] + 1][temp_x[28] - 1] == 'O') &&
                 (temp_board1[temp_y[28] + 2][temp_x[28] - 1] == ' ' || temp_board1[temp_y[28] + 2][temp_x[28] - 1] == '.') && (temp_board1[temp_y[28]][temp_x[28]] == 'x' || temp_board1[temp_y[28]][temp_x[28]] == 'X'))
             {
@@ -2811,8 +2810,6 @@ bool future_more_knocks()
                 temp_x[29] = temp_x[28] + 1;
                 break;
             }
-
-            // downwards
 
             if (choice[0] == 4 && (temp_y[28] == 7 || temp_y[28] == 3 || temp_y[28] == 5) && temp_x[28] != 0 && (temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'o' || temp_board1[temp_y[28] - 1][temp_x[28] - 1] == 'O') &&
                 (temp_board1[temp_y[28] - 2][temp_x[28] - 1] == ' ' || temp_board1[temp_y[28] - 2][temp_x[28] - 1] == '.') && temp_board1[temp_y[28]][temp_x[28]] == 'X')
@@ -2880,7 +2877,7 @@ int maxKnocks_player()
                     const unsigned short int initial_Y = temp_y[28];
                     const unsigned short int initial_X = temp_x[28];
 
-                    int total_knocks{};
+                    total_knocks = 0;
 
                     for (temp_y[29] = 0; temp_y[29] < 8; temp_y[29]++)
                     {
@@ -2890,8 +2887,8 @@ int maxKnocks_player()
                         {
                             const unsigned short int temp_x19 = temp_x[29];
 
-                            bool knock_present{false};
-                            bool proceed{false};
+                            knock_present = false ;
+                            proceed = false;
 
                             do
                             {
@@ -3065,7 +3062,7 @@ int maxKnocks_player()
 
 bool playersKnock_remove()
 {
-    bool removed_knock{false};
+    removed_knock = false;
     short int count{};
 
     if (play_mode != 3)
@@ -4628,7 +4625,7 @@ bool playersKnock_remove()
 
 bool playersKnock_block()
 {
-    bool blocked_knock{false};
+    blocked_knock = false;
     short int count{};
 
     if (play_mode != 3)
@@ -5566,7 +5563,7 @@ bool x_chase()
 
     bool pass{false};
 
-    auto total_moves = total_unknock_moves();
+    total_moves = total_unknock_moves();
     std::cout << "\n        total_moves: " << total_moves;
 
     for (s = 0; s < total_moves; s++)
@@ -5588,7 +5585,7 @@ bool x_chase()
 
     std::cout << "\n        count[2]: " << count[2];
 
-    bool chased{false};
+    chased = false;
     short int round{};
     short int number{};
 
@@ -6026,7 +6023,7 @@ short int check_winner(bool count)
             }
 
             /* --> knocks <-- */
-            
+
             if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'o' || board[s + 1][t + 1] == 'O') &&
                 (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
@@ -6131,7 +6128,7 @@ short int check_winner(bool count)
     }
 }
 
-void print_winner(int winner)
+void print_winner()
 {
     if (winner == 1)
     {
