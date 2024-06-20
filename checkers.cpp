@@ -29,12 +29,13 @@ short int x1_store[30]{};
 short int s{};
 short int t{};
 short int draw_count[5]{};
+short int rand_num{};
 
 void reset_board();
 void print_board();
 
 void player();
-bool choice_processing(int);
+void choice_processing(int);
 bool select_piece_player();
 bool move_piece_player();
 bool more_knocks();
@@ -160,7 +161,7 @@ void reset_board()
     {
         for (t = 0; t < 4; t++)
         {
-            board[s][t] = ' ';
+            board[s][t] = 'x';
         }
     }
 
@@ -169,12 +170,9 @@ void reset_board()
     {
         for (t = 0; t < 4; t++)
         {
-            board[s][t] = ' ';
+            board[s][t] = 'o';
         }
     }
-
-    board[1][1] = 'X';
-    board[0][0] = 'O';
 }
 
 void print_board()
@@ -228,13 +226,13 @@ void player()
     switch (draw_count[4])
     {
     case 6:
-        std::cout << "        Six More Non-Knock Moves To Draw!!!" << std::endl;
+        std::cout << "        --> 6 Non-Knock Moves To Draw." << std::endl;
         break;
     case 9:
-        std::cout << "        Three More Non-Knock Moves To Draw!!!" << std::endl;
+        std::cout << "        --> 3 Non-Knock Moves To Draw." << std::endl;
         break;
     case 11:
-        std::cout << "        One More Non-Knock Move To Draw!!!" << std::endl;
+        std::cout << "        --> 1 Non-Knock Move To Draw." << std::endl;
         break;
     default:
         break;
@@ -243,110 +241,87 @@ void player()
     bool moved{false};
     bool knock_available{false};
     bool selected{false};
-    bool invalid_input{false};
 
     do
     {
         do
         {
-            do
+            std::cout << "        Enter piece row# column# e.g 32: ";
+
+            if (!(std::cin >> choice[0]))
             {
-                std::cout << "           Enter piece row# column# e.g 32: ";
-
-                if (!(std::cin >> choice[0]))
-                {
-                    print_board();
-                    std::cout << "           Invalid input! Try again!" << std::endl;
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                }
-                else
-                {
-                    invalid_input = choice_processing(0);
-                    if (invalid_input)
-                    {
-                        print_board();
-                        std::cout << "           Invalid input! Try again!" << std::endl;
-                    }
-                }
-
-            } while (invalid_input);
-
-            selected = select_piece_player();
-
-            if (!selected)
-            {
+                std::cout << "        Invalid input! Try again!" << std::endl;
                 print_board();
-                std::cout << "           Invalid piece entry! Try again!" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+            else
+            {
+                choice_processing(0);
+                selected = select_piece_player();
+
+                if (!selected)
+                {
+                    std::cout << "        Invalid piece entry! Try again!" << std::endl;
+                    print_board();
+                }
             }
 
         } while (!selected);
 
+        std::cout << std::endl;
+        std::cout << "        -----------------------------------------" << std::endl;
+        std::cout << "        SELECTED " << player_name << std::endl;
+        std::cout << "        -----------------------------------------" << std::endl;
         print_board();
-        std::cout << "        -----------------------------------------" << std::endl;
-        std::cout << "           SELECTED " << player_name << std::endl;
-        std::cout << "        -----------------------------------------" << std::endl;
 
         while (!moved && selected)
         {
-            do
+            std::cout << "        --> Enter 00 to reselect." << '\n';
+            std::cout << "        Enter target row# column# e.g 43: ";
+
+            if (!(std::cin >> choice[1]))
             {
-                std::cout << "             --> Enter 00 to reselect <--" << '\n';
-                std::cout << "           Enter target row# column# e.g 43: ";
-
-                if (!(std::cin >> choice[1]))
-                {
-                    print_board();
-                    std::cout << "           Invalid input! Try again!" << std::endl;
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                }
-                else
-                {
-                    if (choice[1] == 00)
-                    {
-                        selected = false;
-                        for (s = 0; s < 8; s++)
-                        {
-                            for (t = 0; t < 4; t++)
-                            {
-                                board[s][t] = reselect_board[s][t];
-                            }
-                        }
-                    }
-                    else
-                    {
-                        invalid_input = choice_processing(1);
-                        if (invalid_input)
-                        {
-                            print_board();
-                            std::cout << "           Invalid input! Try again!" << std::endl;
-                        }
-                    }
-                }
-
-            } while (invalid_input && selected);
-
-            if (selected && !invalid_input)
-            {
-                moved = move_piece_player();
-                if (!moved)
-                {
-                    print_board();
-                    std::cout << "           Invalid input! Try again!" << std::endl;
-                }
+                print_board();
+                std::cout << "        Invalid input! Try again!" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
             else
             {
-                print_board();
-                for (s = 0; s < 8; s++)
+                if (choice[1] == 00)
                 {
-                    for (t = 0; t < 4; t++)
+                    selected = false;
+                    for (s = 0; s < 8; s++)
                     {
-                        if (board[s][t] == '.')
+                        for (t = 0; t < 4; t++)
                         {
-                            board[s][t] = ' ';
+                            board[s][t] = reselect_board[s][t];
                         }
+                    }
+                }
+                else
+                {
+                    choice_processing(1);
+                    moved = move_piece_player();
+                    if (!moved)
+                    {
+                        print_board();
+                        std::cout << "        Invalid input! Try again!" << std::endl;
+                    }
+                }
+            }
+        }
+        if (!selected)
+        {
+            print_board();
+            for (s = 0; s < 8; s++)
+            {
+                for (t = 0; t < 4; t++)
+                {
+                    if (board[s][t] == '.')
+                    {
+                        board[s][t] = ' ';
                     }
                 }
             }
@@ -375,35 +350,25 @@ void player()
 
         do
         {
-            do
-            {
-                std::cout << "           Enter target row# column# e.g 54: ";
+            std::cout << "        Enter target row# column# e.g 54: ";
 
-                if (!(std::cin >> choice[1]))
+            if (!(std::cin >> choice[1]))
+            {
+                std::cout << "        Invalid input! Try again!" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                print_board();
+            }
+
+            else
+            {
+                choice_processing(1);
+                moved = move_piece_player();
+                if (!moved)
                 {
-                    std::cout << "           Invalid input! Try again!" << std::endl;
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cout << "        Invalid input! Try again!" << std::endl;
                     print_board();
                 }
-
-                else
-                {
-                    invalid_input = choice_processing(1);
-                    if (invalid_input)
-                    {
-                        std::cout << "           Invalid input! Try again!" << std::endl;
-                        print_board();
-                    }
-                }
-
-            } while (invalid_input);
-
-            moved = move_piece_player();
-            if (!moved)
-            {
-                std::cout << "           Invalid input! Try again!" << std::endl;
-                print_board();
             }
 
         } while (!moved);
@@ -414,17 +379,17 @@ void player()
     std::cout << std::endl;
 }
 
-bool choice_processing(int index)
+void choice_processing(int index)
 {
-    bool invalid_choice{true};
-
     if (choice[index] == 11 || choice[index] == 13 || choice[index] == 15 || choice[index] == 17 || choice[index] == 22 || choice[index] == 24 || choice[index] == 26 || choice[index] == 28 || choice[index] == 31 || choice[index] == 33 || choice[index] == 35 || choice[index] == 37 || choice[index] == 42 || choice[index] == 44 || choice[index] == 46 || choice[index] == 48)
     {
-        invalid_choice = true;
+        y[index] = 9;
+        x[index] = 9;
     }
     else if (choice[index] == 51 || choice[index] == 53 || choice[index] == 55 || choice[index] == 57 || choice[index] == 62 || choice[index] == 64 || choice[index] == 66 || choice[index] == 68 || choice[index] == 71 || choice[index] == 73 || choice[index] == 75 || choice[index] == 77 || choice[index] == 82 || choice[index] == 84 || choice[index] == 86 || choice[index] == 88)
     {
-        invalid_choice = true;
+        y[index] = 9;
+        x[index] = 9;
     }
     else if (choice[index] >= 12 && choice[index] <= 87)
     {
@@ -451,7 +416,6 @@ bool choice_processing(int index)
             }
 
             y[index] = y[index] - 1;
-            invalid_choice = false;
         }
         else if (y[index] == 7 || y[index] == 5 || y[index] == 3 || y[index] == 1)
         {
@@ -472,12 +436,8 @@ bool choice_processing(int index)
                 x[index] = 3;
             }
             y[index] = y[index] - 1;
-
-            invalid_choice = false;
         }
     }
-
-    return invalid_choice;
 }
 
 bool select_piece_player()
@@ -649,6 +609,7 @@ bool select_piece_player()
 bool move_piece_player()
 {
     bool moved{false};
+    moved_by_knock = false;
 
     if (y[0] + 1 == y[1] && (board[y[0]][x[0]] == 'S' || board[y[0]][x[0]] == 's'))
     {
@@ -715,8 +676,6 @@ bool move_piece_player()
             board[y[0]][x[0]] = '.';
             moved = true;
         }
-
-        moved_by_knock = false;
     }
 
     else if (y[0] - 1 == y[1] && board[y[0]][x[0]] == 'S')
@@ -749,8 +708,6 @@ bool move_piece_player()
             board[y[0]][x[0]] = '.';
             moved = true;
         }
-
-        moved_by_knock = false;
     }
 
     // up --> knock
@@ -1004,7 +961,6 @@ void computer()
     char temp_board[8][4]{};
 
     int total_knocks{};
-    short int rand_num{};
     short int max_knocks{};
     short int index{};
     short total_comp_knocks{};
@@ -1014,7 +970,7 @@ void computer()
 
     if (play_mode == 1)
     {
-        rand_num = rand() % 3;
+        rand_num = rand() % 2;
         auto total_moves = total_compMoves();
 
         if (total_moves == 0 && knock_present)
@@ -1577,33 +1533,27 @@ short int total_unknock_moves()
 
 void select_piece_comp()
 {
-    auto temp_play_mode{play_mode};
+    bool selected{false};
 
     if (play_mode == 2)
     {
         auto total_moves{total_unknock_moves()};
-        // std::cout << "total_moves: " << total_moves;
-
-        if (total_moves == 0)
-            temp_play_mode = 1;
-
-        else if (total_moves > 0)
+        if (total_moves > 0)
         {
-            auto rand_num{rand() % total_moves};
+            rand_num = rand() % total_moves;
             y[0] = temp_y[rand_num];
             x[0] = temp_x[rand_num];
+            selected = true;
         }
-        // std::cout << " y[0]:" << y[0] << " x[0]:" << x[0] << '\n';
     }
 
     int count{};
-    bool selected{false};
 
-    while (!selected && temp_play_mode == 1)
+    while (!selected)
     {
         y[0] = rand() % 8;
 
-        for (s = 0; s < 500; s++)
+        for (s = 0; s < 75; s++)
         {
             x[0] = rand() % 4;
             choice[0] = rand() % 8;
@@ -1611,7 +1561,6 @@ void select_piece_comp()
 
             do
             {
-                // moving up without knock
                 if (choice[0] == 0 && (y[0] == 0 || y[0] == 2 || y[0] == 4 || y[0] == 6) && board[y[0] + 1][x[0]] == ' ' && board[y[0]][x[0]] == 'O')
                 {
                     selected = true;
@@ -1628,8 +1577,6 @@ void select_piece_comp()
                 {
                     selected = true;
                 }
-
-                // moving down without knock
                 else if (choice[0] == 4 && (y[0] == 2 || y[0] == 4 || y[0] == 6) && board[y[0] - 1][x[0]] == ' ' && (board[y[0]][x[0]] == 'o' || board[y[0]][x[0]] == 'O'))
                 {
                     selected = true;
@@ -1661,7 +1608,6 @@ void select_piece_comp()
 
     count = 0;
 
-    // Available targets
     // downwards rightwards - odd
     if ((y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o') && board[y[0] - 1][x[0]] == ' ')
     {
@@ -1726,7 +1672,7 @@ void select_piece_comp()
         count++;
     }
 
-    short int rand_num = rand() % count;
+    rand_num = rand() % count;
     y[1] = temp_y[rand_num];
     x[1] = temp_x[rand_num];
 }
@@ -2114,10 +2060,9 @@ void best_move()
 
         if (!target_chosen && !chased)
         {
-            short int rand_num{};
             bool future_knock{false};
 
-            for (short int re_do = 0; re_do < 10000; re_do++)
+            for (s = 0; s < 10000; s++)
             {
                 rand_num = rand() % total_moves;
 
@@ -2141,7 +2086,7 @@ void best_move()
                     break;
                 }
 
-                if (re_do == 30)
+                if (s == 30)
                 {
                     rand_num = rand() % total_moves;
 
@@ -3216,7 +3161,7 @@ bool playersKnock_remove()
         if (count > 0)
         {
 
-            auto rand_num{rand() % count};
+            rand_num = rand() % count;
 
             temp_y[28] = temp_y[rand_num];
             temp_x[28] = temp_x[rand_num];
@@ -4670,6 +4615,14 @@ bool playersKnock_remove()
         }
     }
 
+    for (t = 0; t < 4; t++)
+    {
+        if (temp_board1[0][t] == 'o')
+        {
+            temp_board1[0][t] = 'O';
+        }
+    }
+
     return removed_knock;
 }
 
@@ -4770,7 +4723,7 @@ bool playersKnock_block()
 
         if (count > 0)
         {
-            auto rand_num{rand() % count};
+            rand_num = rand() % count;
 
             temp_y[28] = temp_y[rand_num];
             temp_x[28] = temp_x[rand_num];
@@ -5148,6 +5101,14 @@ bool playersKnock_block()
         }
     }
 
+    for (t = 0; t < 4; t++)
+    {
+        if (temp_board1[0][t] == 'o')
+        {
+            temp_board1[0][t] = 'O';
+        }
+    }
+
     return blocked_knock;
 }
 
@@ -5327,6 +5288,14 @@ bool knock_antidote()
                     temp_board1[s][t] = final_board[s][t];
                 }
             }
+        }
+    }
+
+    for (t = 0; t < 4; t++)
+    {
+        if (temp_board1[0][t] == 'o')
+        {
+            temp_board1[0][t] = 'O';
         }
     }
 
@@ -6002,6 +5971,14 @@ bool x_chase()
         }
     }
 
+    for (t = 0; t < 4; t++)
+    {
+        if (board[0][t] == 'o')
+        {
+            board[0][t] = 'O';
+        }
+    }
+
     std::cout << "\n        chased 2: " << std::boolalpha << chased;
 
     return chased;
@@ -6015,57 +5992,94 @@ short int check_winner(bool count)
     {
         for (t = 0; t < 4; t++)
         {
-            // downwards rightwards - odd
             if ((s == 7 || s == 5 || s == 3 || s == 1) && board[s][t] == 'X' && board[s - 1][t] == ' ')
             {
                 player_moves++;
             }
-
-            // downwards leftwards - odd
             if ((s == 7 || s == 5 || s == 3 || s == 1) && t != 0 && board[s][t] == 'X' && board[s - 1][t - 1] == ' ')
             {
                 player_moves++;
             }
-
-            // downwards rightwards - even
             if ((s == 6 || s == 4 || s == 2) && t != 3 && board[s][t] == 'X' && board[s - 1][t + 1] == ' ')
             {
                 player_moves++;
             }
-
-            // downwards leftwards - even
             if ((s == 6 || s == 4 || s == 2) && t != 0 && board[s][t] == 'X' && board[s - 1][t] == ' ')
             {
                 player_moves++;
             }
-
-            // upwards rightwards - odd
             if ((s == 1 || s == 5 || s == 3) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
             {
                 player_moves++;
             }
-
-            // upwards leftwards - odd
             if ((s == 1 || s == 5 || s == 3) && t != 0 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t - 1] == ' ')
             {
                 player_moves++;
             }
-
-            // upwards rightwards - even
             if ((s == 0 || s == 4 || s == 2 || s == 6) && t != 3 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t + 1] == ' ')
             {
                 player_moves++;
             }
-
-            // upwards leftwards - even
             if ((s == 0 || s == 4 || s == 2) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
+            {
+                player_moves++;
+            }
+
+            /* --> knocks <-- */
+            
+            if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'o' || board[s + 1][t + 1] == 'O') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
+            {
+                player_moves++;
+            }
+            if ((s == 0 || s == 2 || s == 4) && t != 0 && (board[s + 1][t] == 'o' || board[s + 1][t] == 'O') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
+            {
+                player_moves++;
+            }
+            if ((s == 1 || s == 3 || s == 5) && t != 3 && (board[s + 1][t] == 'o' || board[s + 1][t] == 'O') &&
+                (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
+            {
+                player_moves++;
+            }
+            if ((s == 1 || s == 3 || s == 5) && t != 0 && (board[s + 1][t - 1] == 'o' || board[s + 1][t - 1] == 'O') &&
+                (board[s + 2][t - 1] == ' ' || board[s + 2][t - 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
+            {
+                player_moves++;
+            }
+            if ((s == 6 || s == 2 || s == 4) && t != 3 && (board[s - 1][t + 1] == 'o' || board[s - 1][t + 1] == 'O') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && board[s][t] == 'X')
+            {
+                player_moves++;
+            }
+            if ((s == 6 || s == 2 || s == 4) && t != 0 && (board[s - 1][t] == 'o' || board[s - 1][t] == 'O') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && board[s][t] == 'X')
+            {
+                player_moves++;
+            }
+            if ((s == 7 || s == 3 || s == 5) && t != 3 && (board[s - 1][t] == 'o' || board[s - 1][t] == 'O') &&
+                (board[s - 2][t + 1] == ' ' || board[s - 2][t + 1] == '.') && board[s][t] == 'X')
+            {
+                player_moves++;
+            }
+            if ((s == 7 || s == 3 || s == 5) && t != 0 && (board[s - 1][t - 1] == 'o' || board[s - 1][t - 1] == 'O') &&
+                (board[s - 2][t - 1] == ' ' || board[s - 2][t - 1] == '.') && board[s][t] == 'X')
             {
                 player_moves++;
             }
         }
     }
 
-    auto comp_moves = total_compMoves();
+    // -------------------------------------------------------------------------------------------------------------------------- //
+
+    short int comp_moves{};
+    int comp_knocks{};
+
+    auto unknock_compMoves = total_compMoves();
+    knocks_checking(&comp_knocks);
+    comp_moves = unknock_compMoves + comp_knocks;
+
+    // -------------------------------------------------------------------------------------------------------------------------- //
 
     short int total_comp_pieces{};
     short int total_player_pieces{};
@@ -6089,18 +6103,32 @@ short int check_winner(bool count)
     draw_count[1] = total_player_pieces;
 
     if ((draw_count[2] == draw_count[0] && draw_count[3] == draw_count[0]) && total_comp_pieces < 4 && total_player_pieces < 4 && count)
+    {
         draw_count[4]++;
+    }
     else if (((draw_count[2] != draw_count[0] && draw_count[3] == draw_count[0]) || (draw_count[2] == draw_count[0] && draw_count[3] != draw_count[0]) || (draw_count[2] != draw_count[0] && draw_count[3] != draw_count[0])) && total_comp_pieces < 4 && total_player_pieces < 4 && count)
+    {
         draw_count[4] = 0;
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------- //
 
     if (draw_count[4] == 12)
+    {
         return 3;
+    }
     else if (player_moves == 0 && comp_moves > 0)
+    {
         return 2;
+    }
     else if (comp_moves == 0 && player_moves > 0)
+    {
         return 1;
+    }
     else
+    {
         return 0;
+    }
 }
 
 void print_winner(int winner)
