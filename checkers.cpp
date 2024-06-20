@@ -40,7 +40,7 @@ bool removed_knock{false};
 bool blocked_knock{false};
 bool moved{false};
 bool future_knock{false};
-bool chased{false};
+bool hunted{false};
 bool proceed{false};
 
 void reset_board();
@@ -48,16 +48,16 @@ void print_board();
 
 void player();
 void choice_processing(int);
-bool select_piece_player();
-bool move_piece_player();
+bool selectPiece_player();
+bool movePiece_player();
 bool more_knocks();
 
 void computer();
 bool knocks_checking(int *);
 short int total_compMoves();
 short int total_unknock_moves();
-void select_piece_comp();
-void move_piece_comp(char knock);
+void selectPiece_comp();
+void movePiece_comp(char knock);
 void best_move();
 short int triple_play();
 bool future_playersKnock();
@@ -67,7 +67,7 @@ int maxKnocks_player();
 bool playersKnock_remove();
 bool playersKnock_block();
 bool knock_antidote();
-bool x_chase();
+bool player_hunt();
 
 short int check_winner(bool count);
 void print_winner();
@@ -278,7 +278,7 @@ void player()
             else
             {
                 choice_processing(0);
-                selected = select_piece_player();
+                selected = selectPiece_player();
 
                 if (!selected)
                 {
@@ -343,7 +343,7 @@ void player()
                 else
                 {
                     choice_processing(1);
-                    moved = move_piece_player();
+                    moved = movePiece_player();
                     if (!moved)
                     {
                         print_board();
@@ -403,7 +403,7 @@ void player()
             else
             {
                 choice_processing(1);
-                moved = move_piece_player();
+                moved = movePiece_player();
                 if (!moved)
                 {
                     std::cout << "        Invalid input! Try again!" << std::endl;
@@ -481,7 +481,7 @@ void choice_processing(int index)
     }
 }
 
-bool select_piece_player()
+bool selectPiece_player()
 {
     selected = false;
 
@@ -647,7 +647,7 @@ bool select_piece_player()
     return selected;
 }
 
-bool move_piece_player()
+bool movePiece_player()
 {
     moved = false;
     moved_by_knock = false;
@@ -998,7 +998,7 @@ void computer()
     future_knock = false;
     removed_knock = false;
     blocked_knock = false;
-    chased = false;
+    hunted = false;
 
     char temp_board[8][4]{};
     short int max_knocks{};
@@ -1023,7 +1023,7 @@ void computer()
             y[1] = y1_store[rand_num];
             x[1] = x1_store[rand_num];
 
-            move_piece_comp('Y');
+            movePiece_comp('Y');
 
             while (knock_present = knocks_checking(&total_knocks))
             {
@@ -1034,7 +1034,7 @@ void computer()
                 y[1] = y1_store[rand_num];
                 x[1] = x1_store[rand_num];
 
-                move_piece_comp('Y');
+                movePiece_comp('Y');
             }
 
             moved = true;
@@ -1042,8 +1042,8 @@ void computer()
 
         if (!moved)
         {
-            select_piece_comp();
-            move_piece_comp('N');
+            selectPiece_comp();
+            movePiece_comp('N');
         }
     }
     else if (play_mode == 2)
@@ -1105,7 +1105,7 @@ void computer()
                 y[1] = y1_store[rand_num];
                 x[1] = x1_store[rand_num];
 
-                move_piece_comp('Y');
+                movePiece_comp('Y');
 
                 while (knock_present = knocks_checking(&total_knocks))
                 {
@@ -1116,7 +1116,7 @@ void computer()
                     y[1] = y1_store[rand_num];
                     x[1] = x1_store[rand_num];
 
-                    move_piece_comp('Y');
+                    movePiece_comp('Y');
                 }
 
                 moved = true;
@@ -1166,13 +1166,13 @@ void computer()
             }
 
             if (!blocked_knock && !removed_knock && player_pieces < 5)
-                chased = x_chase();
+                hunted = player_hunt();
 
-            while (!moved && !chased)
+            while (!moved && !hunted)
             {
                 for (short int re_do = 0; re_do < 100000; re_do++)
                 {
-                    select_piece_comp();
+                    selectPiece_comp();
                     future_knock = future_playersKnock();
 
                     if (!future_knock)
@@ -1192,8 +1192,8 @@ void computer()
                         break;
                     else if (!moved && re_do == 75)
                     {
-                        select_piece_comp();
-                        move_piece_comp('N');
+                        selectPiece_comp();
+                        movePiece_comp('N');
 
                         moved = true;
                         break;
@@ -1574,7 +1574,7 @@ short int total_unknock_moves()
     return count;
 }
 
-void select_piece_comp()
+void selectPiece_comp()
 {
     selected = false;
 
@@ -1720,7 +1720,7 @@ void select_piece_comp()
     x[1] = temp_x[rand_num];
 }
 
-void move_piece_comp(char knock)
+void movePiece_comp(char knock)
 {
     if (y[0] + 1 == y[1] && knock == 'N' && board[y[0]][x[0]] == 'O')
     {
@@ -2011,7 +2011,7 @@ void best_move()
     std::cout << "\n        total_moves: " << total_moves;
 
     short int count{};
-    chased = false;
+    hunted = false;
 
     if (target_chosen)
     {
@@ -2039,9 +2039,9 @@ void best_move()
     }
     else if (!target_chosen)
     {
-        chased = x_chase();
+        hunted = player_hunt();
 
-        if (!chased)
+        if (!hunted)
         {
             auto index{rand() % total_moves};
             while (count <= total_moves)
@@ -2101,7 +2101,7 @@ void best_move()
             }
         }
 
-        if (!target_chosen && !chased)
+        if (!target_chosen && !hunted)
         {
             future_knock = false;
 
@@ -2138,7 +2138,7 @@ void best_move()
                     y[1] = y1_store[rand_num];
                     x[1] = x1_store[rand_num];
 
-                    move_piece_comp('N');
+                    movePiece_comp('N');
 
                     break;
                 }
@@ -5340,7 +5340,7 @@ bool knock_antidote()
     return knock_chosen;
 }
 
-bool x_chase()
+bool player_hunt()
 {
     short int row0[30]{};
     short int row1[30]{};
@@ -5626,11 +5626,11 @@ bool x_chase()
 
     std::cout << "\n        count[2]: " << count[2];
 
-    chased = false;
+    hunted = false;
     short int round{};
     short int number{};
 
-    while (round < count[0] && count[0] > 0 && count[2] > 0 && !chased)
+    while (round < count[0] && count[0] > 0 && count[2] > 0 && !hunted)
     {
         y[0] = row0[round];
         y[1] = row1[round];
@@ -5657,7 +5657,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // downwards leftwards... y0 --> 7/5/3
                 else if (choice[0] == 1 && (y[0] == 7 || y[0] == 5 || y[0] == 3) && y[1] == y[0] - 1 && x[1] == x[0] - 1 && x[0] != 0 && board[y[0] - 2][x[0] - 1] == ' ' && y[0] - 2 == free_y1[t] && x[0] - 1 == free_x1[t])
@@ -5672,7 +5672,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // downwards rightwards... y0 --> 6/4
                 else if (choice[0] == 2 && (y[0] == 6 || y[0] == 4) && y[1] == y[0] - 1 && x[1] == x[0] + 1 && x[0] != 3 && board[y[0] - 2][x[0] + 1] == ' ' && y[0] - 2 == free_y1[t] && x[0] + 1 == free_x1[t])
@@ -5687,7 +5687,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 // downwards leftwards... y0 --> 6/4
@@ -5703,7 +5703,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 // downwards rightwards... y0 --> 2
@@ -5711,7 +5711,7 @@ bool x_chase()
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 // downwards leftwards... y0 --> 2
@@ -5719,7 +5719,7 @@ bool x_chase()
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards rightwards --> 0/2/4
@@ -5735,7 +5735,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards leftwards --> 0/2/4
@@ -5751,7 +5751,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards rightwards --> 1/3
@@ -5767,7 +5767,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards leftwards --> 1/3
@@ -5783,7 +5783,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards rightwards --> 5
@@ -5791,7 +5791,7 @@ bool x_chase()
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 //  upwards leftwards --> 5
@@ -5799,7 +5799,7 @@ bool x_chase()
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 // ------------------------------------------------------------------------- //
@@ -5817,7 +5817,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // upwards rightwards 6
                 else if (choice[0] == 13 && choice[0] == 1 && y[0] == 6 && y[1] == y[0] + 1 && x[0] != 3 && x[1] == x[0] + 1 && free_y1[t] == y[1] && free_x1[t] == x[1])
@@ -5832,14 +5832,14 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // downwards rightwards 1
                 else if (choice[0] == 14 && y[0] == 1 && y[1] == y[0] - 1 && x[0] != 3 && x[1] == x[0] && free_y1[t] == y[1] && free_x1[t] == x[1])
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // downwards leftwards 6/4/2
                 else if (choice[0] == 15 && (y[0] == 6 || y[0] == 4 || y[0] == 2) && y[1] == y[0] - 1 && x[0] == 0 && x[1] == x[0] && free_y1[t] == y[1] && free_x1[t] == x[1])
@@ -5854,14 +5854,14 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // downwards leftwards 1
                 else if (choice[0] == 16 && y[0] == 1 && y[1] == y[0] - 1 && x[0] != 0 && x[1] == x[0] - 1 && free_y1[t] == y[1] && free_x1[t] == x[1])
                 {
                     board[free_y1[t]][free_x1[t]] = 'O';
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // upwards rightwards 1/3/5
                 else if (choice[0] == 17 && (y[0] == 1 || y[0] == 5 || y[0] == 3) && y[1] == y[0] + 1 && x[0] == 3 && x[1] == x[0] && free_y1[t] == y[1] && free_x1[t] == x[1])
@@ -5876,7 +5876,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // upwards leftwards 0/2/4
                 else if (choice[0] == 18 && (y[0] == 0 || y[0] == 4 || y[0] == 2) && y[1] == y[0] + 1 && x[0] == 0 && x[1] == x[0] && free_y1[t] == y[1] && free_x1[t] == x[1])
@@ -5891,7 +5891,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
                 // upwards leftwards 6
                 else if (choice[0] == 19 && choice[0] == 0 && y[0] == 6 && y[1] == y[0] + 1 && x[0] != 0 && x[1] == x[0] && free_y1[t] == y[1] && free_x1[t] == x[1])
@@ -5906,7 +5906,7 @@ bool x_chase()
                     }
 
                     board[free_y0[t]][free_x0[t]] = '.';
-                    chased = true;
+                    hunted = true;
                 }
 
                 number++;
@@ -5914,19 +5914,19 @@ bool x_chase()
                 if (choice[0] == 20)
                     choice[0] = 0;
 
-            } while (number < 21 && !chased);
-            if (chased)
+            } while (number < 21 && !hunted);
+            if (hunted)
                 break;
         }
 
         round++;
     }
 
-    std::cout << "\n        chased 1: " << std::boolalpha << chased;
+    std::cout << "\n        hunted 1: " << std::boolalpha << hunted;
 
-    /*------------------------------------- !CHASED --------------------------------------*/
+    /*------------------------------------- !hunted --------------------------------------*/
 
-    if (!chased && count[0] > 0 && count[2] > 0)
+    if (!hunted && count[0] > 0 && count[2] > 0)
     {
         /* getting player's free target */
         for (s = 7; s >= 0; s--)
@@ -5959,11 +5959,11 @@ bool x_chase()
                                             }
 
                                             board[free_y0[x]][free_x0[x]] = '.';
-                                            chased = true;
+                                            hunted = true;
                                             break;
                                         }
                                     }
-                                    if (chased)
+                                    if (hunted)
                                         break;
                                 }
                             }
@@ -5986,25 +5986,25 @@ bool x_chase()
                                             }
 
                                             board[free_y0[x]][free_x0[x]] = '.';
-                                            chased = true;
+                                            hunted = true;
                                             break;
                                         }
                                     }
-                                    if (chased)
+                                    if (hunted)
                                         break;
                                 }
                             }
-                            if (chased)
+                            if (hunted)
                                 break;
                         }
                     }
-                    if (chased)
+                    if (hunted)
                         break;
                 }
-                if (chased)
+                if (hunted)
                     break;
             }
-            if (chased)
+            if (hunted)
                 break;
         }
     }
@@ -6017,9 +6017,79 @@ bool x_chase()
         }
     }
 
-    std::cout << "\n        chased 2: " << std::boolalpha << chased;
+    std::cout << "\n        hunted 2: " << std::boolalpha << hunted;
 
-    return chased;
+    return hunted;
+}
+
+void best_point()
+{
+    /* available points */
+    short int count = 0;
+
+    // downwards rightwards - odd
+    if ((y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o') && board[y[0] - 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // downwards leftwards - odd
+    if ((y[0] == 7 || y[0] == 5 || y[0] == 3 || y[0] == 1) && x[0] != 0 && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o') && board[y[0] - 1][x[0] - 1] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0] - 1;
+        count++;
+    }
+
+    // downwards rightwards - even
+    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && x[0] != 3 && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o') && board[y[0] - 1][x[0] + 1] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0] + 1;
+        count++;
+    }
+
+    // downwards leftwards - even
+    if ((y[0] == 6 || y[0] == 4 || y[0] == 2) && (board[y[0]][x[0]] == 'O' || board[y[0]][x[0]] == 'o') && board[y[0] - 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] - 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // upwards rightwards - odd
+    if ((y[0] == 1 || y[0] == 5 || y[0] == 3) && board[y[0]][x[0]] == 'O' && board[y[0] + 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0];
+        count++;
+    }
+
+    // upwards leftwards - odd
+    if ((y[0] == 1 || y[0] == 5 || y[0] == 3) && x[0] != 0 && board[y[0]][x[0]] == 'O' && board[y[0] + 1][x[0] - 1] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0] - 1;
+        count++;
+    }
+
+    // upwards rightwards - even
+    if ((y[0] == 0 || y[0] == 4 || y[0] == 2 || y[0] == 6) && x[0] != 3 && board[y[0]][x[0]] == 'O' && board[y[0] + 1][x[0] + 1] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0] + 1;
+        count++;
+    }
+
+    // upwards leftwards - even
+    if ((y[0] == 0 || y[0] == 4 || y[0] == 2) && board[y[0]][x[0]] == 'O' && board[y[0] + 1][x[0]] == ' ')
+    {
+        temp_y[count] = y[0] + 1;
+        temp_x[count] = x[0];
+        count++;
+    }
 }
 
 short int check_winner(bool count)
