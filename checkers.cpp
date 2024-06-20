@@ -1,9 +1,9 @@
 
 
 /*
-    AUTHOR: JOHN KALOKI
-    ORIGIN: KENYA
-    EMAIL:  me.johnkaloki@gmail.com
+    AUTHOR:      JOHN KALOKI
+    NATIONALITY: KENYAN
+    GITHUB:      WebTweaks
 */
 
 #include <iostream>
@@ -51,6 +51,7 @@ void choice_processing(int);
 bool select_piece_player();
 bool move_piece_player();
 bool more_knocks();
+short int total_playerMoves();
 
 void computer();
 bool knocks_checking(int *);
@@ -237,13 +238,13 @@ void player()
     switch (draw_count[4])
     {
     case 6:
-        std::cout << "        --> 6 Non-Knock Moves To Draw." << std::endl;
+        std::cout << "        6 More Non-Knock Moves To Draw!" << std::endl;
         break;
     case 9:
-        std::cout << "        --> 3 Non-Knock Moves To Draw." << std::endl;
+        std::cout << "        3 More Non-Knock Moves To Draw!" << std::endl;
         break;
     case 11:
-        std::cout << "        --> 1 Non-Knock Move To Draw." << std::endl;
+        std::cout << "        1 More Non-Knock Move To Draw!" << std::endl;
         break;
     default:
         break;
@@ -288,7 +289,7 @@ void player()
 
         while (!moved && selected)
         {
-            std::cout << "        --> Enter 00 to reselect." << '\n';
+            std::cout << "        Enter 00 to reselect." << '\n';
             std::cout << "        Enter target row# column# e.g 43: ";
 
             if (!(std::cin >> choice[1]))
@@ -946,6 +947,50 @@ bool more_knocks()
     return knock_present;
 }
 
+short int total_playerMoves()
+{
+    short int player_moves{};
+
+    for (s = 0; s < 8; s++)
+    {
+        for (t = 0; t < 4; t++)
+        {
+            if ((s == 7 || s == 5 || s == 3 || s == 1) && board[s][t] == 'X' && board[s - 1][t] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 7 || s == 5 || s == 3 || s == 1) && t != 0 && board[s][t] == 'X' && board[s - 1][t - 1] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 6 || s == 4 || s == 2) && t != 3 && board[s][t] == 'X' && board[s - 1][t + 1] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 6 || s == 4 || s == 2) && t != 0 && board[s][t] == 'X' && board[s - 1][t] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 1 || s == 5 || s == 3) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 1 || s == 5 || s == 3) && t != 0 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t - 1] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 0 || s == 4 || s == 2 || s == 6) && t != 3 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t + 1] == ' ')
+            {
+                player_moves++;
+            }
+            if ((s == 0 || s == 4 || s == 2) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
+            {
+                player_moves++;
+            }
+        }
+    }
+}
+
 void computer()
 {
     std::cout << "        =========================================" << std::endl;
@@ -963,7 +1008,7 @@ void computer()
         }
     }
 
-    selected = false ;
+    selected = false;
     moved = false;
     future_knock = false;
     removed_knock = false;
@@ -1123,7 +1168,8 @@ void computer()
                 }
             }
 
-            if (!blocked_knock && !removed_knock)
+            auto player_moves = total_playerMoves();
+            if (!blocked_knock && !removed_knock && player_moves < 5)
                 chased = x_chase();
 
             while (!moved && !chased)
@@ -2887,7 +2933,7 @@ int maxKnocks_player()
                         {
                             const unsigned short int temp_x19 = temp_x[29];
 
-                            knock_present = false ;
+                            knock_present = false;
                             proceed = false;
 
                             do
@@ -5983,47 +6029,12 @@ bool x_chase()
 
 short int check_winner(bool count)
 {
-    short int player_moves{};
+    auto player_moves = total_playerMoves();
 
     for (s = 0; s < 8; s++)
     {
         for (t = 0; t < 4; t++)
         {
-            if ((s == 7 || s == 5 || s == 3 || s == 1) && board[s][t] == 'X' && board[s - 1][t] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 7 || s == 5 || s == 3 || s == 1) && t != 0 && board[s][t] == 'X' && board[s - 1][t - 1] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 6 || s == 4 || s == 2) && t != 3 && board[s][t] == 'X' && board[s - 1][t + 1] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 6 || s == 4 || s == 2) && t != 0 && board[s][t] == 'X' && board[s - 1][t] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 1 || s == 5 || s == 3) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 1 || s == 5 || s == 3) && t != 0 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t - 1] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 0 || s == 4 || s == 2 || s == 6) && t != 3 && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t + 1] == ' ')
-            {
-                player_moves++;
-            }
-            if ((s == 0 || s == 4 || s == 2) && (board[s][t] == 'X' || board[s][t] == 'x') && board[s + 1][t] == ' ')
-            {
-                player_moves++;
-            }
-
-            /* --> knocks <-- */
-
             if ((s == 0 || s == 2 || s == 4) && t != 3 && (board[s + 1][t + 1] == 'o' || board[s + 1][t + 1] == 'O') &&
                 (board[s + 2][t + 1] == ' ' || board[s + 2][t + 1] == '.') && (board[s][t] == 'x' || board[s][t] == 'X'))
             {
