@@ -6019,8 +6019,6 @@ bool player_hunt()
             }
         }
     }
-    std::cout << "\n        count[0]: " << count[0];
-    std::cout << "\n        count[1]: " << count[1];
 
     short int free_y0[20]{};
     short int free_y1[20]{};
@@ -6030,7 +6028,6 @@ bool player_hunt()
     bool pass{false};
 
     total_moves = total_unknock_moves();
-    std::cout << "\n        total_moves: " << total_moves;
 
     for (s = 0; s < total_moves; s++)
     {
@@ -6049,6 +6046,8 @@ bool player_hunt()
         }
     }
 
+    std::cout << "\n        count[0]: " << count[0];
+    std::cout << "\n        count[1]: " << count[1];
     std::cout << "\n        count[2]: " << count[2];
 
     hunted = false;
@@ -6347,8 +6346,6 @@ bool player_hunt()
         round++;
     }
 
-    std::cout << "\n        hunted 1: " << std::boolalpha << hunted;
-
     /*------------------------------------- !hunted --------------------------------------*/
 
     if (!hunted && count[0] > 0 && count[2] > 0)
@@ -6442,8 +6439,6 @@ bool player_hunt()
         }
     }
 
-    std::cout << "\n        hunted 2: " << std::boolalpha << hunted;
-
     return hunted;
 }
 
@@ -6456,51 +6451,115 @@ bool best_target(int row, int column)
     selected = false;
 
     /* available targets */
-    if ((row == 7 || row == 5 || row == 3 || row == 1) && (board[row][column] == 'O' || board[row][column] == 'o') && board[row - 1][column] == ' ')
-    {
-        y1[moves_count] = row - 1;
-        x1[moves_count] = column;
-        moves_count++;
-    }
-    if ((row == 7 || row == 5 || row == 3 || row == 1) && column != 0 && (board[row][column] == 'O' || board[row][column] == 'o') && board[row - 1][column - 1] == ' ')
-    {
-        y1[moves_count] = row - 1;
-        x1[moves_count] = column - 1;
-        moves_count++;
-    }
-    if ((row == 6 || row == 4 || row == 2) && column != 3 && (board[row][column] == 'O' || board[row][column] == 'o') && board[row - 1][column + 1] == ' ')
-    {
-        y1[moves_count] = row - 1;
-        x1[moves_count] = column + 1;
-        moves_count++;
-    }
-    if ((row == 6 || row == 4 || row == 2) && (board[row][column] == 'O' || board[row][column] == 'o') && board[row - 1][column] == ' ')
-    {
-        y1[moves_count] = row - 1;
-        x1[moves_count] = column;
-        moves_count++;
-    }
-    if ((row == 1 || row == 5 || row == 3) && board[row][column] == 'O' && board[row + 1][column] == ' ')
-    {
-        y1[moves_count] = row + 1;
-        x1[moves_count] = column;
-        moves_count++;
-    }
-    if ((row == 1 || row == 5 || row == 3) && column != 0 && board[row][column] == 'O' && board[row + 1][column - 1] == ' ')
-    {
-        y1[moves_count] = row + 1;
-        x1[moves_count] = column - 1;
-        moves_count++;
-    }
-    if ((row == 0 || row == 4 || row == 2 || row == 6) && column != 3 && board[row][column] == 'O' && board[row + 1][column + 1] == ' ')
+    if ((row == 0 || row == 2 || row == 4) && column != 3 && board[row + 1][column + 1] == ' ' && board[row + 2][column + 1] != 'X' &&
+        ((board[row][column + 1] != 'x' && board[row][column + 1] != 'X') || ((board[row][column + 1] == 'x' || board[row][column + 1] == 'X') && board[row + 2][column] != ' ')) &&
+        (board[row + 2][column] != 'X' || (board[row + 2][column] == 'X' && board[row][column + 1] != ' ')) && board[row][column] == 'O')
     {
         y1[moves_count] = row + 1;
         x1[moves_count] = column + 1;
         moves_count++;
     }
-    if ((row == 0 || row == 4 || row == 2) && board[row][column] == 'O' && board[row + 1][column] == ' ')
+    if (row == 6 && column != 3 && board[row + 1][column + 1] == ' ' && board[row][column] == 'O')
     {
         y1[moves_count] = row + 1;
+        x1[moves_count] = column + 1;
+        moves_count++;
+    }
+    if ((row == 1 || row == 3 || row == 5) && column != 3 && board[row + 1][column] == ' ' && board[row + 2][column + 1] != 'X' &&
+        ((board[row][column + 1] != 'x' && board[row][column + 1] != 'X') || ((board[row][column + 1] == 'x' || board[row][column + 1] == 'X') && board[row + 2][column] != ' ')) &&
+        (board[row + 2][column] != 'X' || (board[row + 2][column] == 'X' && board[row][column + 1] != ' ')) && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 1 || row == 3 || row == 5) && column == 3 && board[row + 1][column] == ' ' && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 0 || row == 2 || row == 4) && column != 0 && board[row + 1][column] == ' ' && board[row + 2][column - 1] != 'X' &&
+        ((board[row][column - 1] != 'x' && board[row][column - 1] != 'X') || ((board[row][column - 1] == 'x' || board[row][column - 1] == 'X') && board[row + 2][column] != ' ')) &&
+        (board[row + 2][column] != 'X' || (board[row + 2][column] == 'X' && board[row][column - 1] != ' ')) && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if (row == 6 && board[row + 1][column] == ' ' && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 0 || row == 2 || row == 4) && column == 0 && board[row + 1][column] == ' ' && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 1 || row == 3 || row == 5) && column != 0 && board[row + 1][column - 1] == ' ' && board[row + 2][column - 1] != 'X' &&
+        ((board[row][column - 1] != 'x' && board[row][column - 1] != 'X') || ((board[row][column - 1] == 'x' || board[row][column - 1] == 'X') && board[row + 2][column] != ' ')) &&
+        (board[row + 2][column] != 'X' || (board[row + 2][column] == 'X' && board[row][column - 1] != ' ')) && board[row][column] == 'O')
+    {
+        y1[moves_count] = row + 1;
+        x1[moves_count] = column - 1;
+        moves_count++;
+    }
+    if ((row == 7 || row == 5 || row == 3) && column != 3 && board[row - 1][column] == ' ' && board[row - 2][column + 1] != 'X' && board[row - 2][column + 1] != 'x' &&
+        ((board[row - 2][column] != 'x' && board[row - 2][column] != 'X') || ((board[row - 2][column] == 'x' || board[row - 2][column] == 'X') && board[row][column + 1] != ' ')) &&
+        (board[row][column + 1] != 'X' || (board[row][column + 1] == 'X' && board[row - 2][column] != ' ')) && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 7 || row == 5 || row == 3) && column == 3 && board[row - 1][column] == ' ' && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if (row == 1 && board[row - 1][column] == ' ' && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 6 || row == 4 || row == 2) && column != 3 && board[row - 1][column + 1] == ' ' && board[row - 2][column + 1] != 'X' && board[row - 2][column + 1] != 'x' &&
+        ((board[row - 2][column] != 'x' && board[row - 2][column] != 'X') || ((board[row - 2][column] == 'x' || board[row - 2][column] == 'X') && board[row][column + 1] != ' ')) &&
+        (board[row][column + 1] != 'X' || (board[row][column + 1] == 'X' && board[row - 2][column] != ' ')) && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column + 1;
+        moves_count++;
+    }
+    if ((row == 7 || row == 5 || row == 3) && column != 0 && board[row - 1][column - 1] == ' ' && board[row - 2][column - 1] != 'X' && board[row - 2][column - 1] != 'x' &&
+        ((board[row - 2][column] != 'x' && board[row - 2][column] != 'X') || ((board[row - 2][column] == 'x' || board[row - 2][column] == 'X') && board[row][column - 1] != ' ')) &&
+        (board[row][column - 1] != 'X' || (board[row][column - 1] == 'X' && board[row - 2][column] != ' ')) && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column - 1;
+        moves_count++;
+    }
+    if (row == 1 && column != 0 && board[row - 1][column - 1] == ' ' && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column - 1;
+        moves_count++;
+    }
+    if ((row == 6 || row == 4 || row == 2) && column != 0 && board[row - 1][column] == ' ' && board[row - 2][column - 1] != 'X' && board[row - 2][column - 1] != 'x' &&
+        ((board[row - 2][column] != 'x' && board[row - 2][column] != 'X') || ((board[row - 2][column] == 'x' || board[row - 2][column] == 'X') && board[row][column - 1] != ' ')) &&
+        (board[row][column - 1] != 'X' || (board[row][column - 1] == 'X' && board[row - 2][column] != ' ')) && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
+        x1[moves_count] = column;
+        moves_count++;
+    }
+    if ((row == 6 || row == 4 || row == 2) && column == 0 && board[row - 1][column] == ' ' && (board[row][column] == 'O' || board[row][column] == 'o'))
+    {
+        y1[moves_count] = row - 1;
         x1[moves_count] = column;
         moves_count++;
     }
