@@ -2617,6 +2617,8 @@ void best_move()
     }
 
     short int total_moves = total_unknockMoves();
+    short int count{};
+    
     if (total_moves > 0)
     {
         for (s = 0; s < total_moves; s++)
@@ -2626,9 +2628,146 @@ void best_move()
             temp_y1[total_moves] = target_y[total_moves];
             temp_x1[total_moves] = target_x[total_moves];
         }
-    }
+        if (target_chosen)
+        {
+            while (count < total_moves)
+            {
+                y[0] = temp_y0[count];
+                x[0] = temp_x0[count];
+                y[1] = temp_y1[count];
+                x[1] = temp_x1[count];
 
-    if (total_moves == 0)
+                total_comp_knocks[1] = triple_play(&total_player_knocks);
+                if (total_comp_knocks[1] > total_comp_knocks[0] && total_comp_knocks[1] > total_player_knocks)
+                {
+                    for (s = 0; s < 8; s++)
+                    {
+                        for (t = 0; t < 4; t++)
+                        {
+                            final_board[s][t] = temp_board2[s][t];
+                        }
+                    }
+                }
+
+                count++;
+            }
+        }
+        else if (!target_chosen)
+        {
+            knock_creation();
+            if (!knock_created)
+            {
+                player_hunt();
+                if (!hunted)
+                {
+                    short int index = rand() % total_moves;
+                    while (count <= total_moves)
+                    {
+                        y[0] = temp_y0[index];
+                        x[0] = temp_x0[index];
+                        y[1] = temp_y1[index];
+                        x[1] = temp_x1[index];
+
+                        total_comp_knocks[0] = triple_play(&total_player_knocks);
+                        if (total_comp_knocks[0] > total_comp_knocks[1] && total_comp_knocks[0] > total_player_knocks)
+                        {
+                            target_chosen = true;
+                            for (s = 0; s < 8; s++)
+                            {
+                                for (t = 0; t < 4; t++)
+                                {
+                                    final_board[s][t] = temp_board2[s][t];
+                                }
+                            }
+                        }
+
+                        count++;
+                        index++;
+                        if (index == total_moves)
+                            index = 0;
+
+                        y[0] = temp_y0[index];
+                        x[0] = temp_x0[index];
+                        y[1] = temp_y1[index];
+                        x[1] = temp_x1[index];
+
+                        total_comp_knocks[1] = triple_play(&total_player_knocks);
+                        if (total_comp_knocks[1] > total_comp_knocks[0] && total_comp_knocks[1] > total_player_knocks)
+                        {
+                            target_chosen = true;
+                            for (s = 0; s < 8; s++)
+                            {
+                                for (t = 0; t < 4; t++)
+                                {
+                                    final_board[s][t] = temp_board2[s][t];
+                                }
+                            }
+                        }
+
+                        count++;
+                    }
+
+                    if (!target_chosen)
+                    {
+                        for (short int re_do = 0; re_do < 1000; re_do++)
+                        {
+                            rand_num = rand() % total_moves;
+
+                            y[0] = temp_y0[rand_num];
+                            x[0] = temp_x0[rand_num];
+                            y[1] = temp_y1[rand_num];
+                            x[1] = temp_x1[rand_num];
+
+                            future_playersKnock(true);
+
+                            if (!future_knock)
+                            {
+                                for (s = 0; s < 8; s++)
+                                {
+                                    for (t = 0; t < 4; t++)
+                                    {
+                                        board[s][t] = temp_board1[s][t];
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            if (re_do == 30)
+                            {
+                                rand_num = rand() % total_moves;
+
+                                y[0] = temp_y0[rand_num];
+                                x[0] = temp_x0[rand_num];
+                                y[1] = temp_y1[rand_num];
+                                x[1] = temp_x1[rand_num];
+
+                                movePiece_comp('N');
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (target_chosen)
+        {
+            for (s = 0; s < 8; s++)
+            {
+                for (t = 0; t < 4; t++)
+                {
+                    board[s][t] = final_board[s][t];
+                    if (board[0][t] == 'o')
+                    {
+                        board[0][t] = 'O';
+                    }
+                }
+            }
+        }
+    }
+    else if (total_moves == 0)
     {
         for (s = 0; s < 8; s++)
         {
@@ -2702,147 +2841,6 @@ void best_move()
         }
     }
 
-    short int count{};
-    hunted = false;
-
-    if (target_chosen)
-    {
-        while (count < total_moves)
-        {
-            y[0] = temp_y0[count];
-            x[0] = temp_x0[count];
-            y[1] = temp_y1[count];
-            x[1] = temp_x1[count];
-
-            total_comp_knocks[1] = triple_play(&total_player_knocks);
-            if (total_comp_knocks[1] > total_comp_knocks[0] && total_comp_knocks[1] > total_player_knocks)
-            {
-                for (s = 0; s < 8; s++)
-                {
-                    for (t = 0; t < 4; t++)
-                    {
-                        final_board[s][t] = temp_board2[s][t];
-                    }
-                }
-            }
-
-            count++;
-        }
-    }
-    else if (!target_chosen)
-    {
-        knock_creation();
-        if (!knock_created)
-        {
-            player_hunt();
-            if (!hunted)
-            {
-                short int index = rand() % total_moves;
-                while (count <= total_moves)
-                {
-                    y[0] = temp_y0[index];
-                    x[0] = temp_x0[index];
-                    y[1] = temp_y1[index];
-                    x[1] = temp_x1[index];
-
-                    total_comp_knocks[0] = triple_play(&total_player_knocks);
-                    if (total_comp_knocks[0] > total_comp_knocks[1] && total_comp_knocks[0] > total_player_knocks)
-                    {
-                        target_chosen = true;
-                        for (s = 0; s < 8; s++)
-                        {
-                            for (t = 0; t < 4; t++)
-                            {
-                                final_board[s][t] = temp_board2[s][t];
-                            }
-                        }
-                    }
-
-                    count++;
-                    index++;
-                    if (index == total_moves)
-                        index = 0;
-
-                    y[0] = temp_y0[index];
-                    x[0] = temp_x0[index];
-                    y[1] = temp_y1[index];
-                    x[1] = temp_x1[index];
-
-                    total_comp_knocks[1] = triple_play(&total_player_knocks);
-                    if (total_comp_knocks[1] > total_comp_knocks[0] && total_comp_knocks[1] > total_player_knocks)
-                    {
-                        target_chosen = true;
-                        for (s = 0; s < 8; s++)
-                        {
-                            for (t = 0; t < 4; t++)
-                            {
-                                final_board[s][t] = temp_board2[s][t];
-                            }
-                        }
-                    }
-
-                    count++;
-                }
-
-                if (!target_chosen)
-                {
-                    for (short int re_do = 0; re_do < 1000; re_do++)
-                    {
-                        rand_num = rand() % total_moves;
-
-                        y[0] = temp_y0[rand_num];
-                        x[0] = temp_x0[rand_num];
-                        y[1] = temp_y1[rand_num];
-                        x[1] = temp_x1[rand_num];
-
-                        future_playersKnock(true);
-
-                        if (!future_knock)
-                        {
-                            for (s = 0; s < 8; s++)
-                            {
-                                for (t = 0; t < 4; t++)
-                                {
-                                    board[s][t] = temp_board1[s][t];
-                                }
-                            }
-
-                            break;
-                        }
-
-                        if (re_do == 30)
-                        {
-                            rand_num = rand() % total_moves;
-
-                            y[0] = temp_y0[rand_num];
-                            x[0] = temp_x0[rand_num];
-                            y[1] = temp_y1[rand_num];
-                            x[1] = temp_x1[rand_num];
-
-                            movePiece_comp('N');
-
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (target_chosen)
-    {
-        for (s = 0; s < 8; s++)
-        {
-            for (t = 0; t < 4; t++)
-            {
-                board[s][t] = final_board[s][t];
-                if (board[0][t] == 'o')
-                {
-                    board[0][t] = 'O';
-                }
-            }
-        }
-    }
     std::cout << "\n        target chosen: " << target_chosen;
 }
 
