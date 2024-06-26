@@ -1203,29 +1203,11 @@ void computer()
                 y[0] = source_y[index];
                 x[0] = source_x[index];
 
-                rand_num = rand() % 2;
-
                 total_comp_knocks = maxKnocks_comp();
                 total_player_knocks = maxKnocks_player();
 
-                if (((total_comp_knocks >= total_player_knocks && !selected) ||
-                     (total_comp_knocks >= total_player_knocks && total_comp_knocks > max_knocks)) &&
-                    rand_num == 0)
-                {
-                    max_knocks = total_comp_knocks;
-                    for (s = 0; s < 8; s++)
-                    {
-                        for (t = 0; t < 4; t++)
-                        {
-                            temp_board[s][t] = temp_board2[s][t];
-                        }
-                    }
-
-                    selected = true;
-                }
-                else if (((total_comp_knocks > total_player_knocks && !selected) ||
-                          (total_comp_knocks > total_player_knocks && total_comp_knocks > max_knocks)) &&
-                         rand_num == 1)
+                if ((total_comp_knocks >= total_player_knocks && !selected) ||
+                    (total_comp_knocks >= total_player_knocks && total_comp_knocks > max_knocks))
                 {
                     max_knocks = total_comp_knocks;
                     for (s = 0; s < 8; s++)
@@ -2268,6 +2250,14 @@ short int maxKnocks_comp()
 
                     if (proceed)
                     {
+                        for (s = 0; s < 4; s++)
+                        {
+                            if (temp_board1[0][s] == 'o')
+                            {
+                                temp_board1[0][s] = 'O';
+                            }
+                        }
+
                         total_knocks++;
 
                         if (total_knocks > max_knocks)
@@ -2279,15 +2269,6 @@ short int maxKnocks_comp()
                                 {
                                     temp_board2[s][t] = temp_board1[s][t];
                                 }
-                            }
-                        }
-
-                        for (s = 0; s < 4; s++)
-                        {
-                            if (temp_board1[0][s] == 'o')
-                            {
-                                temp_board1[0][s] = 'O';
-                                temp_board2[0][s] = 'O';
                             }
                         }
 
@@ -2638,6 +2619,14 @@ short int maxKnocks_player()
 
                                 if (proceed)
                                 {
+                                    for (t = 0; t < 4; t++)
+                                    {
+                                        if (temp_board1[7][t] == 'x')
+                                        {
+                                            temp_board1[7][t] = 'X';
+                                        }
+                                    }
+
                                     total_knocks++;
 
                                     if (total_knocks > max_knocks)
@@ -2650,15 +2639,6 @@ short int maxKnocks_player()
                                             {
                                                 temp_board3[s][t] = temp_board1[s][t];
                                             }
-                                        }
-                                    }
-
-                                    for (t = 0; t < 4; t++)
-                                    {
-                                        if (temp_board1[7][t] == 'x')
-                                        {
-                                            temp_board1[7][t] = 'X';
-                                            temp_board3[7][t] = 'X';
                                         }
                                     }
 
@@ -2722,6 +2702,7 @@ void best_move()
         }
 
         total_comp_knocks[0] = triple_play(&total_player_knocks[0]);
+        std::cout << "\n        target chosen[0]: " << target_chosen;
     }
 
     short int total_moves = total_unknockMoves();
@@ -2736,6 +2717,7 @@ void best_move()
             temp_y1[s] = target_y[s];
             temp_x1[s] = target_x[s];
         }
+
         if (target_chosen)
         {
             while (count < total_moves)
@@ -2779,17 +2761,6 @@ void best_move()
 
                         future_playersKnock(true);
                         total_comp_knocks[0] = triple_play(&total_player_knocks[0]);
-                        if (total_comp_knocks[0] > total_comp_knocks[1] && total_comp_knocks[0] > total_player_knocks[0])
-                        {
-                            target_chosen = true;
-                            for (s = 0; s < 8; s++)
-                            {
-                                for (t = 0; t < 4; t++)
-                                {
-                                    final_board[s][t] = temp_board2[s][t];
-                                }
-                            }
-                        }
 
                         count++;
                         rand_num++;
@@ -2803,6 +2774,7 @@ void best_move()
 
                         future_playersKnock(true);
                         total_comp_knocks[1] = triple_play(&total_player_knocks[0]);
+
                         if (total_comp_knocks[1] > total_comp_knocks[0] && total_comp_knocks[1] > total_player_knocks[0])
                         {
                             target_chosen = true;
@@ -2813,12 +2785,13 @@ void best_move()
                                     final_board[s][t] = temp_board2[s][t];
                                 }
                             }
+                            std::cout << "\n        target chosen[1]: " << target_chosen;
                         }
                     }
 
                     if (!target_chosen)
                     {
-                        for (short int re_do = 0; re_do < 1000; re_do++)
+                        for (short int re_do = 0; re_do < 100; re_do++)
                         {
                             rand_num = rand() % total_moves;
 
@@ -2842,7 +2815,7 @@ void best_move()
                                 break;
                             }
 
-                            if (re_do == 30)
+                            if (re_do == 50)
                             {
                                 rand_num = rand() % total_moves;
 
@@ -2860,8 +2833,6 @@ void best_move()
                 }
             }
         }
-
-        std::cout << "\n        target chosen[1]: " << target_chosen;
     }
     else if (total_moves == 0)
     {
@@ -2963,6 +2934,7 @@ void best_move()
             if (total_player_knocks[1] < total_player_knocks[0])
             {
                 target_chosen = true;
+                std::cout << "\n        target chosen[2]: " << target_chosen;
                 for (s = 0; s < 8; s++)
                 {
                     for (t = 0; t < 4; t++)
@@ -2985,7 +2957,7 @@ void best_move()
             movePiece_comp('N');
         }
 
-        std::cout << "\n        target chosen[2]: " << target_chosen;
+        std::cout << "\n        target chosen[3]: " << target_chosen;
     }
 
     if (target_chosen)
@@ -3178,13 +3150,6 @@ short int triple_play(short int *total_player_knocks)
 
                                 if (proceed)
                                 {
-                                    total_knocks++;
-
-                                    y[2] = y[3];
-                                    x[2] = x[3];
-
-                                    total_comp_knocks = (total_knocks > total_comp_knocks) ? total_knocks : total_comp_knocks;
-
                                     for (t = 0; t < 4; t++)
                                     {
                                         if (temp_board1[0][t] == 'o')
@@ -3192,6 +3157,13 @@ short int triple_play(short int *total_player_knocks)
                                             temp_board1[0][t] = 'O';
                                         }
                                     }
+
+                                    total_knocks++;
+
+                                    y[2] = y[3];
+                                    x[2] = x[3];
+
+                                    total_comp_knocks = (total_knocks > total_comp_knocks) ? total_knocks : total_comp_knocks;
 
                                     future_more_knocks();
                                 }
