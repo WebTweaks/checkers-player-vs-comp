@@ -6507,6 +6507,8 @@ short int check_winner(bool sum_up)
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------- //
+    std::cout << "\n        player moves:" << player_moves;
+    std::cout << "\n        comp moves:  \n" << comp_moves;
 
     if (draw_count[4] == 12)
     {
