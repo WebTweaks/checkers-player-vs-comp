@@ -6182,7 +6182,7 @@ void player_hunt()
                     hunted = true;
                 }
                 // upwards rightwards 6
-                else if (choice[0] == 13 && choice[0] == 1 && y[2] == 6 && y[3] == y[2] + 1 && x[2] != 3 && x[3] == x[2] + 1 && free_y1[t] == y[3] && free_x1[t] == x[3])
+                else if (choice[0] == 13 && y[2] == 6 && y[3] == y[2] + 1 && x[2] != 3 && x[3] == x[2] + 1 && free_y1[t] == y[3] && free_x1[t] == x[3])
                 {
                     if (board[free_y0[t]][free_x0[t]] == 'O')
                     {
@@ -6256,7 +6256,7 @@ void player_hunt()
                     hunted = true;
                 }
                 // upwards leftwards 6
-                else if (choice[0] == 19 && choice[0] == 0 && y[2] == 6 && y[3] == y[2] + 1 && x[2] != 0 && x[3] == x[2] && free_y1[t] == y[3] && free_x1[t] == x[3])
+                else if (choice[0] == 19 && y[2] == 6 && y[3] == y[2] + 1 && x[2] != 0 && x[3] == x[2] && free_y1[t] == y[3] && free_x1[t] == x[3])
                 {
                     if (board[free_y0[t]][free_x0[t]] == 'O')
                     {
@@ -6311,169 +6311,43 @@ void player_hunt()
         }
     }
 
-    short int player_pieces{};
-    short int comp_pieces{};
-
-    for (s = 0; s < 8; s++)
-    {
-        for (t = 0; t < 4; t++)
-        {
-            if (board[s][t] == 'x' || board[s][t] == 'X')
-            {
-                player_pieces++; /* player pieces count */
-            }
-            else if (board[s][t] == 'o' || board[s][t] == 'O')
-            {
-                comp_pieces++; /* comp pieces count */
-            }
-        }
-    }
-
     if (hunted)
-        std::cout << "\n        hunted[1]: " << hunted;
+        std::cout << "\n        hunted[0]: " << hunted;
 
-    /* hunting in terms of row and column */
-    if (!hunted && count[0] != 0 && count[2] != 0 && player_pieces + 3 < comp_pieces)
+    /* -------------------------------------- corners --------------------------------------------- */
+    while (count[0] > 0 && count[2] != 0 && !hunted)
     {
-        for (s = 0; s < 8; s++)
+        for (s = 0; s < count[0]; s++)
         {
-            for (t = 0; t < 4; t++)
+            for (t = 0; t < count[2]; t++)
             {
-                for (short int u = 0; u < count[0]; u++)
+                if ((temp_y1[s] == 5 || temp_y1[s] == 3 || temp_y1[s] == 1) && temp_x1[s] == 0 && free_y1[t] == temp_y1[s] && free_x1[t] == 0)
                 {
-                    if (temp_y0[u] == s && temp_x0[u] == t) /* acquiring free piece */
+                    if (board[free_y0[t]][free_x0[t]] == 'O')
                     {
-                        if ((s == 7 || s == 6 || s == 5 || s == 4) && (t == 0 || t == 1))
-                        {
-                            for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
-                            {
-                                for (short int row = 7; row >= 0; row--)
-                                {
-                                    for (short int column = 0; column < 4; column++)
-                                    {
-                                        if (free_y0[v] == row && free_x0[v] == column)
-                                        {
-                                            if (board[free_y0[t]][free_x0[t]] == 'O')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'O';
-                                            }
-                                            else if (board[free_y0[t]][free_x0[t]] == 'o')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'o';
-                                            }
-
-                                            board[free_y0[t]][free_x0[t]] = '.';
-                                            hunted = true;
-                                        }
-                                        if (hunted)
-                                            break;
-                                    }
-                                    if (hunted)
-                                        break;
-                                }
-                                if (hunted)
-                                    break;
-                            }
-                        }
-                        else if ((s == 7 || s == 6 || s == 5 || s == 4) && (t == 2 || t == 3))
-                        {
-                            for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
-                            {
-                                for (short int row = 7; row >= 0; row--)
-                                {
-                                    for (short int column = 3; column >= 0; column--)
-                                    {
-                                        if (free_y0[v] == row && free_x0[v] == column)
-                                        {
-                                            if (board[free_y0[t]][free_x0[t]] == 'O')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'O';
-                                            }
-                                            else if (board[free_y0[t]][free_x0[t]] == 'o')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'o';
-                                            }
-
-                                            board[free_y0[t]][free_x0[t]] = '.';
-                                            hunted = true;
-                                        }
-                                        if (hunted)
-                                            break;
-                                    }
-                                    if (hunted)
-                                        break;
-                                }
-                                if (hunted)
-                                    break;
-                            }
-                        }
-                        else if ((s == 3 || s == 2 || s == 1 || s == 0) && (t == 0 || t == 1))
-                        {
-                            for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
-                            {
-                                for (short int row = 0; row < 8; row++)
-                                {
-                                    for (short int column = 0; column < 4; column++)
-                                    {
-                                        if (free_y0[v] == row && free_x0[v] == column)
-                                        {
-                                            if (board[free_y0[t]][free_x0[t]] == 'O')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'O';
-                                            }
-                                            else if (board[free_y0[t]][free_x0[t]] == 'o')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'o';
-                                            }
-
-                                            board[free_y0[t]][free_x0[t]] = '.';
-                                            hunted = true;
-                                        }
-                                        if (hunted)
-                                            break;
-                                    }
-                                    if (hunted)
-                                        break;
-                                }
-                                if (hunted)
-                                    break;
-                            }
-                        }
-                        else if ((s == 3 || s == 2 || s == 1 || s == 0) && (t == 2 || t == 3))
-                        {
-                            for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
-                            {
-                                for (short int row = 0; row < 8; row++)
-                                {
-                                    for (short int column = 3; column >= 0; column--)
-                                    {
-                                        if (free_y0[v] == row && free_x0[v] == column)
-                                        {
-                                            if (board[free_y0[t]][free_x0[t]] == 'O')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'O';
-                                            }
-                                            else if (board[free_y0[t]][free_x0[t]] == 'o')
-                                            {
-                                                board[free_y1[t]][free_x1[t]] = 'o';
-                                            }
-
-                                            board[free_y0[t]][free_x0[t]] = '.';
-                                            hunted = true;
-                                        }
-                                        if (hunted)
-                                            break;
-                                    }
-                                    if (hunted)
-                                        break;
-                                }
-                                if (hunted)
-                                    break;
-                            }
-                        }
+                        board[free_y1[t]][free_x1[t]] = 'O';
                     }
-                    if (hunted)
-                        break;
+                    else if (board[free_y0[t]][free_x0[t]] == 'o')
+                    {
+                        board[free_y1[t]][free_x1[t]] = 'o';
+                    }
+
+                    board[free_y0[t]][free_x0[t]] = '.';
+                    hunted = true;
+                }
+                else if ((temp_y1[s] == 6 || temp_y1[s] == 4 || temp_y1[s] == 2) && temp_x1[s] == 3 && free_y1[t] == temp_y1[s] && free_x1[t] == 0)
+                {
+                    if (board[free_y0[t]][free_x0[t]] == 'O')
+                    {
+                        board[free_y1[t]][free_x1[t]] = 'O';
+                    }
+                    else if (board[free_y0[t]][free_x0[t]] == 'o')
+                    {
+                        board[free_y1[t]][free_x1[t]] = 'o';
+                    }
+
+                    board[free_y0[t]][free_x0[t]] = '.';
+                    hunted = true;
                 }
                 if (hunted)
                     break;
@@ -6481,10 +6355,188 @@ void player_hunt()
             if (hunted)
                 break;
         }
-
-        if (hunted)
-            std::cout << "\n        hunted[2]: " << hunted;
     }
+
+    if (hunted)
+        std::cout << "\n        hunted[1]: " << hunted;
+
+    if (!hunted)
+    {
+        short int player_pieces{};
+        short int comp_pieces{};
+
+        for (s = 0; s < 8; s++)
+        {
+            for (t = 0; t < 4; t++)
+            {
+                if (board[s][t] == 'x' || board[s][t] == 'X')
+                {
+                    player_pieces++; /* player pieces count */
+                }
+                else if (board[s][t] == 'o' || board[s][t] == 'O')
+                {
+                    comp_pieces++; /* comp pieces count */
+                }
+            }
+        }
+
+        /* hunting in terms of row and column */
+        if (!hunted && count[0] != 0 && count[2] != 0 && player_pieces + 3 < comp_pieces)
+        {
+            for (s = 0; s < 8; s++)
+            {
+                for (t = 0; t < 4; t++)
+                {
+                    for (short int u = 0; u < count[0]; u++)
+                    {
+                        if (temp_y0[u] == s && temp_x0[u] == t) /* acquiring free piece */
+                        {
+                            if ((s == 7 || s == 6 || s == 5 || s == 4) && (t == 0 || t == 1))
+                            {
+                                for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
+                                {
+                                    for (short int row = 7; row >= 0; row--)
+                                    {
+                                        for (short int column = 0; column < 4; column++)
+                                        {
+                                            if (free_y0[v] == row && free_x0[v] == column)
+                                            {
+                                                if (board[free_y0[t]][free_x0[t]] == 'O')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'O';
+                                                }
+                                                else if (board[free_y0[t]][free_x0[t]] == 'o')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'o';
+                                                }
+
+                                                board[free_y0[t]][free_x0[t]] = '.';
+                                                hunted = true;
+                                            }
+                                            if (hunted)
+                                                break;
+                                        }
+                                        if (hunted)
+                                            break;
+                                    }
+                                    if (hunted)
+                                        break;
+                                }
+                            }
+                            else if ((s == 7 || s == 6 || s == 5 || s == 4) && (t == 2 || t == 3))
+                            {
+                                for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
+                                {
+                                    for (short int row = 7; row >= 0; row--)
+                                    {
+                                        for (short int column = 3; column >= 0; column--)
+                                        {
+                                            if (free_y0[v] == row && free_x0[v] == column)
+                                            {
+                                                if (board[free_y0[t]][free_x0[t]] == 'O')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'O';
+                                                }
+                                                else if (board[free_y0[t]][free_x0[t]] == 'o')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'o';
+                                                }
+
+                                                board[free_y0[t]][free_x0[t]] = '.';
+                                                hunted = true;
+                                            }
+                                            if (hunted)
+                                                break;
+                                        }
+                                        if (hunted)
+                                            break;
+                                    }
+                                    if (hunted)
+                                        break;
+                                }
+                            }
+                            else if ((s == 3 || s == 2 || s == 1 || s == 0) && (t == 0 || t == 1))
+                            {
+                                for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
+                                {
+                                    for (short int row = 0; row < 8; row++)
+                                    {
+                                        for (short int column = 0; column < 4; column++)
+                                        {
+                                            if (free_y0[v] == row && free_x0[v] == column)
+                                            {
+                                                if (board[free_y0[t]][free_x0[t]] == 'O')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'O';
+                                                }
+                                                else if (board[free_y0[t]][free_x0[t]] == 'o')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'o';
+                                                }
+
+                                                board[free_y0[t]][free_x0[t]] = '.';
+                                                hunted = true;
+                                            }
+                                            if (hunted)
+                                                break;
+                                        }
+                                        if (hunted)
+                                            break;
+                                    }
+                                    if (hunted)
+                                        break;
+                                }
+                            }
+                            else if ((s == 3 || s == 2 || s == 1 || s == 0) && (t == 2 || t == 3))
+                            {
+                                for (short int v = 0; v < count[2]; v++) /* looping through free o/O pieces */
+                                {
+                                    for (short int row = 0; row < 8; row++)
+                                    {
+                                        for (short int column = 3; column >= 0; column--)
+                                        {
+                                            if (free_y0[v] == row && free_x0[v] == column)
+                                            {
+                                                if (board[free_y0[t]][free_x0[t]] == 'O')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'O';
+                                                }
+                                                else if (board[free_y0[t]][free_x0[t]] == 'o')
+                                                {
+                                                    board[free_y1[t]][free_x1[t]] = 'o';
+                                                }
+
+                                                board[free_y0[t]][free_x0[t]] = '.';
+                                                hunted = true;
+                                            }
+                                            if (hunted)
+                                                break;
+                                        }
+                                        if (hunted)
+                                            break;
+                                    }
+                                    if (hunted)
+                                        break;
+                                }
+                            }
+                        }
+                        if (hunted)
+                            break;
+                    }
+                    if (hunted)
+                        break;
+                }
+                if (hunted)
+                    break;
+            }
+
+            if (hunted)
+                std::cout << "\n        hunted[2]: " << hunted;
+        }
+    }
+
+    if (!hunted)
+        std::cout << "\n        hunted: 0";
 }
 
 void knock_creation()
