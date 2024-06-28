@@ -3619,6 +3619,14 @@ void remove_knock()
 {
     removed_knock = false;
 
+    for (short int s = 0; s < 8; s++)
+    {
+        for (short int t = 0; t < 4; t++)
+        {
+            temp_board1[s][t] = board[s][t];
+        }
+    }
+
     short int count{};
 
     // downwards rightwards... y0 --> 7
@@ -5057,6 +5065,14 @@ void remove_knock()
 void block_knock()
 {
     blocked_knock = false;
+
+    for (short int s = 0; s < 8; s++)
+    {
+        for (short int t = 0; t < 4; t++)
+        {
+            temp_board1[s][t] = board[s][t];
+        }
+    }
 
     short int count{};
 
