@@ -1,10 +1,8 @@
-
-
 /*
-    AUTHOR:      JOHN KALOKI
-    NATIONALITY: KENYAN
-    GITHUB:      WebTweaks
-    HANDLE:      @jonkaloki
+    PROGRAMMER    --> JOHN KALOKI
+    NATIONALITY   --> KENYAN
+    GITHUB        --> WebTweaks
+    X/TWITTER     --> jonkaloki
 */
 
 #include <iostream>
@@ -50,7 +48,7 @@ void reset_board();
 void print_board();
 
 void player();
-void choice_processing(short int index);
+void process_choice(short int index);
 void select_piece();
 void move_piece(char knock);
 void more_knocks();
@@ -78,7 +76,7 @@ int main()
 {
     srand(time(0));
 
-    /*bool end{false};
+    bool end{false};
     char play_again{};
     const short int max_length{20};
 
@@ -152,13 +150,14 @@ int main()
     std::cout << "        Thank You " << player_name << " For Playing!" << std::endl;
     print_heart();
 
-    std::cout << std::endl;*/
-    reset_board();
+    std::cout << std::endl;
+    /*reset_board();
+    print_board();
     play_mode = 3;
     for (size_t i = 0; i < 30; i++)
     {
-        computer();
-    }
+        player();
+    }*/
 
     return 0;
 }
@@ -289,7 +288,7 @@ void player()
             }
             else
             {
-                choice_processing(0);
+                process_choice(0);
                 select_piece();
 
                 if (!selected)
@@ -354,7 +353,7 @@ void player()
                 }
                 else
                 {
-                    choice_processing(1);
+                    process_choice(1);
                     move_piece('N');
 
                     if (!moved)
@@ -385,6 +384,7 @@ void player()
 
     while (knock_present && moved_by_knock)
     {
+        moved = false;
         if (board[y[1]][x[1]] == 'X')
         {
             board[y[1]][x[1]] = 'S';
@@ -402,7 +402,7 @@ void player()
         std::cout << "               CONSECUTIVE KNOCK AVAILABLE " << std::endl;
         std::cout << "        -----------------------------------------" << std::endl;
 
-        do
+        while (!moved)
         {
             std::cout << "        Enter target row# column# e.g 54: ";
 
@@ -413,10 +413,9 @@ void player()
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 print_board();
             }
-
             else
             {
-                choice_processing(1);
+                process_choice(1);
                 move_piece('Y');
 
                 if (!moved)
@@ -425,8 +424,8 @@ void player()
                     print_board();
                 }
             }
+        }
 
-        } while (!moved);
         more_knocks();
     }
 
@@ -438,8 +437,10 @@ void player()
     std::cout << std::endl;
 }
 
-void choice_processing(short int index)
+void process_choice(short int index)
 {
+    bool processed{false};
+
     if (choice[index] == 11 || choice[index] == 13 || choice[index] == 15 || choice[index] == 17 || choice[index] == 22 || choice[index] == 24 || choice[index] == 26 || choice[index] == 28 || choice[index] == 31 || choice[index] == 33 || choice[index] == 35 || choice[index] == 37 || choice[index] == 42 || choice[index] == 44 || choice[index] == 46 || choice[index] == 48 ||
         choice[index] == 51 || choice[index] == 53 || choice[index] == 55 || choice[index] == 57 || choice[index] == 62 || choice[index] == 64 || choice[index] == 66 || choice[index] == 68 || choice[index] == 71 || choice[index] == 73 || choice[index] == 75 || choice[index] == 77 || choice[index] == 82 || choice[index] == 84 || choice[index] == 86 || choice[index] == 88)
     {
@@ -471,6 +472,7 @@ void choice_processing(short int index)
             }
 
             y[index] = y[index] - 1;
+            processed = true;
         }
         else if (y[index] == 7 || y[index] == 5 || y[index] == 3 || y[index] == 1)
         {
@@ -490,10 +492,13 @@ void choice_processing(short int index)
             {
                 x[index] = 3;
             }
+
             y[index] = y[index] - 1;
+            processed = true;
         }
     }
-    else
+
+    if (!processed)
     {
         y[index] = 9;
         x[index] = 9;
