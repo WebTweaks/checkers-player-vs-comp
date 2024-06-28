@@ -39,7 +39,7 @@ bool selected{false};
 bool removed_knock{false};
 bool blocked_knock{false};
 bool moved{false};
-bool future_knock{false};
+bool oncoming_knock{false};
 bool hunted{false};
 bool knock_created{false};
 bool knock_countered{false};
@@ -53,20 +53,20 @@ void select_piece();
 void move_piece(char knock);
 void more_knocks();
 void computer();
-void knocks_check(short int *, short int);
+void check_knocks(short int *, short int);
 short int total_moves(bool all);
-void future_playersKnock(bool with_values);
+void future_knock(bool with_values);
 short int maxKnocks_comp();
 void future_more_knocks();
 short int maxKnocks_player();
 void best_move();
 short int triple_play(short int *);
-bool playerMove_prediction();
-void playersKnock_remove();
-void playersKnock_block();
+bool move_prediction();
+void remove_knock();
+void block_knock();
 void knock_antidote();
-void player_hunt();
-void knock_creation();
+void hunt_player();
+void create_knock();
 
 short int check_winner(bool sum_up);
 void print_winner(short int winner);
@@ -1433,7 +1433,7 @@ void computer()
     short int total_comp_knocks{};
     short int total_player_knocks{};
 
-    knocks_check(&total_knocks, 1);
+    check_knocks(&total_knocks, 1);
     if (play_mode == 1)
     {
         rand_num = rand() % 3;
@@ -1441,7 +1441,7 @@ void computer()
 
         if ((rand_num == 1 && knock_present) || (moves == 0 && knock_present))
         {
-            knocks_check(&total_knocks, 1);
+            check_knocks(&total_knocks, 1);
             rand_num = rand() % total_knocks;
 
             y[0] = source_y[rand_num];
@@ -1518,7 +1518,7 @@ void computer()
             }
             else if (rand_num != 0)
             {
-                knocks_check(&total_knocks, 1);
+                check_knocks(&total_knocks, 1);
                 rand_num = rand() % total_knocks;
 
                 y[0] = source_y[rand_num];
@@ -1555,7 +1555,7 @@ void computer()
             }
 
             if (!moved)
-                knock_creation();
+                create_knock();
 
             if (!knock_created && !moved)
             {
@@ -1572,7 +1572,7 @@ void computer()
                 }
 
                 if (!blocked_knock && !removed_knock && player_pieces < 5)
-                    player_hunt();
+                    hunt_player();
 
                 while (!moved && !hunted)
                 {
@@ -1585,9 +1585,9 @@ void computer()
                         y[3] = y[1];
                         x[3] = x[1];
 
-                        future_playersKnock(true);
+                        future_knock(true);
 
-                        if (!future_knock)
+                        if (!oncoming_knock)
                         {
                             for (s = 0; s < 8; s++)
                             {
@@ -1672,7 +1672,7 @@ void computer()
     print_board();
 }
 
-void knocks_check(short int *total_knocks, short int part)
+void check_knocks(short int *total_knocks, short int part)
 {
     knock_present = false;
     *total_knocks = 0;
@@ -2022,9 +2022,9 @@ short int total_moves(bool all)
     return count;
 }
 
-void future_playersKnock(bool with_values)
+void future_knock(bool with_values)
 {
-    future_knock = false;
+    oncoming_knock = false;
 
     short int s{};
     short int t{};
@@ -2134,42 +2134,42 @@ void future_playersKnock(bool with_values)
             if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
                 (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
                 (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
                 (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
                 (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
                 (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
                 (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
                 (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
             if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
                 (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
             {
-                future_knock = true;
+                oncoming_knock = true;
             }
         }
     }
@@ -2773,7 +2773,7 @@ void best_move()
 
         comp_knocks = triple_play(&player_knocks);
         if (player_knocks == 1)
-            knocks_check(&player_knocks, 2);
+            check_knocks(&player_knocks, 2);
 
         knock_difference[0] = comp_knocks - player_knocks;
     }
@@ -2800,11 +2800,11 @@ void best_move()
                 y[3] = temp_y1[count];
                 x[3] = temp_x1[count];
 
-                future_playersKnock(true);
+                future_knock(true);
 
                 comp_knocks = triple_play(&player_knocks);
                 if (player_knocks == 1)
-                    knocks_check(&player_knocks, 2);
+                    check_knocks(&player_knocks, 2);
 
                 knock_difference[1] = comp_knocks - player_knocks;
 
@@ -2836,12 +2836,12 @@ void best_move()
         }
         else if (!knock_countered)
         {
-            knock_creation();
+            create_knock();
             if (knock_created)
                 std::cout << "\n        knock created";
             if (!knock_created)
             {
-                player_hunt();
+                hunt_player();
                 if (hunted)
                     std::cout << "\n        player chased";
                 if (!hunted)
@@ -2856,11 +2856,11 @@ void best_move()
                         y[3] = temp_y1[rand_num];
                         x[3] = temp_x1[rand_num];
 
-                        future_playersKnock(true);
+                        future_knock(true);
 
                         comp_knocks = triple_play(&player_knocks);
                         if (player_knocks == 1)
-                            knocks_check(&player_knocks, 2);
+                            check_knocks(&player_knocks, 2);
 
                         knock_difference[0] = comp_knocks - player_knocks;
 
@@ -2874,11 +2874,11 @@ void best_move()
                         y[3] = temp_y1[rand_num];
                         x[3] = temp_x1[rand_num];
 
-                        future_playersKnock(true);
+                        future_knock(true);
 
                         comp_knocks = triple_play(&player_knocks);
                         if (player_knocks == 1)
-                            knocks_check(&player_knocks, 2);
+                            check_knocks(&player_knocks, 2);
 
                         knock_difference[1] = comp_knocks - player_knocks;
 
@@ -2918,9 +2918,9 @@ void best_move()
                             y[3] = temp_y1[rand_num];
                             x[3] = temp_x1[rand_num];
 
-                            future_playersKnock(true);
+                            future_knock(true);
 
-                            if (!future_knock)
+                            if (!oncoming_knock)
                             {
                                 for (s = 0; s < 8; s++)
                                 {
@@ -3043,11 +3043,11 @@ void best_move()
                 y[3] = temp_y1[rand_num];
                 x[3] = temp_x1[rand_num];
 
-                future_playersKnock(true);
+                future_knock(true);
 
                 triple_play(&total_knocks[0]);
                 if (total_knocks[0] == 1)
-                    knocks_check(&total_knocks[0], 2);
+                    check_knocks(&total_knocks[0], 2);
 
                 if (!selected)
                 {
@@ -3073,11 +3073,11 @@ void best_move()
                 y[3] = temp_y1[rand_num];
                 x[3] = temp_x1[rand_num];
 
-                future_playersKnock(true);
+                future_knock(true);
 
                 triple_play(&total_knocks[1]);
                 if (total_knocks[1] == 1)
-                    knocks_check(&total_knocks[1], 2);
+                    check_knocks(&total_knocks[1], 2);
 
                 if (total_knocks[1] < least_knocks)
                 {
@@ -3149,7 +3149,7 @@ short int triple_play(short int *player_knocks)
     *player_knocks = maxKnocks_player();
     if (*player_knocks == 0)
     {
-        proceed = playerMove_prediction();
+        proceed = move_prediction();
         if (!proceed)
         {
             for (s = 0; s < 8; s++)
@@ -3353,7 +3353,7 @@ short int triple_play(short int *player_knocks)
     return total_comp_knocks;
 }
 
-bool playerMove_prediction()
+bool move_prediction()
 {
 
     bool proceed = false;
@@ -3633,7 +3633,7 @@ bool playerMove_prediction()
     return proceed;
 }
 
-void playersKnock_remove()
+void remove_knock()
 {
     removed_knock = false;
 
@@ -5188,7 +5188,7 @@ void playersKnock_remove()
     }
 }
 
-void playersKnock_block()
+void block_knock()
 {
     blocked_knock = false;
 
@@ -5774,10 +5774,10 @@ void knock_antidote()
             y[3] = temp_y1[rand_num];
             x[3] = temp_x1[rand_num];
 
-            playersKnock_block();
+            block_knock();
             comp_knocks = triple_play(&player_knocks);
             if (player_knocks == 1)
-                knocks_check(&player_knocks, 2);
+                check_knocks(&player_knocks, 2);
 
             knock_difference[0] = comp_knocks - player_knocks;
 
@@ -5798,10 +5798,10 @@ void knock_antidote()
             y[3] = temp_y1[rand_num];
             x[3] = temp_x1[rand_num];
 
-            playersKnock_remove();
+            remove_knock();
             comp_knocks = triple_play(&player_knocks);
             if (player_knocks == 1)
-                knocks_check(&player_knocks, 2);
+                check_knocks(&player_knocks, 2);
 
             knock_difference[1] = comp_knocks - player_knocks;
 
@@ -5836,7 +5836,7 @@ void knock_antidote()
     }
 }
 
-void player_hunt()
+void hunt_player()
 {
     hunted = false;
 
@@ -6409,8 +6409,8 @@ void player_hunt()
                         }
                     }
 
-                    future_playersKnock(false);
-                    if (future_knock)
+                    future_knock(false);
+                    if (oncoming_knock)
                     {
                         if (board[free_y1[t]][free_x1[t]] == 'O')
                         {
@@ -6678,7 +6678,7 @@ void player_hunt()
     }
 }
 
-void knock_creation()
+void create_knock()
 {
     knock_created = false;
 
@@ -6691,7 +6691,7 @@ void knock_creation()
     short int s{};
     short int t{};
 
-    knocks_check(&total_knocks[0], 1);
+    check_knocks(&total_knocks[0], 1);
     moves = total_moves(false);
 
     if (moves > 0)
@@ -6703,7 +6703,7 @@ void knock_creation()
             y[3] = target_y[index];
             x[3] = target_x[index];
 
-            future_playersKnock(true);
+            future_knock(true);
             comp_knocks = triple_play(&player_knocks);
 
             for (s = 0; s < 8; s++)
@@ -6715,7 +6715,7 @@ void knock_creation()
                 }
             }
 
-            knocks_check(&total_knocks[1], 1);
+            check_knocks(&total_knocks[1], 1);
 
             for (s = 0; s < 8; s++)
             {
@@ -6835,7 +6835,7 @@ short int check_winner(bool sum_up)
     auto unknock_compMoves = total_moves(true);
     short int knock_compMoves{};
 
-    knocks_check(&knock_compMoves, 1);
+    check_knocks(&knock_compMoves, 1);
     short int comp_moves = unknock_compMoves + knock_compMoves;
 
     // -------------------------------------------------------------------------------------------------------------------------- //
