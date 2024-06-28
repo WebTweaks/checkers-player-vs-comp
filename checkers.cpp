@@ -151,14 +151,6 @@ int main()
     print_heart();
 
     std::cout << std::endl;
-    /*reset_board();
-    print_board();
-    play_mode = 3;
-    for (size_t i = 0; i < 30; i++)
-    {
-        player();
-    }*/
-
     return 0;
 }
 
@@ -2762,7 +2754,6 @@ void best_move()
     knock_antidote();
     if (knock_countered)
     {
-        std::cout << "\n        knock countered";
         for (s = 0; s < 8; s++)
         {
             for (t = 0; t < 4; t++)
@@ -2811,7 +2802,6 @@ void best_move()
                 if ((knock_difference[1] > knock_difference[0] && !selected) || (knock_difference[1] > max_knocks && selected))
                 {
                     selected = true;
-                    std::cout << "\n        part 1 OK!";
                     max_knocks = knock_difference[1];
 
                     for (s = 0; s < 8; s++)
@@ -2837,13 +2827,9 @@ void best_move()
         else if (!knock_countered)
         {
             create_knock();
-            if (knock_created)
-                std::cout << "\n        knock created";
             if (!knock_created)
             {
                 hunt_player();
-                if (hunted)
-                    std::cout << "\n        player chased";
                 if (!hunted)
                 {
                     selected = false;
@@ -2897,7 +2883,6 @@ void best_move()
 
                     if (target_chosen)
                     {
-                        std::cout << "\n        part 2 OK!";
                         for (s = 0; s < 8; s++)
                         {
                             for (t = 0; t < 4; t++)
@@ -2908,7 +2893,6 @@ void best_move()
                     }
                     else if (!target_chosen)
                     {
-                        std::cout << "\n        in part 3";
                         for (short int re_do = 0; re_do < 1000; re_do++)
                         {
                             rand_num = rand() % moves;
@@ -3096,7 +3080,6 @@ void best_move()
 
             if (selected)
             {
-                std::cout << "\n        least knocks option!";
                 for (s = 0; s < 8; s++)
                 {
                     for (t = 0; t < 4; t++)
@@ -3108,7 +3091,6 @@ void best_move()
         }
         else if (moves == 1)
         {
-            std::cout << "\n        1 option!";
             rand_num = rand() % moves;
 
             y[0] = temp_y0[rand_num];
@@ -3637,852 +3619,351 @@ void remove_knock()
 {
     removed_knock = false;
 
-    short int temp_y0[35]{};
-    short int temp_x0[35]{};
-    short int temp_y1[35]{};
-    short int temp_x1[35]{};
-
-    short int s{};
-    short int t{};
-
     short int count{};
-    short int rand_num{};
 
-    for (s = 0; s < 8; s++)
+    // downwards rightwards... y0 --> 7
+    if (y[2] == 7 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
     {
-        for (t = 0; t < 4; t++)
-        {
-            temp_board1[s][t] = board[s][t];
-        }
-    }
-
-    if (play_mode != 3)
-    {
-        for (s = 0; s < 8; s++)
-        {
-            for (t = 0; t < 4; t++)
-            {
-                if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
-                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
-                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-                if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
-                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
-                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-
-                if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
-                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
-                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-                if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
-                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
-                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-            }
-        }
-
-        if (count > 0)
-        {
-
-            rand_num = rand() % count;
-
-            y[2] = temp_y0[rand_num];
-            x[2] = temp_x0[rand_num];
-            y[3] = temp_y1[rand_num];
-            x[3] = temp_x1[rand_num];
-        }
-    }
-
-    if (count > 0 || play_mode == 3)
-    {
-        count = 0;
-
-        // downwards rightwards... y0 --> 7
-        if (y[2] == 7 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 0)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards leftwards... y0 --> 7
-        else if (y[2] == 7 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0)
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 2 || x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 2] != 'x' && temp_board1[y[2] - 3][x[2] - 2] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2] - 2] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 2] != 'X' || (temp_board1[y[2] - 1][x[2] - 2] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards rightwards... y0 --> 6/4
-        else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
-                    {
-                        if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 0 || x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] + 2] != 'x' && temp_board1[y[2] - 1][x[2] + 2] != 'X') || ((temp_board1[y[2] - 1][x[2] + 2] == 'x' || temp_board1[y[2] - 1][x[2] + 2] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2] + 2] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 2] != 'x' && temp_board1[y[2] - 3][x[2] + 2] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] + 2] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 2] != 'X' || (temp_board1[y[2] - 1][x[2] + 2] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards leftwards... y0 --> 6/4
-        else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2)
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
-                        ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards rightwards... y0 --> 5/3
-        else if ((y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 0)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'x' &&
-                             ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'X' && temp_board1[y[2] - 3][x[2] - 1] != 'x' &&
-                        ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'x' &&
-                             ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2]] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2]] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards leftwards... y0 --> 5/3
-        else if ((y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0)
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x' &&
-                             ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 2 || x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 2] != 'X' && temp_board1[y[2] - 3][x[2] - 2] != 'x' &&
-                        ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O' && temp_board1[y[2] + 1][x[2] - 2] != 'X' && temp_board1[y[2] + 1][x[2] - 2] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2] - 2] != 'x' && temp_board1[y[2] - 1][x[2] - 2] != 'X') || ((temp_board1[y[2] - 1][x[2] - 2] == 'x' || temp_board1[y[2] - 1][x[2] - 2] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2] - 2] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x' &&
-                             ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
-                             (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'O';
-                        }
-                        else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
-                        {
-                            temp_board1[y[2] - 2][x[2]] = 'o';
-                        }
-
-                        temp_board1[y[2] - 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards rightwards... y0 --> 2
-        else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
-                    {
-                        temp_board1[y[2] - 2][x[2]] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
-                    {
-                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 0 || x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
-                    {
-                        temp_board1[y[2] - 2][x[2]] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] - 1][x[2] + 2] != 'x' && temp_board1[y[2] - 1][x[2] + 2] != 'X') || ((temp_board1[y[2] - 1][x[2] + 2] == 'x' || temp_board1[y[2] - 1][x[2] + 2] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2] + 2] != ' ')))
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
-                    {
-                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] - 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        // downwards leftwards... y0 --> 2
-        else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+        if (x[2] == 0)
         {
             choice[0] = rand() % 3;
 
-            while (count < 4 && !removed_knock)
+            do
+            {
+
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O')
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 1 || x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O')
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards leftwards... y0 --> 7
+    else if (y[2] == 7 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
             {
                 if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0)
                 {
-                    temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 2 || x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 2] != 'x' && temp_board1[y[2] - 3][x[2] - 2] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2] - 2] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 2] != 'X' || (temp_board1[y[2] - 1][x[2] - 2] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards rightwards... y0 --> 6/4
+    else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
+                {
+                    if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 0 || x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 1][x[2] + 2] != 'x' && temp_board1[y[2] - 1][x[2] + 2] != 'X') || ((temp_board1[y[2] - 1][x[2] + 2] == 'x' || temp_board1[y[2] - 1][x[2] + 2] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2] + 2] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 2] != 'x' && temp_board1[y[2] - 3][x[2] + 2] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X') || ((temp_board1[y[2] - 3][x[2] + 1] == 'x' || temp_board1[y[2] - 3][x[2] + 1] == 'X') && temp_board1[y[2] - 1][x[2] + 2] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 2] != 'X' || (temp_board1[y[2] - 1][x[2] + 2] == 'X' && temp_board1[y[2] - 3][x[2] + 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] + 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards leftwards... y0 --> 6/4
+    else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
                     temp_board1[y[2] - 1][x[2]] = '.';
                     removed_knock = true;
                 }
@@ -4496,7 +3977,15 @@ void remove_knock()
                 }
                 else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2)
                 {
-                    temp_board1[y[2] - 2][x[2]] = 'O';
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
                     temp_board1[y[2] - 1][x[2]] = '.';
                     removed_knock = true;
                 }
@@ -4505,550 +3994,542 @@ void remove_knock()
                 count++;
                 if (choice[0] == 3)
                     choice[0] = 0;
-            }
+
+            } while (count < 4 && !removed_knock);
         }
-        //  upwards rightwards --> 0
-        else if (y[2] == 0 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'x' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 0 || x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'x' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
-                    {
-                        temp_board1[y[2]][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2] + 2] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X') || ((temp_board1[y[2] + 1][x[2] + 2] == 'x' || temp_board1[y[2] + 1][x[2] + 2] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2] + 2] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards leftwards --> 0
-        else if (y[2] == 0 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
-                    {
-                        temp_board1[y[2]][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards rightwards --> 1/3
-        else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 0)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X' && temp_board1[y[2] - 1][x[2] + 1] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2]] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2]] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X' && temp_board1[y[2] - 1][x[2] + 1] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2]] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2]] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards leftwards --> 1/3
-        else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 1)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
-                    {
-                        if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 2 || x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 2] != 'X' && temp_board1[y[2] - 1][x[2] - 2] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2] - 2] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] - 2] != 'X' || (temp_board1[y[2] + 1][x[2] - 2] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2] - 2] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] - 2] != 'x' && temp_board1[y[2] + 1][x[2] - 2] != 'X') || ((temp_board1[y[2] + 1][x[2] - 2] == 'x' || temp_board1[y[2] + 1][x[2] - 2] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2] - 2] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards rightwards --> 2/4
-        else if ((y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            if (x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
-                    {
-                        if (temp_board1[y[2] + 1][x[2] + 1] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] + 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 2] != 'X' && temp_board1[y[2] - 1][x[2] + 2] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2] + 2] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] + 2] != 'X' || (temp_board1[y[2] + 1][x[2] + 2] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2] + 1] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] + 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2] + 2] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X') || ((temp_board1[y[2] + 1][x[2] + 2] == 'x' || temp_board1[y[2] + 1][x[2] + 2] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2] + 2] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] + 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] + 1] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards leftwards --> 2/4
-        else if ((y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            if (x[2] == 3)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] != 'X' && temp_board1[y[2] - 1][x[2] - 1] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2]] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2]] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 1 || x[2] == 2)
-            {
-                choice[0] = rand() % 3;
-
-                do
-                {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
-                        ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                        (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] != 'X' && temp_board1[y[2] - 1][x[2] - 1] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
-                    {
-                        if (temp_board1[y[2] + 1][x[2]] == 'O')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2]] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
-                             ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
-                             (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2]] = '.';
-                        removed_knock = true;
-                    }
-
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
-
-                } while (count < 4 && !removed_knock);
-            }
-        }
-        //  upwards rightwards --> 5
-        else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+        else if (x[2] == 1 || x[2] == 2)
         {
             choice[0] = rand() % 3;
 
-            while (count < 4 && !removed_knock)
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X' &&
+                    ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] - 1] != 'X' &&
+                         ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards rightwards... y0 --> 5/3
+    else if ((y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 0)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'x' &&
+                         ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 1 || x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 1] != 'X' && temp_board1[y[2] - 3][x[2] - 1] != 'x' &&
+                    ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2] + 1] != 'X' && temp_board1[y[2] - 3][x[2] + 1] != 'x' &&
+                         ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2] + 1] != 'X' || (temp_board1[y[2] - 1][x[2] + 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2]] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2]] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards leftwards... y0 --> 5/3
+    else if ((y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0)
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x' &&
+                         ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 2 || x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0 && temp_board1[y[2] - 3][x[2] - 2] != 'X' && temp_board1[y[2] - 3][x[2] - 2] != 'x' &&
+                    ((temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X') || ((temp_board1[y[2] - 3][x[2]] == 'x' || temp_board1[y[2] - 3][x[2]] == 'X') && temp_board1[y[2] - 1][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] - 1][x[2] - 1] != 'X' || (temp_board1[y[2] - 1][x[2] - 1] == 'X' && temp_board1[y[2] - 3][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] == 'O' && temp_board1[y[2] + 1][x[2] - 2] != 'X' && temp_board1[y[2] + 1][x[2] - 2] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2] - 2] != 'x' && temp_board1[y[2] - 1][x[2] - 2] != 'X') || ((temp_board1[y[2] - 1][x[2] - 2] == 'x' || temp_board1[y[2] - 1][x[2] - 2] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2] - 2] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x' &&
+                         ((temp_board1[y[2] - 3][x[2] - 1] != 'x' && temp_board1[y[2] - 3][x[2] - 1] != 'X') || ((temp_board1[y[2] - 3][x[2] - 1] == 'x' || temp_board1[y[2] - 3][x[2] - 1] == 'X') && temp_board1[y[2] - 1][x[2]] != ' ')) &&
+                         (temp_board1[y[2] - 1][x[2]] != 'X' || (temp_board1[y[2] - 1][x[2]] == 'X' && temp_board1[y[2] - 3][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'O';
+                    }
+                    else if (temp_board1[y[2] - 1][x[2] - 1] == 'o')
+                    {
+                        temp_board1[y[2] - 2][x[2]] = 'o';
+                    }
+
+                    temp_board1[y[2] - 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards rightwards... y0 --> 2
+    else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
+                {
+                    temp_board1[y[2] - 2][x[2]] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
+                {
+                    temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 0 || x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 0)
+                {
+                    temp_board1[y[2] - 2][x[2]] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] == 'O' && temp_board1[y[2] + 1][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] - 1][x[2] + 2] != 'x' && temp_board1[y[2] - 1][x[2] + 2] != 'X') || ((temp_board1[y[2] - 1][x[2] + 2] == 'x' || temp_board1[y[2] - 1][x[2] + 2] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2] + 2] != ' ')))
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] - 2][x[2] + 1] == ' ' && choice[0] == 2)
+                {
+                    temp_board1[y[2] - 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] - 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    // downwards leftwards... y0 --> 2
+    else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        choice[0] = rand() % 3;
+
+        while (count < 4 && !removed_knock)
+        {
+            if (temp_board1[y[2] - 2][x[2] - 1] == ' ' && choice[0] == 0)
+            {
+                temp_board1[y[2] - 2][x[2] - 1] = 'O';
+                temp_board1[y[2] - 1][x[2]] = '.';
+                removed_knock = true;
+            }
+            else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2]] == 'O' && temp_board1[y[2] + 1][x[2] - 1] != 'X' &&
+                     ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2]] != ' ')) &&
+                     (temp_board1[y[2] + 1][x[2]] != 'X' || (temp_board1[y[2] + 1][x[2]] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
+            {
+                temp_board1[y[2]][x[2] - 1] = 'O';
+                temp_board1[y[2] - 1][x[2]] = '.';
+                removed_knock = true;
+            }
+            else if (temp_board1[y[2] - 2][x[2]] == ' ' && choice[0] == 2)
+            {
+                temp_board1[y[2] - 2][x[2]] = 'O';
+                temp_board1[y[2] - 1][x[2]] = '.';
+                removed_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
+        }
+    }
+    //  upwards rightwards --> 0
+    else if (y[2] == 0 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'x' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 0 || x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'x' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
+                {
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2] + 2] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X') || ((temp_board1[y[2] + 1][x[2] + 2] == 'x' || temp_board1[y[2] + 1][x[2] + 2] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2] + 2] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards leftwards --> 0
+    else if (y[2] == 0 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 1 || x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
+                {
+                    temp_board1[y[2]][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards rightwards --> 1/3
+    else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 0)
+        {
+            choice[0] = rand() % 3;
+
+            do
             {
                 if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
                 {
@@ -5074,7 +4555,9 @@ void remove_knock()
                     temp_board1[y[2] + 1][x[2]] = '.';
                     removed_knock = true;
                 }
-                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O')
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
                 {
                     temp_board1[y[2] + 2][x[2] + 1] = 'O';
                     temp_board1[y[2] + 1][x[2]] = '.';
@@ -5085,101 +4568,484 @@ void remove_knock()
                 count++;
                 if (choice[0] == 3)
                     choice[0] = 0;
-            }
+
+            } while (count < 4 && !removed_knock);
         }
-        //  upwards leftwards --> 5
-        else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+        else if (x[2] == 1 || x[2] == 2)
         {
-            if (x[2] == 1)
+            choice[0] = rand() % 3;
+
+            do
             {
-                choice[0] = rand() % 3;
-
-                do
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
                 {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X' && temp_board1[y[2] - 1][x[2] + 1] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2]] == 'O')
                     {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
+
+                        temp_board1[y[2]][x[2] + 1] = 'O';
                     }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
+                    else if (temp_board1[y[2] + 1][x[2]] == 'o')
                     {
-                        if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                        {
 
-                            temp_board1[y[2]][x[2] + 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] + 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
+                        temp_board1[y[2]][x[2] + 1] = 'o';
                     }
 
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
 
-                } while (count < 4 && !removed_knock);
-            }
-            else if (x[2] == 2 || x[2] == 3)
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards leftwards --> 1/3
+    else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
             {
-                choice[0] = rand() % 3;
-
-                do
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
                 {
-                    if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
+                {
+                    if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
                     {
-                        temp_board1[y[2] + 2][x[2]] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
+
+                        temp_board1[y[2]][x[2] + 1] = 'O';
                     }
-                    else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 2] != 'X' && temp_board1[y[2] - 1][x[2] - 2] != 'x' &&
-                             ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2] - 2] != ' ')) &&
-                             (temp_board1[y[2] + 1][x[2] - 2] != 'X' || (temp_board1[y[2] + 1][x[2] - 2] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
+                    else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
                     {
-                        if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                        {
 
-                            temp_board1[y[2]][x[2] - 1] = 'O';
-                        }
-                        else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
-                        {
-
-                            temp_board1[y[2]][x[2] - 1] = 'o';
-                        }
-
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
-                    }
-                    else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[2] + 2][x[2] - 1] = 'O';
-                        temp_board1[y[2] + 1][x[2] - 1] = '.';
-                        removed_knock = true;
+                        temp_board1[y[2]][x[2] + 1] = 'o';
                     }
 
-                    choice[0]++;
-                    count++;
-                    if (choice[0] == 3)
-                        choice[0] = 0;
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
 
-                } while (count < 4 && !removed_knock);
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 2 || x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 2] != 'X' && temp_board1[y[2] - 1][x[2] - 2] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2] - 2] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] - 2] != 'X' || (temp_board1[y[2] + 1][x[2] - 2] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O' && temp_board1[y[2] + 3][x[2] - 2] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] - 2] != 'x' && temp_board1[y[2] + 1][x[2] - 2] != 'X') || ((temp_board1[y[2] + 1][x[2] - 2] == 'x' || temp_board1[y[2] + 1][x[2] - 2] == 'X') && temp_board1[y[2] + 3][x[2] - 1] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2] - 1] != 'X' || (temp_board1[y[2] + 3][x[2] - 1] == 'X' && temp_board1[y[2] + 1][x[2] - 2] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards rightwards --> 2/4
+    else if ((y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        if (x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1)
+                {
+                    if (temp_board1[y[2] + 1][x[2] + 1] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2] + 1] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 1 || x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2]] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2]] != 'x' && temp_board1[y[2] + 1][x[2]] != 'X') || ((temp_board1[y[2] + 1][x[2]] == 'x' || temp_board1[y[2] + 1][x[2]] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2]] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 2] != 'X' && temp_board1[y[2] - 1][x[2] + 2] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2] + 1] != 'x' && temp_board1[y[2] - 1][x[2] + 1] != 'X') || ((temp_board1[y[2] - 1][x[2] + 1] == 'x' || temp_board1[y[2] - 1][x[2] + 1] == 'X') && temp_board1[y[2] + 1][x[2] + 2] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] + 2] != 'X' || (temp_board1[y[2] + 1][x[2] + 2] == 'X' && temp_board1[y[2] - 1][x[2] + 1] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2] + 1] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2] + 1] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] + 1] == 'O' && temp_board1[y[2] + 3][x[2] + 2] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X') || ((temp_board1[y[2] + 1][x[2] + 2] == 'x' || temp_board1[y[2] + 1][x[2] + 2] == 'X') && temp_board1[y[2] + 3][x[2] + 1] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2] + 1] != 'X' || (temp_board1[y[2] + 3][x[2] + 1] == 'X' && temp_board1[y[2] + 1][x[2] + 2] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] + 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards leftwards --> 2/4
+    else if ((y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] != 'X' && temp_board1[y[2] - 1][x[2] - 1] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2]] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2]] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 1 || x[2] == 2)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] + 1] != 'X' &&
+                    ((temp_board1[y[2] + 1][x[2] + 1] != 'x' && temp_board1[y[2] + 1][x[2] + 1] != 'X') || ((temp_board1[y[2] + 1][x[2] + 1] == 'x' || temp_board1[y[2] + 1][x[2] + 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                    (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] + 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 1] != 'X' && temp_board1[y[2] - 1][x[2] - 1] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] - 1] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] - 1] != 'X' || (temp_board1[y[2] + 1][x[2] - 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2]] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2]] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O' && temp_board1[y[2] + 3][x[2] - 1] != 'X' &&
+                         ((temp_board1[y[2] + 1][x[2] - 1] != 'x' && temp_board1[y[2] + 1][x[2] - 1] != 'X') || ((temp_board1[y[2] + 1][x[2] - 1] == 'x' || temp_board1[y[2] + 1][x[2] - 1] == 'X') && temp_board1[y[2] + 3][x[2]] != ' ')) &&
+                         (temp_board1[y[2] + 3][x[2]] != 'X' || (temp_board1[y[2] + 3][x[2]] == 'X' && temp_board1[y[2] + 1][x[2] - 1] != ' ')))
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2]] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+    }
+    //  upwards rightwards --> 5
+    else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        choice[0] = rand() % 3;
+
+        while (count < 4 && !removed_knock)
+        {
+            if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2]] == 'O')
+            {
+                temp_board1[y[2] + 2][x[2]] = 'O';
+                temp_board1[y[2] + 1][x[2]] = '.';
+                removed_knock = true;
             }
+            else if (temp_board1[y[2]][x[2] + 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X' && temp_board1[y[2] - 1][x[2] + 1] != 'x' &&
+                     ((temp_board1[y[2] - 1][x[2]] != 'x' && temp_board1[y[2] - 1][x[2]] != 'X') || ((temp_board1[y[2] - 1][x[2]] == 'x' || temp_board1[y[2] - 1][x[2]] == 'X') && temp_board1[y[2] + 1][x[2] + 1] != ' ')) &&
+                     (temp_board1[y[2] + 1][x[2] + 1] != 'X' || (temp_board1[y[2] + 1][x[2] + 1] == 'X' && temp_board1[y[2] - 1][x[2]] != ' ')))
+            {
+                if (temp_board1[y[2] + 1][x[2]] == 'O')
+                {
+
+                    temp_board1[y[2]][x[2] + 1] = 'O';
+                }
+                else if (temp_board1[y[2] + 1][x[2]] == 'o')
+                {
+
+                    temp_board1[y[2]][x[2] + 1] = 'o';
+                }
+
+                temp_board1[y[2] + 1][x[2]] = '.';
+                removed_knock = true;
+            }
+            else if (temp_board1[y[2] + 2][x[2] + 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2]] == 'O')
+            {
+                temp_board1[y[2] + 2][x[2] + 1] = 'O';
+                temp_board1[y[2] + 1][x[2]] = '.';
+                removed_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
+        }
+    }
+    //  upwards leftwards --> 5
+    else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        if (x[2] == 1)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1)
+                {
+                    if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] + 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
+        }
+        else if (x[2] == 2 || x[2] == 3)
+        {
+            choice[0] = rand() % 3;
+
+            do
+            {
+                if (temp_board1[y[2] + 2][x[2]] == ' ' && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2]] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2]][x[2] - 1] == ' ' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] - 2] != 'X' && temp_board1[y[2] - 1][x[2] - 2] != 'x' &&
+                         ((temp_board1[y[2] - 1][x[2] - 1] != 'x' && temp_board1[y[2] - 1][x[2] - 1] != 'X') || ((temp_board1[y[2] - 1][x[2] - 1] == 'x' || temp_board1[y[2] - 1][x[2] - 1] == 'X') && temp_board1[y[2] + 1][x[2] - 2] != ' ')) &&
+                         (temp_board1[y[2] + 1][x[2] - 2] != 'X' || (temp_board1[y[2] + 1][x[2] - 2] == 'X' && temp_board1[y[2] - 1][x[2] - 1] != ' ')))
+                {
+                    if (temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'O';
+                    }
+                    else if (temp_board1[y[2] + 1][x[2] - 1] == 'o')
+                    {
+
+                        temp_board1[y[2]][x[2] - 1] = 'o';
+                    }
+
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+                else if (temp_board1[y[2] + 2][x[2] - 1] == ' ' && choice[0] == 2 && temp_board1[y[2] + 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[2] + 2][x[2] - 1] = 'O';
+                    temp_board1[y[2] + 1][x[2] - 1] = '.';
+                    removed_knock = true;
+                }
+
+                choice[0]++;
+                count++;
+                if (choice[0] == 3)
+                    choice[0] = 0;
+
+            } while (count < 4 && !removed_knock);
         }
     }
 
-    for (t = 0; t < 4; t++)
+    for (short int t = 0; t < 4; t++)
     {
         if (temp_board1[0][t] == 'o')
         {
@@ -5192,469 +5058,354 @@ void block_knock()
 {
     blocked_knock = false;
 
-    short int temp_y0[35]{};
-    short int temp_x0[35]{};
-    short int temp_y1[35]{};
-    short int temp_x1[35]{};
-
-    short int s{};
-    short int t{};
-
     short int count{};
-    short int rand_num{};
 
-    for (s = 0; s < 8; s++)
+    // downwards rightwards... y0 --> 7/5/3
+    if ((y[2] == 7 || y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
     {
-        for (t = 0; t < 4; t++)
+        choice[0] = rand() % 2;
+
+        while (count < 3 && !blocked_knock)
         {
-            temp_board1[s][t] = board[s][t];
+            if ((temp_board1[y[2] - 1][x[2] + 1] == 'o' || temp_board1[y[2] - 1][x[2] + 1] == 'O') && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X')
+            {
+                if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] - 1][x[2] + 1] = '.';
+                blocked_knock = true;
+            }
+            else if (temp_board1[y[2] - 3][x[2]] == 'O' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2]] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 2)
+                choice[0] = 0;
         }
     }
-
-    if (play_mode != 3)
+    // downwards leftwards... y0 --> 7/5/3
+    else if ((y[2] == 7 || y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
     {
-        for (s = 0; s < 8; s++)
+        choice[0] = rand() % 3;
+
+        while (count < 4 && !blocked_knock)
         {
-            for (t = 0; t < 4; t++)
+            if (temp_board1[y[2] - 3][x[2] - 1] == 'O' && choice[0] == 0 && x[3] == 0)
             {
-                if ((s == 0 || s == 2 || s == 4) && t != 3 && (temp_board1[s + 1][t + 1] == 'o' || temp_board1[s + 1][t + 1] == 'O') &&
-                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 0 || s == 2 || s == 4) && t != 0 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
-                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-                if ((s == 1 || s == 3 || s == 5) && t != 3 && (temp_board1[s + 1][t] == 'o' || temp_board1[s + 1][t] == 'O') &&
-                    (temp_board1[s + 2][t + 1] == ' ' || temp_board1[s + 2][t + 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 1 || s == 3 || s == 5) && t != 0 && (temp_board1[s + 1][t - 1] == 'o' || temp_board1[s + 1][t - 1] == 'O') &&
-                    (temp_board1[s + 2][t - 1] == ' ' || temp_board1[s + 2][t - 1] == '.') && (temp_board1[s][t] == 'x' || temp_board1[s][t] == 'X'))
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s + 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-
-                if ((s == 6 || s == 2 || s == 4) && t != 3 && (temp_board1[s - 1][t + 1] == 'o' || temp_board1[s - 1][t + 1] == 'O') &&
-                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 6 || s == 2 || s == 4) && t != 0 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
-                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
-                if ((s == 7 || s == 3 || s == 5) && t != 3 && (temp_board1[s - 1][t] == 'o' || temp_board1[s - 1][t] == 'O') &&
-                    (temp_board1[s - 2][t + 1] == ' ' || temp_board1[s - 2][t + 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t + 1;
-                    count++;
-                }
-                if ((s == 7 || s == 3 || s == 5) && t != 0 && (temp_board1[s - 1][t - 1] == 'o' || temp_board1[s - 1][t - 1] == 'O') &&
-                    (temp_board1[s - 2][t - 1] == ' ' || temp_board1[s - 2][t - 1] == '.') && temp_board1[s][t] == 'X')
-                {
-                    temp_y0[count] = s;
-                    temp_x0[count] = t;
-                    temp_y1[count] = s - 2;
-                    temp_x1[count] = t - 1;
-                    count++;
-                }
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2] - 1] = '.';
+                blocked_knock = true;
             }
-        }
+            else if (temp_board1[y[2] - 3][x[2] - 1] == 'O' && choice[0] == 1 && x[3] != 0 && temp_board1[y[2] - 1][x[2] - 2] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2] - 1] = '.';
+                blocked_knock = true;
+            }
+            else if ((temp_board1[y[2] - 1][x[2] - 2] == 'O' || temp_board1[y[2] - 1][x[2] - 2] == 'o') && choice[0] == 2 && x[3] != 0 && temp_board1[y[2] - 3][x[2] - 1] != 'X' && temp_board1[y[2] - 3][x[2] - 1] != 'x')
+            {
+                if (temp_board1[y[2] - 1][x[2] - 2] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
 
-        if (count > 0)
-        {
-            rand_num = rand() % count;
+                temp_board1[y[2] - 1][x[2] - 2] = '.';
+                blocked_knock = true;
+            }
 
-            y[2] = temp_y0[rand_num];
-            x[2] = temp_x0[rand_num];
-            y[3] = temp_y1[rand_num];
-            x[3] = temp_x1[rand_num];
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
         }
     }
-
-    if (count > 0 || play_mode == 3)
+    // downwards rightwards... y0 --> 6/4
+    else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
     {
-        count = 0;
+        choice[0] = rand() % 3;
 
-        // downwards rightwards... y0 --> 7/5/3
-        if ((y[2] == 7 || y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
+        while (count < 4 && !blocked_knock)
         {
-            choice[0] = rand() % 2;
-
-            while (count < 3 && !blocked_knock)
+            if ((temp_board1[y[2] - 1][x[2] + 2] == 'o' || temp_board1[y[2] - 1][x[2] + 2] == 'O') && choice[0] == 0 && x[3] != 3 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X')
             {
-                if ((temp_board1[y[2] - 1][x[2] + 1] == 'o' || temp_board1[y[2] - 1][x[2] + 1] == 'O') && choice[0] == 0 && temp_board1[y[2] - 3][x[2]] != 'x' && temp_board1[y[2] - 3][x[2]] != 'X')
-                {
-                    if (temp_board1[y[2] - 1][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] - 1][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] - 3][x[2]] == 'O' && choice[0] == 1 && temp_board1[y[2] - 1][x[2] + 1] != 'X')
+                if (temp_board1[y[2] - 1][x[2] + 2] == 'O')
                 {
                     temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2]] = '.';
-                    blocked_knock = true;
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
                 }
 
-                choice[0]++;
-                count++;
-                if (choice[0] == 2)
-                    choice[0] = 0;
+                temp_board1[y[2] - 1][x[2] + 2] = '.';
+                blocked_knock = true;
             }
-        }
-        // downwards leftwards... y0 --> 7/5/3
-        else if ((y[2] == 7 || y[2] == 5 || y[2] == 3) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            choice[0] = rand() % 3;
-
-            while (count < 4 && !blocked_knock)
+            else if (temp_board1[y[2] - 3][x[2] + 1] == 'O' && choice[0] == 1 && x[3] != 3 && temp_board1[y[2] - 1][x[2] + 2] != 'X')
             {
-                if (temp_board1[y[2] - 3][x[2] - 1] == 'O' && choice[0] == 0 && x[3] == 0)
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] - 3][x[2] - 1] == 'O' && choice[0] == 1 && x[3] != 0 && temp_board1[y[2] - 1][x[2] - 2] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-                else if ((temp_board1[y[2] - 1][x[2] - 2] == 'O' || temp_board1[y[2] - 1][x[2] - 2] == 'o') && choice[0] == 2 && x[3] != 0 && temp_board1[y[2] - 3][x[2] - 1] != 'X' && temp_board1[y[2] - 3][x[2] - 1] != 'x')
-                {
-                    if (temp_board1[y[2] - 1][x[2] - 2] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] - 1][x[2] - 2] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 3)
-                    choice[0] = 0;
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2] + 1] = '.';
+                blocked_knock = true;
             }
-        }
-        // downwards rightwards... y0 --> 6/4
-        else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            choice[0] = rand() % 3;
-
-            while (count < 4 && !blocked_knock)
+            else if (temp_board1[y[2] - 3][x[2] + 1] == 'O' && choice[0] == 2 && x[3] == 3)
             {
-                if ((temp_board1[y[2] - 1][x[2] + 2] == 'o' || temp_board1[y[2] - 1][x[2] + 2] == 'O') && choice[0] == 0 && x[3] != 3 && temp_board1[y[2] - 3][x[2] + 1] != 'x' && temp_board1[y[2] - 3][x[2] + 1] != 'X')
-                {
-                    if (temp_board1[y[2] - 1][x[2] + 2] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] - 1][x[2] + 2] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] - 3][x[2] + 1] == 'O' && choice[0] == 1 && x[3] != 3 && temp_board1[y[2] - 1][x[2] + 2] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] - 3][x[2] + 1] == 'O' && choice[0] == 2 && x[3] == 3)
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 3)
-                    choice[0] = 0;
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2] + 1] = '.';
+                blocked_knock = true;
             }
-        }
-        // downwards leftwards... y0 --> 6/4
-        else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            choice[0] = rand() % 2;
 
-            while (count < 3 && !blocked_knock)
-            {
-                if (temp_board1[y[2] - 3][x[2]] == 'O' && choice[0] == 0 && temp_board1[y[2] - 1][x[2] - 1] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] - 3][x[2]] = '.';
-                    blocked_knock = true;
-                }
-                else if ((temp_board1[y[2] - 1][x[2] - 1] == 'O' || temp_board1[y[2] - 1][x[2] - 1] == 'o') && choice[0] == 1 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x')
-                {
-                    if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] - 1][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 2)
-                    choice[0] = 0;
-            }
-        }
-        // downwards rightwards... y0 --> 2
-        else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3 && x[2] != 2 &&
-                 (temp_board1[y[2] - 1][x[2] + 2] == 'o' || temp_board1[y[2] - 1][x[2] + 2] == 'O'))
-        {
-            temp_board1[y[3]][x[3]] = 'O';
-            temp_board1[y[2] - 1][x[2] + 2] = '.';
-            blocked_knock = true;
-        }
-        // downwards leftwards... y0 --> 2
-        else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0 &&
-                 (temp_board1[y[2] - 1][x[2] - 1] == 'O' || temp_board1[y[2] - 1][x[2] - 1] == 'o'))
-        {
-            temp_board1[y[3]][x[3]] = 'O';
-            temp_board1[y[2] - 1][x[2] - 1] = '.';
-            blocked_knock = true;
-        }
-        //  upwards rightwards --> 0/2/4
-        else if ((y[2] == 0 || y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            choice[0] = rand() % 3;
-
-            while (count < 4 && !blocked_knock)
-            {
-                if ((temp_board1[y[2] + 3][x[2] + 1] == 'o' || temp_board1[y[2] + 3][x[2] + 1] == 'O') && choice[0] == 0 && x[3] != 3 && temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X')
-                {
-                    if (temp_board1[y[2] + 3][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-                else if ((temp_board1[y[2] + 3][x[2] + 1] == 'o' || temp_board1[y[2] + 3][x[2] + 1] == 'O') && choice[0] == 1 && x[3] == 3)
-                {
-                    if (temp_board1[y[2] + 3][x[2] + 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] + 1][x[2] + 2] == 'O' && choice[0] == 2 && x[3] != 3 && temp_board1[y[2] + 3][x[2] + 1] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] + 1][x[2] + 2] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 3)
-                    choice[0] = 0;
-            }
-        }
-        //  upwards leftwards --> 0/2/4
-        else if ((y[2] == 0 || y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            choice[0] = rand() % 2;
-
-            while (count < 3 && !blocked_knock)
-            {
-                if ((temp_board1[y[2] + 3][x[2]] == 'O' || temp_board1[y[2] + 3][x[2]] == 'o') && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] != 'X' && temp_board1[y[2] + 1][x[2] - 1] != 'x')
-                {
-                    if (temp_board1[y[2] + 3][x[2]] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2]] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] + 1][x[2] - 1] == 'O' && choice[0] == 1 && temp_board1[y[2] + 3][x[2]] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] + 1][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 2)
-                    choice[0] = 0;
-            }
-        }
-        //  upwards rightwards --> 1/3
-        else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
-        {
-            choice[0] = rand() % 2;
-
-            while (count < 3 && !blocked_knock)
-            {
-                if (temp_board1[y[2] + 1][x[2] + 1] == 'O' && choice[0] == 0 && temp_board1[y[2] + 3][x[2]] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] + 1][x[2] + 1] = '.';
-                    blocked_knock = true;
-                }
-                else if ((temp_board1[y[2] + 3][x[2]] == 'o' || temp_board1[y[2] + 3][x[2]] == 'O') && choice[0] == 1 && temp_board1[y[2] + 1][x[2] + 1] != 'X' && temp_board1[y[2] + 1][x[2] + 1] != 'x')
-                {
-                    if (temp_board1[y[2] + 3][x[2]] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2]] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 2)
-                    choice[0] = 0;
-            }
-        }
-        //  upwards leftwards --> 1/3
-        else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
-        {
-            choice[0] = rand() % 3;
-
-            while (count < 3 && !blocked_knock)
-            {
-                if ((temp_board1[y[2] + 3][x[2] - 1] == 'O' || temp_board1[y[2] + 3][x[2] - 1] == 'o') && choice[0] == 0 && x[3] != 0 && temp_board1[y[2] + 1][x[2] - 2] != 'X' && temp_board1[y[2] + 1][x[2] - 2] != 'x')
-                {
-                    if (temp_board1[y[2] + 3][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-                else if ((temp_board1[y[2] + 3][x[2] - 1] == 'O' || temp_board1[y[2] + 3][x[2] - 1] == 'o') && choice[0] == 1 && x[3] == 0)
-                {
-                    if (temp_board1[y[2] + 3][x[2] - 1] == 'O')
-                    {
-                        temp_board1[y[3]][x[3]] = 'O';
-                    }
-                    else
-                    {
-                        temp_board1[y[3]][x[3]] = 'o';
-                    }
-
-                    temp_board1[y[2] + 3][x[2] - 1] = '.';
-                    blocked_knock = true;
-                }
-                else if (temp_board1[y[2] + 1][x[2] - 2] == 'O' && choice[0] == 2 && x[3] != 0 && temp_board1[y[2] + 3][x[2] - 1] != 'X')
-                {
-                    temp_board1[y[3]][x[3]] = 'O';
-                    temp_board1[y[2] + 1][x[2] - 2] = '.';
-                    blocked_knock = true;
-                }
-
-                choice[0]++;
-                count++;
-                if (choice[0] == 3)
-                    choice[0] = 0;
-            }
-        }
-        //  upwards rightwards --> 5
-        else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3 &&
-                 temp_board1[y[2] + 1][x[2] + 1] == 'O')
-        {
-            temp_board1[y[3]][x[3]] = 'O';
-            temp_board1[y[2] + 1][x[2] + 1] = '.';
-            blocked_knock = true;
-        }
-        //  upwards leftwards --> 5
-        else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0 && x[2] != 1 &&
-                 temp_board1[y[2] + 1][x[2] - 2] == 'O')
-        {
-            temp_board1[y[3]][x[3]] = 'O';
-            temp_board1[y[2] + 1][x[2] - 2] = '.';
-            blocked_knock = true;
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
         }
     }
+    // downwards leftwards... y0 --> 6/4
+    else if ((y[2] == 6 || y[2] == 4) && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        choice[0] = rand() % 2;
 
-    for (t = 0; t < 4; t++)
+        while (count < 3 && !blocked_knock)
+        {
+            if (temp_board1[y[2] - 3][x[2]] == 'O' && choice[0] == 0 && temp_board1[y[2] - 1][x[2] - 1] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] - 3][x[2]] = '.';
+                blocked_knock = true;
+            }
+            else if ((temp_board1[y[2] - 1][x[2] - 1] == 'O' || temp_board1[y[2] - 1][x[2] - 1] == 'o') && choice[0] == 1 && temp_board1[y[2] - 3][x[2]] != 'X' && temp_board1[y[2] - 3][x[2]] != 'x')
+            {
+                if (temp_board1[y[2] - 1][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] - 1][x[2] - 1] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 2)
+                choice[0] = 0;
+        }
+    }
+    // downwards rightwards... y0 --> 2
+    else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] + 1 && x[2] != 3 && x[2] != 2 &&
+             (temp_board1[y[2] - 1][x[2] + 2] == 'o' || temp_board1[y[2] - 1][x[2] + 2] == 'O'))
+    {
+        temp_board1[y[3]][x[3]] = 'O';
+        temp_board1[y[2] - 1][x[2] + 2] = '.';
+        blocked_knock = true;
+    }
+    // downwards leftwards... y0 --> 2
+    else if (y[2] == 2 && y[3] == y[2] - 2 && x[3] == x[2] - 1 && x[2] != 0 &&
+             (temp_board1[y[2] - 1][x[2] - 1] == 'O' || temp_board1[y[2] - 1][x[2] - 1] == 'o'))
+    {
+        temp_board1[y[3]][x[3]] = 'O';
+        temp_board1[y[2] - 1][x[2] - 1] = '.';
+        blocked_knock = true;
+    }
+    //  upwards rightwards --> 0/2/4
+    else if ((y[2] == 0 || y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        choice[0] = rand() % 3;
+
+        while (count < 4 && !blocked_knock)
+        {
+            if ((temp_board1[y[2] + 3][x[2] + 1] == 'o' || temp_board1[y[2] + 3][x[2] + 1] == 'O') && choice[0] == 0 && x[3] != 3 && temp_board1[y[2] + 1][x[2] + 2] != 'x' && temp_board1[y[2] + 1][x[2] + 2] != 'X')
+            {
+                if (temp_board1[y[2] + 3][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2] + 1] = '.';
+                blocked_knock = true;
+            }
+            else if ((temp_board1[y[2] + 3][x[2] + 1] == 'o' || temp_board1[y[2] + 3][x[2] + 1] == 'O') && choice[0] == 1 && x[3] == 3)
+            {
+                if (temp_board1[y[2] + 3][x[2] + 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2] + 1] = '.';
+                blocked_knock = true;
+            }
+            else if (temp_board1[y[2] + 1][x[2] + 2] == 'O' && choice[0] == 2 && x[3] != 3 && temp_board1[y[2] + 3][x[2] + 1] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] + 1][x[2] + 2] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
+        }
+    }
+    //  upwards leftwards --> 0/2/4
+    else if ((y[2] == 0 || y[2] == 2 || y[2] == 4) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        choice[0] = rand() % 2;
+
+        while (count < 3 && !blocked_knock)
+        {
+            if ((temp_board1[y[2] + 3][x[2]] == 'O' || temp_board1[y[2] + 3][x[2]] == 'o') && choice[0] == 0 && temp_board1[y[2] + 1][x[2] - 1] != 'X' && temp_board1[y[2] + 1][x[2] - 1] != 'x')
+            {
+                if (temp_board1[y[2] + 3][x[2]] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2]] = '.';
+                blocked_knock = true;
+            }
+            else if (temp_board1[y[2] + 1][x[2] - 1] == 'O' && choice[0] == 1 && temp_board1[y[2] + 3][x[2]] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] + 1][x[2] - 1] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 2)
+                choice[0] = 0;
+        }
+    }
+    //  upwards rightwards --> 1/3
+    else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3)
+    {
+        choice[0] = rand() % 2;
+
+        while (count < 3 && !blocked_knock)
+        {
+            if (temp_board1[y[2] + 1][x[2] + 1] == 'O' && choice[0] == 0 && temp_board1[y[2] + 3][x[2]] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] + 1][x[2] + 1] = '.';
+                blocked_knock = true;
+            }
+            else if ((temp_board1[y[2] + 3][x[2]] == 'o' || temp_board1[y[2] + 3][x[2]] == 'O') && choice[0] == 1 && temp_board1[y[2] + 1][x[2] + 1] != 'X' && temp_board1[y[2] + 1][x[2] + 1] != 'x')
+            {
+                if (temp_board1[y[2] + 3][x[2]] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2]] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 2)
+                choice[0] = 0;
+        }
+    }
+    //  upwards leftwards --> 1/3
+    else if ((y[2] == 1 || y[2] == 3) && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0)
+    {
+        choice[0] = rand() % 3;
+
+        while (count < 3 && !blocked_knock)
+        {
+            if ((temp_board1[y[2] + 3][x[2] - 1] == 'O' || temp_board1[y[2] + 3][x[2] - 1] == 'o') && choice[0] == 0 && x[3] != 0 && temp_board1[y[2] + 1][x[2] - 2] != 'X' && temp_board1[y[2] + 1][x[2] - 2] != 'x')
+            {
+                if (temp_board1[y[2] + 3][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2] - 1] = '.';
+                blocked_knock = true;
+            }
+            else if ((temp_board1[y[2] + 3][x[2] - 1] == 'O' || temp_board1[y[2] + 3][x[2] - 1] == 'o') && choice[0] == 1 && x[3] == 0)
+            {
+                if (temp_board1[y[2] + 3][x[2] - 1] == 'O')
+                {
+                    temp_board1[y[3]][x[3]] = 'O';
+                }
+                else
+                {
+                    temp_board1[y[3]][x[3]] = 'o';
+                }
+
+                temp_board1[y[2] + 3][x[2] - 1] = '.';
+                blocked_knock = true;
+            }
+            else if (temp_board1[y[2] + 1][x[2] - 2] == 'O' && choice[0] == 2 && x[3] != 0 && temp_board1[y[2] + 3][x[2] - 1] != 'X')
+            {
+                temp_board1[y[3]][x[3]] = 'O';
+                temp_board1[y[2] + 1][x[2] - 2] = '.';
+                blocked_knock = true;
+            }
+
+            choice[0]++;
+            count++;
+            if (choice[0] == 3)
+                choice[0] = 0;
+        }
+    }
+    //  upwards rightwards --> 5
+    else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] + 1 && x[2] != 3 &&
+             temp_board1[y[2] + 1][x[2] + 1] == 'O')
+    {
+        temp_board1[y[3]][x[3]] = 'O';
+        temp_board1[y[2] + 1][x[2] + 1] = '.';
+        blocked_knock = true;
+    }
+    //  upwards leftwards --> 5
+    else if (y[2] == 5 && y[3] == y[2] + 2 && x[3] == x[2] - 1 && x[2] != 0 && x[2] != 1 &&
+             temp_board1[y[2] + 1][x[2] - 2] == 'O')
+    {
+        temp_board1[y[3]][x[3]] = 'O';
+        temp_board1[y[2] + 1][x[2] - 2] = '.';
+        blocked_knock = true;
+    }
+
+    for (short int t = 0; t < 4; t++)
     {
         if (temp_board1[0][t] == 'o')
         {
